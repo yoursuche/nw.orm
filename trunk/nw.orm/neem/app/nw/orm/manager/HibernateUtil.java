@@ -2,8 +2,6 @@ package nw.orm.manager;
 
 import java.util.Properties;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
 
 import nw.commons.NeemClazz;
 import nw.orm.base.BaseInterceptor;
@@ -32,7 +30,6 @@ class HibernateUtil extends NeemClazz implements IHibernateUtil{
 	private SessionFactory sessionFactory;
 
 	private String configFilename = "hibernte.cfg.xml";
-	private ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 	
 	public HibernateUtil() {
 		// do nothing
@@ -96,10 +93,6 @@ class HibernateUtil extends NeemClazz implements IHibernateUtil{
 
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
-	}
-
-	public ValidatorFactory getValidatorFactory() {
-		return validatorFactory;
 	}
 
 	public Configuration getActiveConfiguration() {

@@ -7,13 +7,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.4.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator/classmate-0.8.0.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator/hibernate-validator-5.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator/hibernate-validator-annotation-processor-5.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator/hibernate-validator-cdi-5.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator/javax.el-2.2.4.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator/javax.el-api-2.2.4.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-validator/jboss-logging-3.1.1.GA.jar"/>
-	<classpathentry kind="lib" path="lib/hibernate-validator/validation-api-1.1.0.Final.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/antlr-2.7.7.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/c3p0-0.9.1.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/dom4j-1.6.1.jar"/>
@@ -25,8 +19,8 @@
 	<classpathentry kind="lib" path="lib/hibernate/javassist-3.17.1-GA.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/jboss-logging-3.1.0.GA.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate/jboss-transaction-api_1.1_spec-1.0.0.Final.jar"/>
-	<classpathentry kind="lib" path="C:/nimspace/code/repo/nimblar/web/WEB-INF/lib/postgresql-9.2-1002.jdbc4.jar"/>
 	<classpathentry kind="lib" path="C:/nimspace/code/api/slf4j/1.7.4/slf4j-1.7.4/slf4j-jdk14-1.7.4.jar"/>
 	<classpathentry kind="lib" path="C:/nimspace/deploy/neemcommon/nw.commons-0.6b1-bin.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/pgsql"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

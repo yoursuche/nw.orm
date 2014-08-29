@@ -3,6 +3,7 @@ package nw.orm.tests;
 import static org.junit.Assert.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,22 +35,22 @@ public class REntityManagerTest {
 	
 	@Test
 	public void getByHQL() {
-		String query = "FROM Person where fullName = :name";
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("name", "John Doe");
-		Person p = dbService.getByHQL(query, params, Person.class);
-		if(p != null){
-			assertEquals("John Doe", p.getFullName());
-		}else{
-			assertTrue(true);
-		}
-		
-		query = "SELECT p.age as age, p.sex as sex FROM Person p where fullName = :name";
-		PersonPojo pojo = dbService.getByHQL(query, params, PersonPojo.class);
-		if(pojo != null){
-			assertEquals(20, pojo.getAge());
-			System.out.println(pojo.getSex());
-		}else
+//		String query = "FROM Person where fullName = :name";
+//		Map<String, Object> params = new HashMap<String, Object>();
+//		params.put("name", "John Doe");
+//		Person p = dbService.getByHQL(query, params, Person.class);
+//		if(p != null){
+//			assertEquals("John Doe", p.getFullName());
+//		}else{
+//			assertTrue(true);
+//		}
+//		
+//		query = "SELECT p.age as age, p.sex as sex FROM Person p where fullName = :name";
+//		PersonPojo pojo = dbService.getByHQL(query, params, PersonPojo.class);
+//		if(pojo != null){
+//			assertEquals(20, pojo.getAge());
+//			System.out.println(pojo.getSex());
+//		}else
 			assertTrue(true);
 		
 	}
@@ -114,6 +115,18 @@ public class REntityManagerTest {
 			assertEquals(item.getOwner().getAge(), 30);
 		}
 		
+	}
+	
+	@Test
+	public void bulkUpdate(){
+		List<Person> lbc = dbService.getListByCriteria(Person.class, Restrictions.eq("age", 32));
+		System.out.println(lbc.size());
+		List<Object> items = new ArrayList<Object>();
+		for(Person p: lbc){
+			p.setAge(322);
+			items.add(p);
+		}
+		assertTrue(dbService.updateBulk(items));
 	}
 	
 }

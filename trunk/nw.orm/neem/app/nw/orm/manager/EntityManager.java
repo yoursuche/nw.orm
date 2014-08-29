@@ -1,6 +1,8 @@
 package nw.orm.manager;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.engine.transaction.spi.TransactionContext;
+import org.hibernate.jdbc.Work;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.transform.Transformers;
 
@@ -302,22 +306,17 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
-		StatelessSession statelessSession = null;
-		Transaction tx = null;
+		StatelessSession session = null;
 		try {
-			statelessSession = getStatelessSession();
-			tx = statelessSession.beginTransaction();
+			session = getStatelessSession();
 
 			for (Serializable pk : pks) {
-				statelessSession.delete(statelessSession.get(clazz, pk));
+				session.delete(session.get(clazz, pk));
 			}
-			tx.commit();
-			statelessSession.close();
+			((TransactionContext)session).managedFlush();
+			session.close();
 			return true;
 		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
-			}
 			this.logger.error("Exception ", e);
 		}
 		return false;
@@ -343,21 +342,16 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 
 	public List<Serializable> createBulk(List<Object> items) {
 		List<Serializable> ids = null;
-		StatelessSession statelessSession = null;
-		Transaction tx = null;
+		StatelessSession session = null;
 		try {
 			ids = new ArrayList<Serializable>();
-			statelessSession = getStatelessSession();
-			tx = statelessSession.beginTransaction();
+			session = getStatelessSession();
 			for (Object item: items) {
-				ids.add(statelessSession.insert(item));
+				ids.add(session.insert(item));
 			}
-			tx.commit();
-			statelessSession.close();
+			((TransactionContext)session).managedFlush();
+			session.close();
 		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
-			}
 			this.logger.error("Exception ", e);
 		}
 		return ids;
@@ -391,22 +385,32 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	 * @return true if update completed without errors, 
 	 * returns false with rollback if an error occurs
 	 */
-	public boolean updateBulk(List<Object> objs) {
-		StatelessSession session = null;
-		Transaction txn = null;
+	public boolean updateBulk(final List<Object> objs) {
+		Session sxn = null;
 		try {
-			session = getStatelessSession();
-			txn = session.beginTransaction();
-			for (Object obj: objs) {
-				session.update(obj);
-			}
+			sxn = getSession();
+			Transaction txn = sxn.beginTransaction();
+			sxn.doWork(new Work() {
+				
+				@Override
+				public void execute(Connection arg0) throws SQLException {
+					try {
+						StatelessSession session = getCurrentSessionFactory().openStatelessSession(arg0);
+						for (Object obj: objs) {
+							session.update(obj);
+						}
+						((TransactionContext)session).managedFlush();
+						session.close();
+					} catch (Exception e) {
+						logger.error("Exception ", e);
+					}
+				}
+			});
 			txn.commit();
+			closeSession(sxn);
 			return true;
 		} catch (Exception e) {
 			this.logger.error("Exception ", e);
-			if (txn != null){
-				txn.rollback();
-			}
 		}
 		return false;
 	}
@@ -450,8 +454,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return sf.openSession();
 	}
 
-	public StatelessSession getStatelessSession()
-			throws REntityManagerException {
+	public StatelessSession getStatelessSession() throws REntityManagerException {
 		SessionFactory sf = getCurrentSessionFactory();
 		return sf.openStatelessSession();
 	}
@@ -468,11 +471,9 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return this.hUtil.getSessionFactory();
 	}
 
-	public SessionFactory getCurrentSessionFactory()
-			throws REntityManagerException {
+	public SessionFactory getCurrentSessionFactory() throws REntityManagerException {
 		if (this.hUtil == null)
-			throw new REntityManagerException(
-					"Session Factory could not be located");
+			throw new REntityManagerException("Session Factory could not be located");
 		return this.hUtil.getSessionFactory();
 	}
 

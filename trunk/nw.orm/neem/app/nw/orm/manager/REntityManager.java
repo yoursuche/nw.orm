@@ -14,6 +14,7 @@ import nw.orm.base.contract.IHibernateUtil;
 import nw.orm.examples.model.Person;
 import nw.orm.query.QueryModifier;
 import nw.orm.query.QueryParameter;
+
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -230,7 +231,7 @@ public class REntityManager extends EntityManager {
 				query.setParameter(param.toString(), parameters.get(param));
 			}
 		}
-		if(clazz.isAssignableFrom(Entity.class)){
+		if(clazz != Object.class && clazz.isAssignableFrom(Entity.class)){
 			query.setParameter("deleted", false);
 			query.setParameter("active", true);
 		}
@@ -240,14 +241,12 @@ public class REntityManager extends EntityManager {
 		for(QueryParameter rp: parameters){
 			query.setParameter(rp.getName(), rp.getValue());
 		}
-		if(clazz.isAssignableFrom(Entity.class)){
+		if(clazz != Object.class && clazz.isAssignableFrom(Entity.class)){
 			query.setParameter("deleted", false);
 			query.setParameter("active", true);
 		}
 	}
-
-
-
+	
 	/**
 	 * Searches the database based on set criteria
 	 * @param returnClazz the return object type
@@ -446,11 +445,18 @@ public class REntityManager extends EntityManager {
 		session.beginTransaction();
 		org.hibernate.Query query = session.createQuery(hql);
 		buildParameter(Object.class, query, parameters);
-
 		int o = query.executeUpdate();
 		session.getTransaction().commit();
-		session.close();
-
+		return o;
+	}
+	
+	public int executeUpdate(String hql){
+		SessionFactory sf = hUtil.getSessionFactory();
+		Session session = sf.getCurrentSession();
+		session.beginTransaction();
+		org.hibernate.Query query = session.createQuery(hql);
+		int o = query.executeUpdate();
+		session.getTransaction().commit();
 		return o;
 	}
 
