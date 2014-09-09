@@ -10,8 +10,6 @@ import nw.orm.examples.model.Person;
 import nw.orm.session.core.HibernateConfiguration;
 import nw.orm.session.core.SessionManager;
 
-import org.hibernate.criterion.Example;
-
 /**
  * Neemworks Limited Database.
  * Transaction processing using HQL, and criteria.

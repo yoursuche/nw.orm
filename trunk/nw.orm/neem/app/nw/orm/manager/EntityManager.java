@@ -56,8 +56,21 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	protected static void putManager(String file, EntityManager manager) {
 		activeManagers.put(file, manager);
 	}
+	
+	public void configureSessionManager(boolean useTxns, boolean useCurrent){
+		if(useCurrent){
+			sxnManager.enableCurrentSession();
+		}else{
+			sxnManager.disableCurrentSession();
+		}
+		if(useTxns){
+			sxnManager.enableTransactions();
+		}else{
+			sxnManager.disableTransactions();
+		}
+	}
 
-	protected boolean isClassMapped(Class<?> clazz) {
+	public boolean isClassMapped(Class<?> clazz) {
 		try {
 			return sxnManager.getFactory().getClassMetadata(
 					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz
@@ -232,7 +245,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getBySQL(String sql, SQLModifier<T> sqlMod, QueryParameter ... params){
+	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params){
 		List<T> out = new ArrayList<T>();
 		Session session = sxnManager.getManagedSession();
 		SQLQuery te = session.createSQLQuery(sql);
@@ -244,10 +257,10 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		}
 		
 		if(sqlMod != null){
-			if(sqlMod.getQueryClazz() != null){
-				te.addEntity(sqlMod.getQueryClazz());
+			if(returnClazz != null){
+				te.addEntity(returnClazz);
 			}
-			if(Entity.class.isAssignableFrom(sqlMod.getQueryClazz())){
+			if(Entity.class.isAssignableFrom(returnClazz)){
 				te.setParameter("deleted", false);
 			}
 			if(sqlMod.isPaginated()){
@@ -262,7 +275,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T getByCriteria(QueryModifier<T> qm, Criterion ... criteria){
+	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
 		T out = null;
 		Session session = sxnManager.getManagedSession();
 		try {
@@ -274,7 +287,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 			if(!qm.isTransformResult()){
 				out = (T) te.uniqueResult();
 			}else{
-				out = (T) te.setResultTransformer(Transformers.aliasToBean(qm.getQueryClazz())).uniqueResult();
+				out = (T) te.setResultTransformer(Transformers.aliasToBean(returnClazz)).uniqueResult();
 			}
 			sxnManager.commit(session);
 		} catch (Exception e) {
@@ -286,7 +299,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getListByCriteria(QueryModifier<T> qm, Criterion ... criteria){
+	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
 		List<T> out = new ArrayList<T>();
 		Session session = sxnManager.getManagedSession();
 		try {
@@ -298,7 +311,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 			if(!qm.isTransformResult()){
 				out = (List<T>) te.list();
 			}else{
-				out = (List<T>) te.setResultTransformer(Transformers.aliasToBean(qm.getQueryClazz())).list();
+				out = (List<T>) te.setResultTransformer(Transformers.aliasToBean(returnClazz)).list();
 			}
 			sxnManager.commit(session);
 		} catch (Exception e) {
@@ -325,7 +338,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getListByExample(QueryModifier<T> qm, Example example){
+	public <T> List<T> getListByExample(QueryModifier qm, Example example){
 		List<T> items = new ArrayList<T>();
 		Session sxn = sxnManager.getManagedSession();
 		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
@@ -579,7 +592,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return hql;
 	}
 
-	protected void modifyCriteria(Criteria te, QueryModifier<?> qm) {
+	protected void modifyCriteria(Criteria te, QueryModifier qm) {
 		List<QueryAlias> aliases = qm.getAliases();
 		for (QueryAlias qa : aliases) {
 			if ((qa.getJoinType() == null) && (qa.getWithClause() == null))

@@ -12,7 +12,7 @@ import org.hibernate.criterion.Projection;
  * @author kulgan
  *
  */
-public class QueryModifier<T> extends SQLModifier<T>{
+public class QueryModifier extends SQLModifier{
 	
 	private boolean transformResult;
 
@@ -20,11 +20,13 @@ public class QueryModifier<T> extends SQLModifier<T>{
 	private List<QueryAlias> aliases = new ArrayList<QueryAlias>();
 	private List<Projection> projections = new ArrayList<Projection>();
 	
+	private Class<?> transformClass;
+	
 	/**
 	 * 
 	 * @param queryClass class used for creating criteria
 	 */
-	public QueryModifier(Class<T> queryClass) {
+	public QueryModifier(Class<?> queryClass) {
 		super(queryClass);
 	}
 
@@ -56,8 +58,12 @@ public class QueryModifier<T> extends SQLModifier<T>{
 		return transformResult;
 	}
 
-	public void setTransformResult(boolean transformResult) {
-		this.transformResult = transformResult;
+	public void transformResult(boolean txfm) {
+		this.transformResult = txfm;
+	}
+	
+	public Class<?> getTransformClass(){
+		return transformClass;
 	}
 
 }

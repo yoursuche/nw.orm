@@ -92,13 +92,13 @@ public interface IEntityManager {
 	public <T> List<T> getListByHQL(Class<T> paramClass, String paramString, QueryParameter ... paramArrayOfQueryParameter);
 
 	/**
-	 * 
+	 * @param returnClazz return type for the entity
 	 * @param sql
-	 * @param sqlMod
-	 * @param params
+	 * @param sqlMod @see {@link SQLModifier}
+	 * @param params @see {@link QueryParameter}
 	 * @return
 	 */
-	public <T> List<T> getBySQL(String sql, SQLModifier<T> sqlMod, QueryParameter ... params);
+	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params);
 	
 	/**
 	 * @see {@link QueryModifier}
@@ -106,7 +106,7 @@ public interface IEntityManager {
 	 * @param paramArrayOfCriterion
 	 * @return
 	 */
-	public <T> T getByCriteria(QueryModifier<T> qm, Criterion ... paramArrayOfCriterion);
+	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... paramArrayOfCriterion);
 	
 	/**
 	 * 
@@ -114,11 +114,11 @@ public interface IEntityManager {
 	 * @param paramArrayOfCriterion
 	 * @return
 	 */
-	public <T> List<T> getListByCriteria(QueryModifier<T> qm, Criterion ... paramArrayOfCriterion);
+	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... paramArrayOfCriterion);
 	
 	public <T> T getByExample(Class<T> clazz, Example example);
 	
-	public <T> List<T> getListByExample(QueryModifier<T> qm, Example example);
+	public <T> List<T> getListByExample(QueryModifier qm, Example example);
 	
 	/**
 	 * Performs raw sql insert, update or delete (DML) operation 

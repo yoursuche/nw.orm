@@ -8,6 +8,11 @@ import org.hibernate.StatelessSession;
 
 import nw.commons.NeemClazz;
 
+/**
+ * 
+ * @author kulgan
+ *
+ */
 public class SessionManager extends NeemClazz implements ISessionManager{
 	
 	private HibernateConfiguration conf;
@@ -97,17 +102,25 @@ public class SessionManager extends NeemClazz implements ISessionManager{
 			sxn.beginTransaction();
 		}
 	}
-
-	public void useCurrentSession(boolean useCurrentSession) {
-		this.useCurrentSession = useCurrentSession;
+	
+	public void enableCurrentSession(){
+		this.useCurrentSession = true;
+	}
+	
+	public void enableTransactions(){
+		this.useTransactions = true;
+	}
+	
+	public void disableCurrentSession(){
+		this.useCurrentSession = false;
+	}
+	
+	public void disableTransactions(){
+		this.useTransactions = false;
 	}
 
 	public boolean useTransactions() {
 		return useTransactions;
-	}
-
-	public void setUseTransactions(boolean useTransactions) {
-		this.useTransactions = useTransactions;
 	}
 
 }

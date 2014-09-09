@@ -6,19 +6,19 @@ package nw.orm.query;
  * @author kulgan
  *
  */
-public class SQLModifier<T> {
+public class SQLModifier {
 	
 	private boolean paginated;
 	private int pageIndex;
 	private int maxResult;
 	
-	private Class<T> queryClass;
+	private Class<?> queryClass;
 	
 	public SQLModifier() {
 		
 	}
 	
-	public SQLModifier(Class<T> queryClass) {
+	public SQLModifier(Class<?> queryClass) {
 		this.queryClass = queryClass;
 	}
 	
@@ -53,11 +53,11 @@ public class SQLModifier<T> {
 		this.maxResult = maxResult;
 	}
 	
-	public Class<T> getQueryClazz() {
+	public Class<?> getQueryClazz() {
 		return queryClass;
 	}
 
-	protected void setQueryClazz(Class<T> returnClazz) {
+	protected void setQueryClazz(Class<?> returnClazz) {
 		this.queryClass = returnClazz;
 	}
 

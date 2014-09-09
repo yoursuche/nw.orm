@@ -2,7 +2,6 @@ package nw.orm.session.core;
 
 import java.util.Properties;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -52,11 +51,6 @@ public class HibernateConfiguration extends NeemClazz{
 
 	public String closeFactory() {
 		if (!sessionFactory.isClosed()) {
-			Session currentSession = sessionFactory.getCurrentSession();
-			if (currentSession != null) {
-				currentSession.cancelQuery();
-				currentSession.close();
-			}
 			sessionFactory.close();
 		}
 		if(hibernateProps != null){
