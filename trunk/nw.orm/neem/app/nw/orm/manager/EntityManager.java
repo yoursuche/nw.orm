@@ -1,8 +1,6 @@
 package nw.orm.manager;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,29 +8,29 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import nw.commons.NeemClazz;
 import nw.orm.base.Entity;
-import nw.orm.base.REntityManagerException;
 import nw.orm.base.contract.IEntityManager;
-import nw.orm.base.contract.IHibernateUtil;
 import nw.orm.examples.model.Person;
 import nw.orm.query.QueryAlias;
 import nw.orm.query.QueryModifier;
 import nw.orm.query.QueryParameter;
+import nw.orm.query.SQLModifier;
+import nw.orm.session.core.HibernateConfiguration;
+import nw.orm.session.core.SessionManager;
 
 import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.engine.transaction.spi.TransactionContext;
-import org.hibernate.jdbc.Work;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.transform.Transformers;
 
@@ -43,8 +41,12 @@ import org.hibernate.transform.Transformers;
  */
 public abstract class EntityManager extends NeemClazz implements IEntityManager {
 	
+	protected HibernateConfiguration conf;
+	protected SessionManager sxnManager;
+	
+	private boolean initializedSuccessfully;
+	
 	private static ConcurrentHashMap<String, EntityManager> activeManagers = new ConcurrentHashMap<String, EntityManager>();
-	protected IHibernateUtil hUtil;
 	protected boolean useCurrentSession = true;
 
 	protected static EntityManager getManager(String configFile) {
@@ -57,60 +59,60 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 
 	protected boolean isClassMapped(Class<?> clazz) {
 		try {
-			return getCurrentSessionFactory().getClassMetadata(
+			return sxnManager.getFactory().getClassMetadata(
 					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz
 							.newInstance())) != null;
 		} catch (InstantiationException e) {
 			this.logger.error("Exception: ", e);
 		} catch (IllegalAccessException e) {
 			this.logger.error("Exception: ", e);
-		} catch (REntityManagerException e) {
-			this.logger.error("Exception: ", e);
-		}
+		} 
 		return false;
 	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T getById(Class<? extends T> clazz, Serializable id, boolean lock) {
-		T out = null;
-		Transaction tx = null;
-		Session session = null;
-		try {
-			session = getSession();
-			tx = session.beginTransaction();
-			if (lock){
-				out = (T) session.load(clazz, id);
-			}else{
-				out = (T) session.load(clazz, id, LockOptions.UPGRADE);
-			}
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
-			}
-			this.logger.error("Exception: ", e);
-		}
-		closeSession(session);
-		return out;
-	}
-
-	public <T> T getById(Class<? extends T> clazz, Serializable id) {
+	
+	public <T> T getById(Class<T> clazz, Serializable id) {
 		return getById(clazz, id, false);
 	}
 
-	public <T> List<T> getAll(Class<? extends T> clazz) {
-		return getListByCriteria(clazz, new Criterion[0]);
+	@SuppressWarnings("unchecked")
+	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
+		T out = null;
+		sxnManager.getManagedSession();
+		Session session = sxnManager.getManagedSession();
+		try {
+			if (!lock){
+				out = (T) session.load(clazz, id, LockOptions.READ);
+			}else{
+				out = (T) session.load(clazz, id, LockOptions.UPGRADE);
+			}
+			sxnManager.commit(session);
+		} catch (HibernateException e) {
+			sxnManager.rollback(session);
+			this.logger.error("Exception: ", e);
+		}
+		sxnManager.closeSession(session);
+		return out;
+	}
+
+	public <T> List<T> getAll(Class<T> clazz) {
+		return getListByCriteria(clazz);
+	}
+	
+	/**
+	 * Filters out deleted entries from queries
+	 */
+	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
+		if (Entity.class.isAssignableFrom(clazz)){
+			te.add(Restrictions.eq("deleted", Boolean.valueOf(false)));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getByCriteria(Class<? extends T> clz, Criterion ... criteria) {
+	public <T> T getByCriteria(Class<T> clz, Criterion ... criteria) {
 		T out = null;
 		boolean isMapped = isClassMapped(clz);
-		Transaction tx = null;
-		Session session = null;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
 			Criteria te = session.createCriteria(clz);
 			for (Criterion c : criteria) {
 				te.add(c);
@@ -121,88 +123,92 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 			}else{
 				out = (T) te.setResultTransformer(Transformers.aliasToBean(clz)).uniqueResult();
 			}
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			this.logger.error("Exception: ", e);
+			sxnManager.commit(session);
+		} catch (HibernateException e) {
+			sxnManager.rollback(session);
+			logger.error("Exception: ", e);
 		}
-		closeSession(session);
+		sxnManager.closeSession(session);
 		return out;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getListByCriteria(Class<? extends T> clz, Criterion ... criteria) {
+	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
 		List<T> out = new ArrayList<T>();
-		Transaction tx = null;
-		Session session = null;
+		boolean isMapped = isClassMapped(clz);
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
 			Criteria te = session.createCriteria(clz);
 			for (Criterion c : criteria) {
 				te.add(c);
 			}
 			addSoftRestrictions(te, clz);
-			out = te.list();
-			tx.commit();
-		} catch (Exception e) {
+			if (isMapped){
+				out = (List<T>) te.list();
+			}else{
+				out = (List<T>) te.setResultTransformer(Transformers.aliasToBean(clz)).list();
+			}
+			sxnManager.commit(session);
+		} catch (HibernateException e) {
 			this.logger.error("Exception: ", e);
-			if (tx != null)
-				tx.rollback();
+			sxnManager.rollback(session);
 		}
-		closeSession(session);
+		sxnManager.closeSession(session);
 		return out;
 	}
 
-	public <T> T getByHQL(String hql, Map<String, Object> parameters,Class<? extends T> resultClass) {
+	public <T> T getByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
 		T out = getByHQL(resultClass, hql, QueryParameter.fromMap(parameters));
 		return out;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getByHQL(Class<? extends T> resultClass, String hql, QueryParameter ... parameters) {
+	public <T> T getByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		T out = null;
 		boolean isMapped = isClassMapped(resultClass);
-		Session session = null;
-		Transaction tx = null;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
-			hql = modifyHQL(hql, resultClass);
+			
+			if (Entity.class.isAssignableFrom(resultClass)) {
+				hql = modifyHQL(hql, resultClass);
+			}
+			
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
+			
 			if (Entity.class.isAssignableFrom(resultClass)) {
 				query.setParameter("deleted", Boolean.valueOf(false));
 			}
-			if (isMapped)
+			if (isMapped){
 				out = (T) query.uniqueResult();
-			else {
-				out = (T) query.setResultTransformer(
-						Transformers.aliasToBean(resultClass)).uniqueResult();
+			}else {
+				out = (T) query.setResultTransformer(Transformers.aliasToBean(resultClass)).uniqueResult();
 			}
-			tx.commit();
-		} catch (Exception e) {
+			sxnManager.commit(session);
+		} catch (HibernateException e) {
 			this.logger.error("Exception: ", e);
-			if (tx != null)
-				tx.rollback();
+			sxnManager.rollback(session);
 		}
-		closeSession(session);
+		sxnManager.closeSession(session);
+		return out;
+	}
+	
+	public <T> List<T> getListByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
+		List<T> out = getListByHQL(resultClass, hql, QueryParameter.fromMap(parameters));
 		return out;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getListByHQL(Class<? extends T> resultClass, String hql, QueryParameter ... parameters) {
+	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		List<T> out = new ArrayList<T>();
 		boolean isMapped = isClassMapped(resultClass);
-		Session session = null;
-		Transaction tx = null;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
-			hql = modifyHQL(hql, resultClass);
+			if (Entity.class.isAssignableFrom(resultClass)) {
+				hql = modifyHQL(hql, resultClass);
+			}
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
@@ -210,29 +216,164 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 			if (Entity.class.isAssignableFrom(resultClass)) {
 				query.setBoolean("deleted", false);
 			}
-			if (isMapped)
+			if (isMapped){
 				out = query.list();
-			else
-				out = query.setResultTransformer(
-						Transformers.aliasToBean(resultClass)).list();
-			tx.commit();
-		} catch (Exception e) {
+			}else{
+				out = query.setResultTransformer(Transformers.aliasToBean(resultClass)).list();
+			}
+						
+			sxnManager.commit(session);
+		} catch (HibernateException e) {
 			this.logger.error("Exception: ", e);
-			if (tx != null)
-				tx.rollback();
+			sxnManager.rollback(session);
 		}
-		closeSession(session);
+		sxnManager.closeSession(session);
 		return out;
 	}
-
-	public <T> List<T> getListByHQL(String hql, Map<String, Object> parameters, Class<? extends T> resultClass) {
-		List<T> out = getListByHQL(resultClass, hql,
-				QueryParameter.fromMap(parameters));
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getBySQL(String sql, SQLModifier<T> sqlMod, QueryParameter ... params){
+		List<T> out = new ArrayList<T>();
+		Session session = sxnManager.getManagedSession();
+		SQLQuery te = session.createSQLQuery(sql);
+		
+		if (params != null) {
+			for (QueryParameter param : params) {
+				te.setParameter(param.getName(), param.getValue());
+			}
+		}
+		
+		if(sqlMod != null){
+			if(sqlMod.getQueryClazz() != null){
+				te.addEntity(sqlMod.getQueryClazz());
+			}
+			if(Entity.class.isAssignableFrom(sqlMod.getQueryClazz())){
+				te.setParameter("deleted", false);
+			}
+			if(sqlMod.isPaginated()){
+				te.setFirstResult(sqlMod.getPageIndex());
+				te.setMaxResults(sqlMod.getMaxResult());
+			}
+		}
+		
+		out = te.list();
+		sxnManager.closeSession(session);
 		return out;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getByCriteria(QueryModifier<T> qm, Criterion ... criteria){
+		T out = null;
+		Session session = sxnManager.getManagedSession();
+		try {
+			Criteria te = session.createCriteria(qm.getQueryClazz());
+			for (Criterion c : criteria) {
+				te.add(c);
+			}
+			modifyCriteria(te, qm);
+			if(!qm.isTransformResult()){
+				out = (T) te.uniqueResult();
+			}else{
+				out = (T) te.setResultTransformer(Transformers.aliasToBean(qm.getQueryClazz())).uniqueResult();
+			}
+			sxnManager.commit(session);
+		} catch (Exception e) {
+			logger.error("Exception: ", e);
+			sxnManager.rollback(session);
+		}
+		sxnManager.closeSession(session);
+		return out;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getListByCriteria(QueryModifier<T> qm, Criterion ... criteria){
+		List<T> out = new ArrayList<T>();
+		Session session = sxnManager.getManagedSession();
+		try {
+			Criteria te = session.createCriteria(qm.getQueryClazz());
+			for (Criterion c : criteria) {
+				te.add(c);
+			}
+			modifyCriteria(te, qm);
+			if(!qm.isTransformResult()){
+				out = (List<T>) te.list();
+			}else{
+				out = (List<T>) te.setResultTransformer(Transformers.aliasToBean(qm.getQueryClazz())).list();
+			}
+			sxnManager.commit(session);
+		} catch (Exception e) {
+			logger.error("Exception: ", e);
+			sxnManager.rollback(session);
+		}
+		sxnManager.closeSession(session);
+		return out;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getByExample(Class<T> clazz, Example example){
+		T out = null;
+		Session sxn = sxnManager.getManagedSession();
+		Criteria te = sxn.createCriteria(clazz).add(example);
+		try {
+			out = (T) te.uniqueResult();
+			sxnManager.commit(sxn);
+		} catch (HibernateException e) {
+			logger.error("Exception ", e);
+		}
+		sxnManager.closeSession(sxn);
+		return out;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getListByExample(QueryModifier<T> qm, Example example){
+		List<T> items = new ArrayList<T>();
+		Session sxn = sxnManager.getManagedSession();
+		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
+		try {
+			modifyCriteria(te, qm);
+			items = (List<T>) te.list();
+			sxnManager.commit(sxn);
+		} catch (HibernateException e) {
+			logger.error("Exception ", e);
+		}
+		sxnManager.closeSession(sxn);
+		return items;
+	}
+	
+	public int executeSQLUpdate(String sql, QueryParameter ... params){
+		Session session = sxnManager.getManagedSession();
+		SQLQuery query = session.createSQLQuery(sql);
+		if (params != null) {
+			for (QueryParameter param : params) {
+				query.setParameter(param.getName(), param.getValue());
+			}
+		}
+		int o = query.executeUpdate();
+		sxnManager.commit(session);
+		sxnManager.closeSession(session);
+		return o;
+	}
+	
+	public int executeHQLUpdate(String hql, QueryParameter ... params){
+		Session session = sxnManager.getManagedSession();
+		org.hibernate.Query query = session.createQuery(hql);
+		if (params != null) {
+			for (QueryParameter param : params) {
+				query.setParameter(param.getName(), param.getValue());
+			}
+		}
+		int o = query.executeUpdate();
+		sxnManager.commit(session);
+		sxnManager.closeSession(session);
+		return o;
+	}
 
-	public boolean softDelete(Class<?> clazz, Serializable id) {
-		Object bc = getByCriteria(clazz, new Criterion[] { Restrictions.idEq(id) });
+	public boolean softDelete(Class<? extends Entity<?>> clazz, Serializable id) {
+		if (Entity.class.isAssignableFrom(clazz)) {
+			logger.debug("Unsupported class specified.");
+			return false;
+		}
+		Object bc = getByCriteria(clazz, Restrictions.idEq(id));
 		if ((bc instanceof Entity)) {
 			Entity<?> e = (Entity<?>) bc;
 			e.setDeleted(true);
@@ -240,26 +381,28 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return update(bc);
 	}
 
-	public boolean bulkSoftDelete(Class<?> clazz, List<Serializable> ids) {
-		StatelessSession session = null;
-		Transaction tx = null;
+	public boolean bulkSoftDelete(Class<? extends Entity<?>> clazz, List<Serializable> ids) {
+		StatelessSession session = sxnManager.getStatelessSession();
+		if (Entity.class.isAssignableFrom(clazz)) {
+			logger.debug("Unsupported class specified.");
+			return false;
+		}
+		
 		try {
-			session = getStatelessSession();
-			tx = session.beginTransaction();
 			for (Serializable s : ids) {
 				Object entity = session.get(clazz, s);
-				if ((entity instanceof Entity)) {
-					Entity<?> e = (Entity<?>) entity;
-					e.setDeleted(true);
-				}
+				Entity<?> e = (Entity<?>) entity;
+				e.setDeleted(true);
 				session.update(entity);
 			}
-			tx.commit();
+			if(sxnManager.useTransactions()){
+				session.getTransaction().commit();
+			}
 			session.close();
 			return true;
-		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
+		} catch (HibernateException e) {
+			if(sxnManager.useTransactions()){
+				session.getTransaction().rollback();
 			}
 			this.logger.error("Exception", e);
 		}
@@ -267,93 +410,87 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 
 	public boolean remove(Object obj) {
-		Session session = null;
-		Transaction tx = null;
+		boolean outcome = false;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
 			session.delete(obj);
-			tx.commit();
-			closeSession(session);
-			return true;
-		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
-				closeSession(session);
-			}
+			sxnManager.commit(session);
+			outcome = true;
+		} catch (HibernateException e) {
+			sxnManager.rollback(session);
 			this.logger.error("Exception", e);
 		}
-		return false;
+		sxnManager.closeSession(session);
+		return outcome;
 	}
 
 	public boolean remove(Class<?> clazz, Serializable pk) {
-		Session session = null;
-		Transaction tx = null;
+		boolean outcome = false;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
 			session.delete(session.get(clazz, pk));
-			tx.commit();
-			closeSession(session);
-			return true;
-		} catch (Exception e) {
+			sxnManager.commit(session);
+			outcome = true;
+		} catch (HibernateException e) {
 			this.logger.error("Exception ", e);
-			if (tx != null){
-				tx.rollback();
-			}
+			sxnManager.rollback(session);
 		}
-		return false;
+		sxnManager.closeSession(session);
+		return outcome;
 	}
 
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
-		StatelessSession session = null;
+		StatelessSession session = sxnManager.getStatelessSession();
 		try {
-			session = getStatelessSession();
-
 			for (Serializable pk : pks) {
 				session.delete(session.get(clazz, pk));
 			}
-			((TransactionContext)session).managedFlush();
+			if(sxnManager.useTransactions()){
+				session.getTransaction().commit();
+			}
 			session.close();
 			return true;
-		} catch (Exception e) {
+		} catch (HibernateException e) {
 			this.logger.error("Exception ", e);
+			if(sxnManager.useTransactions()){
+				session.getTransaction().rollback();
+			}
 		}
+		session.close();
 		return false;
 	}
 
 	public Serializable create(Object obj) {
 		Serializable pk = null;
-		Session session = null;
-		Transaction tx = null;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
 			pk = session.save(obj);
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
-			}
+			sxnManager.commit(session);
+		} catch (HibernateException e) {
+			sxnManager.rollback(session);
 			this.logger.error("Exception ", e);
 		}
+		sxnManager.closeSession(session);
 		return pk;
 	}
 
-	public List<Serializable> createBulk(List<Object> items) {
-		List<Serializable> ids = null;
-		StatelessSession session = null;
+	public List<Serializable> createBulk(List<?> items) {
+		List<Serializable> ids = new ArrayList<Serializable>();
+		StatelessSession session = sxnManager.getStatelessSession();
 		try {
-			ids = new ArrayList<Serializable>();
-			session = getStatelessSession();
 			for (Object item: items) {
 				ids.add(session.insert(item));
 			}
-			((TransactionContext)session).managedFlush();
-			session.close();
-		} catch (Exception e) {
+			if(sxnManager.useTransactions()){
+				session.getTransaction().commit();
+			}
+		} catch (HibernateException e) {
 			this.logger.error("Exception ", e);
+			if(sxnManager.useTransactions()){
+				session.getTransaction().rollback();
+			}
 		}
+		session.close();
 		return ids;
 	}
 
@@ -361,23 +498,18 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	 * Updates a serializable entity
 	 */
 	public boolean update(Object obj) {
-		Session session = null;
-		Transaction txn = null;
+		boolean outcome = false;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			txn = session.beginTransaction();
 			session.update(obj);
-			txn.commit();
-			closeSession(session);
-			return true;
-		} catch (Exception e) {
-			if (txn != null){
-				txn.rollback();
-				closeSession(session);
-			}
+			sxnManager.commit(session);
+			outcome = true;
+		} catch (HibernateException e) {
+			sxnManager.rollback(session);
 			this.logger.error("Exception ", e);
 		}
-		return false;
+		sxnManager.closeSession(session);
+		return outcome;
 	}
 
 	/**
@@ -385,37 +517,28 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	 * @return true if update completed without errors, 
 	 * returns false with rollback if an error occurs
 	 */
-	public boolean updateBulk(final List<Object> objs) {
-		Session sxn = null;
+	public boolean updateBulk(List<?> items) {
+		boolean outcome = false;
+		StatelessSession session = sxnManager.getStatelessSession();
 		try {
-			sxn = getSession();
-			Transaction txn = sxn.beginTransaction();
-			sxn.doWork(new Work() {
-				
-				@Override
-				public void execute(Connection arg0) throws SQLException {
-					try {
-						StatelessSession session = getCurrentSessionFactory().openStatelessSession(arg0);
-						for (Object obj: objs) {
-							session.update(obj);
-						}
-						((TransactionContext)session).managedFlush();
-						session.close();
-					} catch (Exception e) {
-						logger.error("Exception ", e);
-					}
-				}
-			});
-			txn.commit();
-			closeSession(sxn);
-			return true;
-		} catch (Exception e) {
+			for (Object item: items) {
+				session.update(item);
+			}
+			if(sxnManager.useTransactions()){
+				session.getTransaction().commit();
+			}
+			outcome = true;
+		} catch (HibernateException e) {
 			this.logger.error("Exception ", e);
+			if(sxnManager.useTransactions()){
+				session.getTransaction().rollback();
+			}
 		}
-		return false;
+		session.close();
+		return outcome;
 	}
 
-	public boolean toggleActive(Class<?> clazz, Serializable id) {
+	public boolean toggleActive(Class<? extends Entity<?>> clazz, Serializable id) {
 		Object bc = getByCriteria(clazz, new Criterion[] { Restrictions.idEq(id) });
 		if ((bc instanceof Entity)) {
 			Entity<?> e = (Entity<?>) bc;
@@ -425,68 +548,17 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 
 	public boolean createOrUpdate(Object obj) {
-		Session session = null;
-		Transaction tx = null;
+		boolean outcome = false;
+		Session session = sxnManager.getManagedSession();
 		try {
-			session = getSession();
-			tx = session.beginTransaction();
 			session.saveOrUpdate(obj);
-			tx.commit();
-			closeSession(session);
-			return true;
+			sxnManager.commit(session);
+			outcome = true;
 		} catch (Exception e) {
-			if (tx != null){
-				tx.rollback();
-				closeSession(session);
-			}
+			sxnManager.rollback(session);
 			this.logger.error("Exception ", e);
 		}
-		return false;
-	}
-
-	public Session getActiveSession() throws REntityManagerException {
-		SessionFactory sf = getCurrentSessionFactory();
-		return sf.getCurrentSession();
-	}
-
-	public Session openSession() throws REntityManagerException {
-		SessionFactory sf = getCurrentSessionFactory();
-		return sf.openSession();
-	}
-
-	public StatelessSession getStatelessSession() throws REntityManagerException {
-		SessionFactory sf = getCurrentSessionFactory();
-		return sf.openStatelessSession();
-	}
-
-	@Deprecated
-	public Session getCurrentSession() {
-		if (getSessionFactory() != null)
-			return getSessionFactory().getCurrentSession();
-		return null;
-	}
-
-	@Deprecated
-	public SessionFactory getSessionFactory() {
-		return this.hUtil.getSessionFactory();
-	}
-
-	public SessionFactory getCurrentSessionFactory() throws REntityManagerException {
-		if (this.hUtil == null)
-			throw new REntityManagerException("Session Factory could not be located");
-		return this.hUtil.getSessionFactory();
-	}
-
-	protected Session getSession() throws REntityManagerException {
-		if (this.useCurrentSession) {
-			return getActiveSession();
-		}
-		return openSession();
-	}
-
-	protected void closeSession(Session sxn) {
-		if ((sxn != null) && (!this.useCurrentSession))
-			sxn.close();
+		return outcome;
 	}
 
 	public void enableJTABasedSession() {
@@ -495,15 +567,6 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 
 	public void disableJTABasedSession() {
 		this.useCurrentSession = false;
-	}
-
-	/**
-	 * Adds 
-	 */
-	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
-		if (Entity.class.isAssignableFrom(clazz)){
-			te.add(Restrictions.eq("deleted", Boolean.valueOf(false)));
-		}
 	}
 
 	protected String modifyHQL(String hql, Class<?> clazz) {
@@ -516,7 +579,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return hql;
 	}
 
-	protected void modifyCriteria(Criteria te, QueryModifier qm) {
+	protected void modifyCriteria(Criteria te, QueryModifier<?> qm) {
 		List<QueryAlias> aliases = qm.getAliases();
 		for (QueryAlias qa : aliases) {
 			if ((qa.getJoinType() == null) && (qa.getWithClause() == null))
@@ -551,5 +614,13 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 
 	public static void main(String[] args) {
 		System.out.println(Entity.class.isAssignableFrom(Person.class));
+	}
+
+	public boolean isInitializedSuccessfully() {
+		return initializedSuccessfully;
+	}
+
+	public void setInitializedSuccessfully(boolean initializedSuccessfully) {
+		this.initializedSuccessfully = initializedSuccessfully;
 	}
 }

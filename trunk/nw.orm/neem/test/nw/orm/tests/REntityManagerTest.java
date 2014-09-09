@@ -129,4 +129,11 @@ public class REntityManagerTest {
 		assertTrue(dbService.updateBulk(items));
 	}
 	
+	@Test
+	public void testGetById(){
+		Person person = dbService.getById(Person.class, 2L);
+		assertNotNull(person);
+		
+	}
+	
 }

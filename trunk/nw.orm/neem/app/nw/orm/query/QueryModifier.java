@@ -6,13 +6,15 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
 
-public class QueryModifier {
-
-	private boolean paginated;
-	private int pageIndex;
-	private int maxResult;
+/**
+ * Adds extra parameters to criteria operation
+ * @see {@link SQLModifier}
+ * @author kulgan
+ *
+ */
+public class QueryModifier<T> extends SQLModifier<T>{
 	
-	private Class<?> queryClass;
+	private boolean transformResult;
 
 	private List<Order> orderBys = new ArrayList<Order>();
 	private List<QueryAlias> aliases = new ArrayList<QueryAlias>();
@@ -22,12 +24,8 @@ public class QueryModifier {
 	 * 
 	 * @param queryClass class used for creating criteria
 	 */
-	public QueryModifier(Class<?> queryClass) {
-		setQueryClazz(queryClass);
-	}
-	
-	public QueryModifier(){
-		
+	public QueryModifier(Class<T> queryClass) {
+		super(queryClass);
 	}
 
 	public List<Order> getOrderBys() {
@@ -50,42 +48,16 @@ public class QueryModifier {
 		projections.add(proj);
 	}
 
-	public boolean isPaginated() {
-		return paginated;
-	}
-
-	public void setPaginated(int pageIndex, int maxResult) {
-		setMaxResult(maxResult);//maxResult;
-		setPageIndex(pageIndex);// = pageIndex;
-		this.paginated = true;
-	}
-
-	public int getPageIndex() {
-		return pageIndex;
-	}
-
-	private void setPageIndex(int pageIndex) {
-		this.pageIndex = pageIndex;
-	}
-
-	public int getMaxResult() {
-		return maxResult;
-	}
-
-	private void setMaxResult(int maxResult) {
-		this.maxResult = maxResult;
-	}
-
 	public List<Projection> getProjections() {
 		return projections;
 	}
 
-	public Class<?> getQueryClazz() {
-		return queryClass;
+	public boolean isTransformResult() {
+		return transformResult;
 	}
 
-	private void setQueryClazz(Class<?> returnClazz) {
-		this.queryClass = returnClazz;
+	public void setTransformResult(boolean transformResult) {
+		this.transformResult = transformResult;
 	}
 
 }
