@@ -13,7 +13,10 @@ import nw.orm.examples.pojo.PersonPojo;
 import nw.orm.examples.pojo.TestPox;
 import nw.orm.manager.REntityManager;
 import nw.orm.query.QueryModifier;
+import nw.orm.query.QueryParameter;
+import nw.orm.query.SQLModifier;
 
+import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.junit.BeforeClass;
@@ -107,47 +110,32 @@ public class REntityManagerTest {
 
 	@Test
 	public void testGetByHQL() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetByHQLClassOfTStringQueryParameterArray() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetListByHQLStringMapOfStringObjectClassOfT() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetListByHQLClassOfTStringQueryParameterArray() {
-		fail("Not yet implemented");
+		String hql = "FROM Person p WHERE p.pk = :pk";
+		Person bc = rem.getByHQL(Person.class, hql, QueryParameter.create("pk", personPk));
+		assertEquals(bc.getPk(), personPk);
+		
+		hql = "FROM Person p WHERE p.age = :age";
+		List<Person> lbh = rem.getListByHQL(Person.class, hql, QueryParameter.create("age", 20));
+		assertTrue(!lbh.isEmpty());
 	}
 
 	@Test
 	public void testGetBySQL() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetByCriteriaQueryModifierOfTCriterionArray() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetListByCriteriaQueryModifierOfTCriterionArray() {
-		fail("Not yet implemented");
+		String sql = "SELECT p.age, count(*) as size FROM Person p WHERE age > :age group by p.age";
+		SQLModifier sqlMod = new SQLModifier();
+		List<TestPox> bs = rem.getBySQL(TestPox.class, sql, sqlMod, QueryParameter.create("age", 20));
+		
+		System.out.println(bs);
+		assertTrue(!bs.isEmpty());
 	}
 
 	@Test
 	public void testGetByExample() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetListByExample() {
-		fail("Not yet implemented");
+		Person p = new Person();
+		p.setSex(Sex.FEMALE);
+		Example eg = Example.create(p);
+		Person be = rem.getByExample(Person.class, eg);
+		assertEquals(be.getPk(), personPk);
 	}
 
 	@Test
@@ -214,35 +202,4 @@ public class REntityManagerTest {
 	public void testCreateOrUpdate() {
 		fail("Not yet implemented");
 	}
-
-	@Test
-	public void testEnableJTABasedSession() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testDisableJTABasedSession() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testModifyHQL() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testModifyCriteria() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testIsInitializedSuccessfully() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetInitializedSuccessfully() {
-		fail("Not yet implemented");
-	}
-
 }

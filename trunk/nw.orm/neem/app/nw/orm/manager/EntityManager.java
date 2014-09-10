@@ -94,9 +94,9 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		Session session = sxnManager.getManagedSession();
 		try {
 			if (!lock){
-				out = (T) session.load(clazz, id, LockOptions.READ);
+				out = (T) session.get(clazz, id, LockOptions.READ);
 			}else{
-				out = (T) session.load(clazz, id, LockOptions.UPGRADE);
+				out = (T) session.get(clazz, id, LockOptions.UPGRADE);
 			}
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
@@ -257,8 +257,12 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		}
 		
 		if(sqlMod != null){
-			if(returnClazz != null){
+			if(returnClazz != null && isClassMapped(returnClazz)){
 				te.addEntity(returnClazz);
+			}
+			
+			if(returnClazz != null && !isClassMapped(returnClazz)){
+				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
 			if(Entity.class.isAssignableFrom(returnClazz)){
 				te.setParameter("deleted", false);
@@ -328,7 +332,9 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		Session sxn = sxnManager.getManagedSession();
 		Criteria te = sxn.createCriteria(clazz).add(example);
 		try {
+			System.out.println(te.list());
 			out = (T) te.uniqueResult();
+			System.out.println(out);
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
 			logger.error("Exception ", e);

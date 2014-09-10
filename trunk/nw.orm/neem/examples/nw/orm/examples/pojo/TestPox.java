@@ -4,13 +4,13 @@ public class TestPox {
 	
 	private Integer age;
 	
-	private Long size;
+	private Number size;
 
-	public Long getSize() {
+	public Number getSize() {
 		return size;
 	}
 
-	public void setSize(Long size) {
+	public void setSize(Number size) {
 		this.size = size;
 	}
 
