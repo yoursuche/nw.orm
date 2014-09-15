@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 
 /**
  * Meta data for attributes that is required to be captured for created entities.

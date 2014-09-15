@@ -1,4 +1,4 @@
-package nw.orm.base.enums;
+package nw.orm.core.enums;
 
 public enum RAuditLevel {
     

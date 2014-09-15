@@ -1,18 +1,18 @@
-package nw.orm.base.contract;
+package nw.orm.core.service;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import nw.orm.base.Entity;
-import nw.orm.query.QueryModifier;
-import nw.orm.query.QueryParameter;
-import nw.orm.query.SQLModifier;
+import nw.orm.core.NwormEntity;
+import nw.orm.core.query.QueryModifier;
+import nw.orm.core.query.QueryParameter;
+import nw.orm.core.query.SQLModifier;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 
-public interface IEntityManager {
+public interface NwormService {
 	
 	/**
 	 * Retrieves a database entry by its primary key with default lockoption of READ
@@ -142,7 +142,7 @@ public interface IEntityManager {
 	 * @param paramSerializable
 	 * @return
 	 */
-	public boolean softDelete(Class<? extends Entity<?>> paramClass, Serializable paramSerializable);
+	public boolean softDelete(Class<? extends NwormEntity<?>> paramClass, Serializable paramSerializable);
 
 	/**
 	 * sets the deleted field for all entries in the list. All entries will be ignored in all queries
@@ -150,7 +150,7 @@ public interface IEntityManager {
 	 * @param paramList
 	 * @return
 	 */
-	public boolean bulkSoftDelete(Class<? extends Entity<?>> paramClass, List<Serializable> paramList);
+	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> paramClass, List<Serializable> paramList);
 
 	/**
 	 * Deletes an entry from the database
@@ -203,7 +203,7 @@ public interface IEntityManager {
 	 */
 	public boolean updateBulk(List<?> paramList);
 
-	public boolean toggleActive(Class<? extends Entity<?>> paramClass, Serializable paramSerializable);
+	public boolean toggleActive(Class<? extends NwormEntity<?>> paramClass, Serializable paramSerializable);
 
 	public boolean createOrUpdate(Object paramObject);
 

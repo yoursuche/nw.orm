@@ -3,7 +3,7 @@ package nw.orm.eav;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 
 @Entity
 @Table(name = "EAV_LIST_VALUE")

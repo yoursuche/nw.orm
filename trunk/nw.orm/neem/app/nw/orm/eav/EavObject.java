@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 
 import org.hibernate.annotations.Index;
 /**

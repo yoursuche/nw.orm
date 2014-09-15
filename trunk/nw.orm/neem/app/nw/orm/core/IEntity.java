@@ -1,4 +1,4 @@
-package nw.orm.base;
+package nw.orm.core;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class IEntity extends Entity<Long> {
+public abstract class IEntity extends NwormEntity<Long> {
 
 	private static final long serialVersionUID = -5965442215210696967L;
 

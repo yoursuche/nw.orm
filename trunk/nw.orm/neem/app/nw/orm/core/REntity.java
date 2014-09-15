@@ -1,4 +1,4 @@
-package nw.orm.base;
+package nw.orm.core;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -12,7 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
  *
  */
 @MappedSuperclass
-public abstract class REntity extends Entity<String> {
+public abstract class REntity extends NwormEntity<String> {
 
 	private static final long serialVersionUID = 8126268423762341105L;
 

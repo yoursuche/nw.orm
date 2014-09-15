@@ -1,11 +1,16 @@
-package nw.orm.session.core;
+package nw.orm.core.session;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 
-public interface ISessionManager {
+/**
+ * 
+ * @author Ogwara O. Rowland
+ *
+ */
+public interface IHibernateSessionService {
 	
 	/**
 	 * Returns a usable session object for database operations. The outcome depends on whether use of current session is enabled

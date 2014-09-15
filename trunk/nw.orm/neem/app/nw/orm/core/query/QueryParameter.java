@@ -1,4 +1,4 @@
-package nw.orm.query;
+package nw.orm.core.query;
 
 import java.util.Map;
 import java.util.Set;

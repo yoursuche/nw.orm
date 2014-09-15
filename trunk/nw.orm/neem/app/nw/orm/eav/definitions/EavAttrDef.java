@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 import nw.orm.eav.EavList;
 import nw.orm.eav.enums.FieldDataType;
 import nw.orm.eav.enums.GuiType;

@@ -4,7 +4,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 import nw.orm.eav.EavAttribute;
 
 @MappedSuperclass

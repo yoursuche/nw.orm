@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Properties;
 
-import nw.orm.session.core.HibernateConfiguration;
+import nw.orm.core.session.HibernateSessionFactory;
 
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
@@ -14,15 +14,15 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class HibernateConfigurationTest {
 	
-	private static HibernateConfiguration conf;
-	private static HibernateConfiguration pConf;
+	private static HibernateSessionFactory conf;
+	private static HibernateSessionFactory pConf;
 	
 	private String cfg = "hibernate.cfg.xml";
 	
 	@BeforeClass
 	public static void init(){
-		conf = new HibernateConfiguration();
-		pConf = new HibernateConfiguration();
+		conf = new HibernateSessionFactory();
+		pConf = new HibernateSessionFactory();
 	}
 
 	@Test

@@ -1,4 +1,4 @@
-package nw.orm.query;
+package nw.orm.core.query;
 
 /**
  * Adds paging and return class attributes to simple sql queries. A call to @see {@link #setPaginated(int, int)}

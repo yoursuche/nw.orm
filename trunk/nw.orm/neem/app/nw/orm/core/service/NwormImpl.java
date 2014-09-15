@@ -1,21 +1,19 @@
-package nw.orm.manager;
+package nw.orm.core.service;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import nw.commons.NeemClazz;
-import nw.orm.base.Entity;
-import nw.orm.base.contract.IEntityManager;
+import nw.orm.core.NwormEntity;
+import nw.orm.core.query.QueryAlias;
+import nw.orm.core.query.QueryModifier;
+import nw.orm.core.query.QueryParameter;
+import nw.orm.core.query.SQLModifier;
+import nw.orm.core.session.HibernateSessionFactory;
+import nw.orm.core.session.HibernateSessionService;
 import nw.orm.examples.model.Person;
-import nw.orm.query.QueryAlias;
-import nw.orm.query.QueryModifier;
-import nw.orm.query.QueryParameter;
-import nw.orm.query.SQLModifier;
-import nw.orm.session.core.HibernateConfiguration;
-import nw.orm.session.core.SessionManager;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -39,22 +37,22 @@ import org.hibernate.transform.Transformers;
  * @author kulgan
  *
  */
-public abstract class EntityManager extends NeemClazz implements IEntityManager {
+public abstract class NwormImpl extends NeemClazz implements NwormService {
 	
-	protected HibernateConfiguration conf;
-	protected SessionManager sxnManager;
+	protected HibernateSessionFactory conf;
+	protected HibernateSessionService sxnManager;
 	
 	private boolean initializedSuccessfully;
 	
-	private static ConcurrentHashMap<String, EntityManager> activeManagers = new ConcurrentHashMap<String, EntityManager>();
 	protected boolean useCurrentSession = true;
 
-	protected static EntityManager getManager(String configFile) {
-		return (EntityManager) activeManagers.get(configFile);
+	protected static NwormImpl getManager(String configFile) {
+		NwormCache.getManager(configFile);
+		return (NwormImpl) NwormCache.getManager(configFile);
 	}
 
-	protected static void putManager(String file, EntityManager manager) {
-		activeManagers.put(file, manager);
+	protected static void putManager(String file, NwormImpl manager) {
+		NwormCache.putManager(file, manager);
 	}
 	
 	public void configureSessionManager(boolean useTxns, boolean useCurrent){
@@ -115,7 +113,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	 * Filters out deleted entries from queries
 	 */
 	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
-		if (Entity.class.isAssignableFrom(clazz)){
+		if (NwormEntity.class.isAssignableFrom(clazz)){
 			te.add(Restrictions.eq("deleted", Boolean.valueOf(false)));
 		}
 	}
@@ -182,7 +180,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		Session session = sxnManager.getManagedSession();
 		try {
 			
-			if (Entity.class.isAssignableFrom(resultClass)) {
+			if (NwormEntity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 			
@@ -191,7 +189,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 				query.setParameter(rp.getName(), rp.getValue());
 			}
 			
-			if (Entity.class.isAssignableFrom(resultClass)) {
+			if (NwormEntity.class.isAssignableFrom(resultClass)) {
 				query.setParameter("deleted", Boolean.valueOf(false));
 			}
 			if (isMapped){
@@ -219,14 +217,14 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			if (Entity.class.isAssignableFrom(resultClass)) {
+			if (NwormEntity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			if (Entity.class.isAssignableFrom(resultClass)) {
+			if (NwormEntity.class.isAssignableFrom(resultClass)) {
 				query.setBoolean("deleted", false);
 			}
 			if (isMapped){
@@ -264,7 +262,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 			if(returnClazz != null && !isClassMapped(returnClazz)){
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
-			if(Entity.class.isAssignableFrom(returnClazz)){
+			if(NwormEntity.class.isAssignableFrom(returnClazz)){
 				te.setParameter("deleted", false);
 			}
 			if(sqlMod.isPaginated()){
@@ -387,22 +385,22 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return o;
 	}
 
-	public boolean softDelete(Class<? extends Entity<?>> clazz, Serializable id) {
-		if (Entity.class.isAssignableFrom(clazz)) {
+	public boolean softDelete(Class<? extends NwormEntity<?>> clazz, Serializable id) {
+		if (NwormEntity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
 		Object bc = getByCriteria(clazz, Restrictions.idEq(id));
-		if ((bc instanceof Entity)) {
-			Entity<?> e = (Entity<?>) bc;
+		if ((bc instanceof NwormEntity)) {
+			NwormEntity<?> e = (NwormEntity<?>) bc;
 			e.setDeleted(true);
 		}
 		return update(bc);
 	}
 
-	public boolean bulkSoftDelete(Class<? extends Entity<?>> clazz, List<Serializable> ids) {
+	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> clazz, List<Serializable> ids) {
 		StatelessSession session = sxnManager.getStatelessSession();
-		if (Entity.class.isAssignableFrom(clazz)) {
+		if (NwormEntity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
@@ -410,7 +408,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		try {
 			for (Serializable s : ids) {
 				Object entity = session.get(clazz, s);
-				Entity<?> e = (Entity<?>) entity;
+				NwormEntity<?> e = (NwormEntity<?>) entity;
 				e.setDeleted(true);
 				session.update(entity);
 			}
@@ -557,10 +555,10 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 		return outcome;
 	}
 
-	public boolean toggleActive(Class<? extends Entity<?>> clazz, Serializable id) {
+	public boolean toggleActive(Class<? extends NwormEntity<?>> clazz, Serializable id) {
 		Object bc = getByCriteria(clazz, new Criterion[] { Restrictions.idEq(id) });
-		if ((bc instanceof Entity)) {
-			Entity<?> e = (Entity<?>) bc;
+		if ((bc instanceof NwormEntity)) {
+			NwormEntity<?> e = (NwormEntity<?>) bc;
 			e.setActive(!e.isActive());
 		}
 		return update(bc);
@@ -589,7 +587,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 
 	protected String modifyHQL(String hql, Class<?> clazz) {
-		if (Entity.class.isAssignableFrom(clazz)) {
+		if (NwormEntity.class.isAssignableFrom(clazz)) {
 			if (hql.toLowerCase().contains(" where ")) {
 				return hql + " and deleted = :deleted";
 			}
@@ -632,7 +630,7 @@ public abstract class EntityManager extends NeemClazz implements IEntityManager 
 	}
 
 	public static void main(String[] args) {
-		System.out.println(Entity.class.isAssignableFrom(Person.class));
+		System.out.println(NwormEntity.class.isAssignableFrom(Person.class));
 	}
 
 	public boolean isInitializedSuccessfully() {

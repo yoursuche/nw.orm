@@ -1,4 +1,4 @@
-package nw.orm.base;
+package nw.orm.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -10,8 +10,14 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+/**
+ * 
+ * @author kulgan
+ *
+ * @param <T> Datatype to represent the primary key
+ */
 @MappedSuperclass
-public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
+public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEntity<T>>{
 	
 	private static final long serialVersionUID = -5965442215210696967L;
 	
@@ -68,10 +74,10 @@ public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
 		if (this == object) {
 			return true;
 		}
-		if (!(object instanceof Entity)) {
+		if (!(object instanceof NwormEntity)) {
 			return false;
 		}
-		final Entity<T> that = (Entity<T>) object;
+		final NwormEntity<T> that = (NwormEntity<T>) object;
 		if (this.getPk() == null || that.getPk() == null
 				|| !this.getPk().equals(that.getPk())) {
 			return false;
@@ -93,7 +99,7 @@ public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
 	}
 
 	@Override
-	public int compareTo(Entity<T> o) {
+	public int compareTo(NwormEntity<T> o) {
 		int cmp = 0;
 		if (this.getPk() != null && (this.getPk() == o.getPk() || this.getPk().equals(o.getPk()))) {
 			cmp = 0;

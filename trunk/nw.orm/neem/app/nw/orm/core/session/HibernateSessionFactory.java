@@ -1,21 +1,21 @@
-package nw.orm.session.core;
+package nw.orm.core.session;
 
 import java.util.Properties;
 
+import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
 import nw.commons.NeemClazz;
-import nw.orm.base.BaseInterceptor;
 
 /**
- * Hibernate configuration helper
+ * Hibernate SessionFactory builder
  * @author kulgan
  *
  */
-public class HibernateConfiguration extends NeemClazz{
+public class HibernateSessionFactory extends NeemClazz{
 	
 	private Properties hibernateProps;
 	private SessionFactory sessionFactory;
@@ -23,16 +23,26 @@ public class HibernateConfiguration extends NeemClazz{
 	private String configFilename = "hibernate.cfg.xml";
 	private Configuration activeConfiguration;
 	
+	private Interceptor interceptor;
+	
 	public void init(Properties props, String configFile) {
+		init(props, configFile, null);
+	}
+	
+	public void init(Properties props, String configFile, Interceptor interceptor) {
 		this.hibernateProps = props;
 		this.configFilename = configFile;
+		this.interceptor = interceptor;
 		sessionFactory = buildSessionFactory();
 	}
 	
 	private SessionFactory buildSessionFactory() {
 		try {
 			// Create the SessionFactory from configFilename(default=hibernate.cfg.xml)
-			activeConfiguration = new Configuration().setInterceptor(new BaseInterceptor());
+			activeConfiguration = new Configuration();
+			if(interceptor != null){
+				activeConfiguration.setInterceptor(interceptor);
+			}
 			activeConfiguration.configure(configFilename);
 			if (hibernateProps != null) {
 				hibernateProps.remove("config.name");

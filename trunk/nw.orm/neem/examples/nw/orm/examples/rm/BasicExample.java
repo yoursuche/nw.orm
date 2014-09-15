@@ -3,26 +3,27 @@ package nw.orm.examples.rm;
 import java.util.Date;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
+import nw.orm.core.query.QueryParameter;
+import nw.orm.core.service.Nworm;
 import nw.orm.examples.model.BasicSequencedIdModel;
 import nw.orm.examples.model.BasicUUIDModel;
-import nw.orm.manager.REntityManager;
-import nw.orm.query.QueryParameter;
 
 public class BasicExample {
 
-	private REntityManager dbService;
+	private Nworm dbService;
 
 	@Test
 	public void getService(){
-		dbService = REntityManager.getInstance(); // loads service using default configuration file
+		dbService = Nworm.getInstance(); // loads service using default configuration file
 		assertNotNull("Could not get connection to the database", dbService);
 	}
 
 	@Test
 	public void createSequenced(){
-		dbService = REntityManager.getInstance();
+		dbService = Nworm.getInstance();
 		BasicSequencedIdModel bs = new BasicSequencedIdModel();
 		bs.setBasicDate(new Date());
 		bs.setBasicString("Sample String");
@@ -33,7 +34,7 @@ public class BasicExample {
 
 	@Test
 	public void createUUIDed(){
-		dbService = REntityManager.getInstance();
+		dbService = Nworm.getInstance();
 		BasicUUIDModel bs = new BasicUUIDModel();
 		bs.setBasicDate(new Date());
 		bs.setBasicString("Sample String");
@@ -44,7 +45,7 @@ public class BasicExample {
 
 	@Test
 	public void findByHQL(){
-		dbService = REntityManager.getInstance();
+		dbService = Nworm.getInstance();
 		BasicUUIDModel bh = dbService.getByHQL(BasicUUIDModel.class, "FROM BasicUUIDModel b where b.basicString = :bs", QueryParameter.create("bs", "Sample String"));
 		// if items found
 		if(bh != null)
@@ -55,7 +56,7 @@ public class BasicExample {
 
 	@Test
 	public void update(){
-		dbService = REntityManager.getInstance();
+		dbService = Nworm.getInstance();
 		BasicUUIDModel bh = dbService.getByHQL(BasicUUIDModel.class, "FROM BasicUUIDModel b where b.basicString = :bs", QueryParameter.create("bs", "Sample String"));
 		bh.setBasicString("Hga");
 		assertTrue(dbService.update(bh));
@@ -64,7 +65,7 @@ public class BasicExample {
 
 	@Test
 	public void delete(){
-		dbService = REntityManager.getInstance();
+		dbService = Nworm.getInstance();
 		BasicUUIDModel bh = dbService.getByHQL(BasicUUIDModel.class, "FROM BasicUUIDModel b where b.basicString = :bs", QueryParameter.create("bs", "Hga"));
 		dbService.remove(bh);
 		assertTrue(true);

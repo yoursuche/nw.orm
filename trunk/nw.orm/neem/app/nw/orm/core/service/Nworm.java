@@ -1,14 +1,14 @@
-package nw.orm.manager;
+package nw.orm.core.service;
 
 import java.util.List;
 import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
-import nw.orm.base.RAudit;
+import nw.orm.core.RAudit;
+import nw.orm.core.session.HibernateSessionFactory;
+import nw.orm.core.session.HibernateSessionService;
 import nw.orm.examples.model.Person;
-import nw.orm.session.core.HibernateConfiguration;
-import nw.orm.session.core.SessionManager;
 
 /**
  * Neemworks Limited Database.
@@ -20,14 +20,14 @@ import nw.orm.session.core.SessionManager;
  *
  *
  */
-public class REntityManager extends EntityManager {
+public class Nworm extends NwormImpl {
 	
 	/**
 	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
 	 * @return a single database service instance
 	 */
 
-	public static REntityManager getInstance() {
+	public static Nworm getInstance() {
 		String configFile = "hibernate.cfg.xml";
 		return getInstance(configFile);
 	}
@@ -39,12 +39,12 @@ public class REntityManager extends EntityManager {
 	 * @return a single database service instance
 	 */
 
-	public static REntityManager getInstance(String configFile) {
-		REntityManager service = null;
+	public static Nworm getInstance(String configFile) {
+		Nworm service = null;
 		try {
 			service = getInstance(configFile, null);
 		} catch (OperationNotSupportedException e) {
-			se(REntityManager.class, "Exception ", e);
+			se(Nworm.class, "Exception ", e);
 		}
 		return service;
 	}
@@ -60,20 +60,20 @@ public class REntityManager extends EntityManager {
 	 * @throws OperationNotSupportedException
 	 */
 
-	public static REntityManager getInstance(String configFile, Properties props) throws OperationNotSupportedException {
-		REntityManager service = null;
+	public static Nworm getInstance(String configFile, Properties props) throws OperationNotSupportedException {
+		Nworm service = null;
 		if(props != null){
 			String cname = props.getProperty("config.name");
 			if(cname == null || (cname != null && cname.isEmpty())){
 				throw new OperationNotSupportedException("A Property named config.name must be specified in this property object");
 			}
-			service = (REntityManager) getManager(configFile + "_" + cname);
+			service = (Nworm) getManager(configFile + "_" + cname);
 		}else{
-			service = (REntityManager) getManager(configFile);
+			service = (Nworm) getManager(configFile);
 		}
 		if (service == null) {
-			synchronized (REntityManager.class) {
-				service = new REntityManager();
+			synchronized (Nworm.class) {
+				service = new Nworm();
 				service.init(configFile, props);
 				if(!service.isInitializedSuccessfully()){
 					throw new OperationNotSupportedException("Initialization of the configuration was unsuccessful.");
@@ -83,15 +83,15 @@ public class REntityManager extends EntityManager {
 		return service;
 	}
 
-	private REntityManager() {
+	private Nworm() {
 		// do nothing
 	}
 	
 	private void init(String configFile, Properties props){
-		conf = new HibernateConfiguration();
+		conf = new HibernateSessionFactory();
 		try {
 			conf.init(props, configFile);
-			sxnManager = new SessionManager(conf);
+			sxnManager = new HibernateSessionService(conf);
 			setInitializedSuccessfully(true);
 		} catch (Exception e) {
 			logger.error("Exception ", e);
@@ -120,7 +120,7 @@ public class REntityManager extends EntityManager {
 		ra.setActive(false);
 		System.out.println(ra.toString());
 		
-		REntityManager dbService = REntityManager.getInstance();
+		Nworm dbService = Nworm.getInstance();
 		Person pa = dbService.getById(Person.class, 9L);
 		System.out.println(pa);
 		

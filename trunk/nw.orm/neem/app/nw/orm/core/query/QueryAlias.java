@@ -1,4 +1,4 @@
-package nw.orm.query;
+package nw.orm.core.query;
 
 import org.hibernate.criterion.Criterion;
 import org.hibernate.sql.JoinType;

@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 
 @Entity
 @Table(name = "BASIC_UUID")

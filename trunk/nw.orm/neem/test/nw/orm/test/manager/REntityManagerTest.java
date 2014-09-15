@@ -7,14 +7,14 @@ import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
+import nw.orm.core.query.QueryModifier;
+import nw.orm.core.query.QueryParameter;
+import nw.orm.core.query.SQLModifier;
+import nw.orm.core.service.Nworm;
 import nw.orm.examples.model.Person;
 import nw.orm.examples.model.enums.Sex;
 import nw.orm.examples.pojo.PersonPojo;
 import nw.orm.examples.pojo.TestPox;
-import nw.orm.manager.REntityManager;
-import nw.orm.query.QueryModifier;
-import nw.orm.query.QueryParameter;
-import nw.orm.query.SQLModifier;
 
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Projections;
@@ -24,8 +24,8 @@ import org.junit.Test;
 
 public class REntityManagerTest {
 	
-	private static REntityManager rem;
-	private static REntityManager rem2;
+	private static Nworm rem;
+	private static Nworm rem2;
 	
 	private static Long personPk;
 	
@@ -35,8 +35,8 @@ public class REntityManagerTest {
 		Properties props = new Properties();
 		props.put("config.name", "xtra");
 		props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/test_im");
-		rem = REntityManager.getInstance();
-		rem2 = REntityManager.getInstance(cfg, props);
+		rem = Nworm.getInstance();
+		rem2 = Nworm.getInstance(cfg, props);
 		
 		Person p = new Person();
 		p.setAge(20);

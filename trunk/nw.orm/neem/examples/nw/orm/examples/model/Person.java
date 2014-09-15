@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.base.IEntity;
+import nw.orm.core.IEntity;
 import nw.orm.examples.model.enums.Sex;
 
 @Entity

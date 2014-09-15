@@ -1,4 +1,4 @@
-package nw.orm.session.core;
+package nw.orm.core.session;
 
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -10,12 +10,12 @@ import nw.commons.NeemClazz;
 
 /**
  * 
- * @author kulgan
+ * @author Ogwara O. Rowland
  *
  */
-public class SessionManager extends NeemClazz implements ISessionManager{
+public class HibernateSessionService extends NeemClazz implements IHibernateSessionService{
 	
-	private HibernateConfiguration conf;
+	private HibernateSessionFactory conf;
 	
 	/**
 	 * Default flush mode
@@ -32,7 +32,7 @@ public class SessionManager extends NeemClazz implements ISessionManager{
 	 */
 	private boolean useTransactions = true;
 	
-	public SessionManager(HibernateConfiguration conf) {
+	public HibernateSessionService(HibernateSessionFactory conf) {
 		this.conf = conf;
 	}
 
@@ -70,14 +70,14 @@ public class SessionManager extends NeemClazz implements ISessionManager{
 
 	@Override
 	public void commit(Session sxn) throws HibernateException{
-		logger.info("Commit in progress ");
+		logger.trace("Commit in progress ");
 		if(useTransactions()){
 			sxn.getTransaction().commit();
 		}
 	}
 	
 	public void rollback(Session sxn) throws HibernateException{
-		logger.info("Rollback in progress ");
+		logger.trace("Rollback in progress ");
 		if(useTransactions()){
 			sxn.getTransaction().rollback();
 		}

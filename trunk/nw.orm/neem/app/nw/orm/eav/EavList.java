@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.base.REntity;
+import nw.orm.core.REntity;
 
 @Entity
 @Table(name = "EAV_LIST_VALUE")

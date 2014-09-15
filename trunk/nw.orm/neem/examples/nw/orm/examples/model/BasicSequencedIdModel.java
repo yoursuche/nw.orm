@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.base.IEntity;
+import nw.orm.core.IEntity;
 
 @Entity
 @Table(name = "BASIC_SEQ_MODEL")

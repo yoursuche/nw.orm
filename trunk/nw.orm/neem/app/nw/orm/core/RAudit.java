@@ -1,4 +1,4 @@
-package nw.orm.base;
+package nw.orm.core;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,7 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
-import nw.orm.base.enums.RAuditLevel;
+import nw.orm.core.enums.RAuditLevel;
 
 import org.hibernate.annotations.Index;
 
