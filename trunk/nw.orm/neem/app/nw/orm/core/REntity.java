@@ -7,7 +7,7 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- *
+ * A base implementation of an Entity that uses a UUID based primary key string
  * @author Ogwara O. Rowland
  *
  */
@@ -25,6 +25,7 @@ public abstract class REntity extends NwormEntity<String> {
 	@Column(name = "PK", nullable = false, insertable = true, updatable = false)
 	private String pk;
 
+	@Override
 	public String getPk() {
 		return pk;
 	}

@@ -5,6 +5,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+/**
+ * A base implementation of an Entity that uses a number base on Hibernate Sequence as primary key
+ * @author Ogwara O. Rowland
+ *
+ */
 @MappedSuperclass
 public abstract class IEntity extends NwormEntity<Long> {
 
@@ -18,6 +23,7 @@ public abstract class IEntity extends NwormEntity<Long> {
 	@Column(name = "PK", nullable = false, insertable = true, updatable = false)
 	private Long pk;
 
+	@Override
 	public Long getPk() {
 		return pk;
 	}

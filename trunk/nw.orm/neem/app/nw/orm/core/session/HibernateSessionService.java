@@ -53,6 +53,7 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		return sxn;
 	}
 	
+	@Override
 	public Session getCurrentSession() {
 		SessionFactory sf = conf.getSessionFactory();
 		Session sxn = sf.getCurrentSession();
@@ -76,6 +77,7 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		}
 	}
 	
+	@Override
 	public void rollback(Session sxn) throws HibernateException{
 		logger.trace("Rollback in progress ");
 		if(useTransactions()){
@@ -93,6 +95,7 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		return ss;
 	}
 	
+	@Override
 	public SessionFactory getFactory() {
 		return conf.getSessionFactory();
 	}

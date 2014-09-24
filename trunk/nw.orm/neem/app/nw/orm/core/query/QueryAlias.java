@@ -5,7 +5,7 @@ import org.hibernate.sql.JoinType;
 
 /**
  * Short hand for building projection aliases used for joins
- * @author kulgan
+ * @author Ogwara O. Rowland
  *
  */
 public class QueryAlias {

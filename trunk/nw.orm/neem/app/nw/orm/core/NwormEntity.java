@@ -11,9 +11,8 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
- * 
- * @author kulgan
- *
+ * NwormEntity is a shorthand for creating entities. It comes with extra properties
+ * @author Ogwara O. Rowland
  * @param <T> Datatype to represent the primary key
  */
 @MappedSuperclass
@@ -34,18 +33,34 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	@Column(name = "LAST_MODIFIED", nullable = false, insertable = true, updatable = true)
 	private Date lastModified = new Date();
 
+	/**
+	 * a boolean variable that can be used to activate and deactivate data entries
+	 * @return true is entry is active, false if it is not
+	 */
 	public boolean isActive() {
 		return active;
 	}
 
+	/**
+	 * Used to activate or deactivate an entry
+	 * @param active
+	 */
 	public void setActive(boolean active) {
 		this.active = active;
 	}
 
+	/**
+	 * Determines whether the entry should be soft deleted. As in flagged as deleted and ignored be subsequent queries
+	 * @return
+	 */
 	public boolean isDeleted() {
 		return deleted;
 	}
 
+	/**
+	 * Deletes or undeletes an entry
+	 * @param deleted
+	 */
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
@@ -58,6 +73,10 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		this.createDate = createDate;
 	}
 
+	/**
+	 * retrieve the last date the entry was modified. This field is auto populated
+	 * @return
+	 */
 	public Date getLastModified() {
 		return lastModified;
 	}
@@ -69,6 +88,7 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	 *            The target object to compare with
 	 * @return boolean True if both objects a 'equal'
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean equals(Object object) {
 		if (this == object) {
@@ -85,13 +105,18 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		return true;
 	}
 
+	/**
+	 * Retrieves the priary key
+	 * @return
+	 */
 	public abstract T getPk();
 
 	/**
-	 * Returns a hash code value for the object
+	 * Returns the hash code value for the current object
 	 *
 	 * @return int The hash code value
 	 */
+	@Override
 	public int hashCode() {
 		int hashCode = 0;
 		hashCode = 29 * hashCode + (getPk() == null ? 0 : getPk().hashCode());
@@ -108,8 +133,11 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		return cmp;
 	}
 	
-	public void markDeleted(){
-		
+	/**
+	 * deletes this entry
+	 */
+	public void delete(){
+		this.deleted = true;
 	}
 	
 	@Override
