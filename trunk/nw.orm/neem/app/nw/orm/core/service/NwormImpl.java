@@ -8,6 +8,7 @@ import java.util.Map;
 import nw.commons.NeemClazz;
 import nw.orm.core.NwormEntity;
 import nw.orm.core.query.QueryAlias;
+import nw.orm.core.query.QueryFetchMode;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
@@ -634,7 +635,11 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 				te.createAlias(qa.getAssociationPath(), qa.getAlias(), qa.getJoinType(), qa.getWithClause());
 			}
 		}
-
+		List<QueryFetchMode> fms = qm.getFetchModes();
+		for(QueryFetchMode fm: fms){
+			te.setFetchMode(fm.getAlias(), fm.getFetchMode());
+		}
+		
 		if (qm.isPaginated()) {
 			te.setFirstResult(qm.getPageIndex());
 			te.setMaxResults(qm.getMaxResult());
@@ -666,5 +671,13 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 
 	public void setInitializedSuccessfully(boolean initializedSuccessfully) {
 		this.initializedSuccessfully = initializedSuccessfully;
+	}
+	
+	@Override
+	public HibernateSessionService getSessionService() {
+		if(isInitializedSuccessfully()){
+			return this.sxnManager;
+		}
+		return null;
 	}
 }

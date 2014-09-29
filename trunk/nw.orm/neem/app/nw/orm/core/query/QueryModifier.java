@@ -16,6 +16,7 @@ public class QueryModifier extends SQLModifier{
 	
 	private boolean transformResult;
 
+	private List<QueryFetchMode> fetchMode = new ArrayList<QueryFetchMode>();
 	private List<Order> orderBys = new ArrayList<Order>();
 	private List<QueryAlias> aliases = new ArrayList<QueryAlias>();
 	private List<Projection> projections = new ArrayList<Projection>();
@@ -64,6 +65,14 @@ public class QueryModifier extends SQLModifier{
 	
 	public Class<?> getTransformClass(){
 		return transformClass;
+	}
+
+	public List<QueryFetchMode> getFetchModes() {
+		return fetchMode;
+	}
+
+	public void addFetchMode(QueryFetchMode fetchMode) {
+		this.fetchMode.add(fetchMode);
 	}
 
 }
