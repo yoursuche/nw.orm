@@ -6,16 +6,13 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import nw.orm.core.IEntity;
 
 @Entity
-@Table(name = "COUNTRY", indexes = {
-		@Index(columnList= "NAME", unique = true)
-})
+@Table(name = "COUNTRY")
 public class Country extends IEntity {
 	
 	private static final long serialVersionUID = -1518248137801443711L;

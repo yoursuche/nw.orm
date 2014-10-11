@@ -1,7 +1,6 @@
 package nw.orm.core.query;
 
 import org.hibernate.criterion.Criterion;
-import org.hibernate.sql.JoinType;
 
 /**
  * Short hand for building projection aliases used for joins
@@ -12,7 +11,7 @@ public class QueryAlias {
 
 	private String associationPath;
 	private String alias;
-	private JoinType joinType;
+	private int joinType;
 	private Criterion withClause;
 
 
@@ -23,7 +22,7 @@ public class QueryAlias {
 	}
 
 
-	public QueryAlias(String associationPath, String alias, JoinType joinType) {
+	public QueryAlias(String associationPath, String alias, int joinType) {
 		super();
 		this.associationPath = associationPath;
 		this.alias = alias;
@@ -31,7 +30,7 @@ public class QueryAlias {
 	}
 
 
-	public QueryAlias(String associationPath, String alias, JoinType joinType,
+	public QueryAlias(String associationPath, String alias, int joinType,
 			Criterion withClause) {
 		super();
 		this.associationPath = associationPath;
@@ -53,10 +52,10 @@ public class QueryAlias {
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
-	public JoinType getJoinType() {
+	public int getJoinType() {
 		return joinType;
 	}
-	public void setJoinType(JoinType joinType) {
+	public void setJoinType(int joinType) {
 		this.joinType = joinType;
 	}
 	public Criterion getWithClause() {

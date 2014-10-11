@@ -4,15 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Index;
 import javax.persistence.Table;
 
 import nw.orm.core.enums.RAuditLevel;
 
 @Entity
-@Table(name="AUDIT", indexes = {
-		@Index(columnList = "USER_ID"), @Index(columnList = "RA_ENT_INDX")
-})
+@Table(name="AUDIT")
 
 public class RAudit extends REntity {
 
