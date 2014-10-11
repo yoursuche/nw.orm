@@ -20,7 +20,7 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	/**
 	 * Default flush mode
 	 */
-	private FlushMode flushMode = FlushMode.AUTO;
+	private FlushMode flushMode = FlushMode.COMMIT;
 	
 	/**
 	 * Configures the system use currentSession instead of opening a new session each time

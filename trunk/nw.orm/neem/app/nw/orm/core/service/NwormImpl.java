@@ -611,7 +611,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 	}
 
 	public void disableJTABasedSession() {
-		this.useCurrentSession = false;
+		configureSessionManager(true, false);
 	}
 
 	protected String modifyHQL(String hql, Class<?> clazz) {
