@@ -6,7 +6,6 @@ import javax.persistence.Table;
 
 import nw.orm.core.REntity;
 
-import org.hibernate.annotations.Index;
 /**
  * MetaData defining entities that needs to be captured
  * @author Ogwara O. Rowland
@@ -18,7 +17,6 @@ public class EavObject extends REntity{
 	
 	private static final long serialVersionUID = -6243652326429500193L;
 
-	@Index(name = "ON_OR_IX")
 	@Column(name = "OBJECT_NAME", unique = true, length = 1024, nullable = false)
 	private String objectName; //A simple and unique name for the target entity
 	
