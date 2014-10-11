@@ -29,5 +29,9 @@
   <property name="hibernate.current_session_context_class">thread</property>
   <mapping class="nw.orm.examples.model.Person"/>
   <mapping class="nw.orm.examples.model.Item"/>
+  
+  <mapping class="nw.orm.entity.geo.Country"/>
+  <mapping class="nw.orm.entity.geo.Region"/>
+  <mapping class="nw.orm.entity.geo.City"/>
  </session-factory>
 </hibernate-configuration>

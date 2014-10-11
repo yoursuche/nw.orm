@@ -1,18 +1,26 @@
 package nw.orm.entity.geo;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import nw.orm.core.IEntity;
 
 @Entity
-@Table(name = "COUNTRY")
+@Table(name = "COUNTRY", indexes = {
+		@Index(columnList= "NAME", unique = true)
+})
 public class Country extends IEntity {
 	
 	private static final long serialVersionUID = -1518248137801443711L;
 
-	@Column(name = "NAME", nullable = false)
+	@Column(name = "NAME", nullable = false, unique = true)
 	private String name;
 	
 	@Column(name = "ALPHA_2", nullable = false)
@@ -23,6 +31,9 @@ public class Country extends IEntity {
 	
 	@Column(name = "PHONE_CODE", nullable = false)
 	private String phoneCode;
+	
+	@OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
+	private List<Region> regions;
 
 	public String getName() {
 		return name;
@@ -67,6 +78,24 @@ public class Country extends IEntity {
 		c.setIsoAlpha3(split[2]);
 		c.setPhoneCode(split[3]);
 		return c;
+	}
+
+	public List<Region> getRegions() {
+		if(this.regions == null){
+			this.regions = new ArrayList<Region>();
+		}
+		return regions;
+	}
+
+	public void setRegions(List<Region> regions) {
+		this.regions = regions;
+	}
+	
+	public void addRegion(Region region) {
+		if(this.regions == null){
+			this.regions = new ArrayList<Region>();
+		}
+		this.regions.add(region);
 	}
 	
 }

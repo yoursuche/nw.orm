@@ -11,6 +11,9 @@ import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 import nw.orm.core.service.Nworm;
+import nw.orm.entity.geo.City;
+import nw.orm.entity.geo.Country;
+import nw.orm.entity.geo.Region;
 import nw.orm.examples.model.Person;
 import nw.orm.examples.model.enums.Sex;
 import nw.orm.examples.pojo.PersonPojo;
@@ -39,7 +42,7 @@ public class REntityManagerTest {
 		rem2 = Nworm.getInstance(cfg, props);
 		
 		Person p = new Person();
-		p.setAge(20);
+		p.setAge(223);
 		p.setFullName("Tekaso Pillasso");
 		p.setSex(Sex.FEMALE);
 		
@@ -57,6 +60,36 @@ public class REntityManagerTest {
 	@Test
 	public void testCloseFactory() {
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGeo(){
+		Country c = new Country();
+		c.setName("NIGERIA");
+		c.setIsoAlpha2("NG");
+		c.setIsoAlpha3("NGA");
+		c.setPhoneCode("234");
+		
+		Region r = new Region();
+		r.setName("EAST");
+		r.setCountry(c);
+		
+		City city = new City();
+		city.setName("LAGOS");
+		city.setRegion(r);
+		r.addCity(city);
+		
+		c.addRegion(r);
+		
+		rem.create(c);
+	}
+	
+	@Test
+	public void testGetCity(){
+		City city = rem.getByCriteria(City.class, Restrictions.eq("name", "LAGOS"));
+		System.out.println(city);
+		
+		assertNotNull(city.getRegion());
 	}
 
 	@Test

@@ -4,14 +4,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.Table;
 
 import nw.orm.core.enums.RAuditLevel;
 
-import org.hibernate.annotations.Index;
-
 @Entity
-@Table(name="AUDIT")
+@Table(name="AUDIT", indexes = {
+		@Index(columnList = "USER_ID"), @Index(columnList = "RA_ENT_INDX")
+})
+
 public class RAudit extends REntity {
 
     private static final long serialVersionUID = -6137992922034567873L;
@@ -19,14 +21,12 @@ public class RAudit extends REntity {
     /**
      * Unique Identifier for current user performing the action to be audited
      */
-    @Index(name = "RA_UID_INDX")
     @Column(nullable = false, name = "USER_ID", updatable = false, insertable = true)
     private String userId;
     
     /**
      * Target entity
      */
-    @Index(name = "RA_ENT_INDX")
     @Column(nullable = false, name = "ENTITY", updatable = false, insertable = true)
     private String entity;
     
