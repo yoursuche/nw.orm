@@ -2,7 +2,7 @@ package nw.orm.eav.values;
 
 import java.sql.Array;
 
-import nw.orm.eav.data.EavValue;
+import nw.orm.eav.EavValue;
 
 public class ArrayValue extends EavValue{
 	

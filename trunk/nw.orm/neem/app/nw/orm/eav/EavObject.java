@@ -1,44 +1,34 @@
 package nw.orm.eav;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import nw.orm.core.REntity;
+import nw.orm.core.IEntity;
+import nw.orm.eav.metadata.EavEntity;
 
-import org.hibernate.annotations.Index;
 /**
- * MetaData defining entities that needs to be captured
+ * Actual captured entity data
  * @author Ogwara O. Rowland
  *
  */
 @Entity
 @Table(name = "EAV_OBJECT")
-public class EavObject extends REntity{
+public class EavObject extends IEntity{
 	
-	private static final long serialVersionUID = -6243652326429500193L;
+	private static final long serialVersionUID = 955105470876195986L;
+	
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "ENTITY_FK")
+	private EavEntity entity;
 
-	@Index(name = "ON_OR_IX")
-	@Column(name = "OBJECT_NAME", unique = true, length = 1024, nullable = false)
-	private String objectName; //A simple and unique name for the target entity
-	
-	@Column(name = "OBJECT_DESC", length = 2048, nullable = true)
-	private String objectDescription; // simple description for this entity
-	
-	public String getObjectDescription() {
-		return objectDescription;
+	public EavEntity getObjectReference() {
+		return entity;
 	}
 
-	public void setObjectDescription(String objectDescription) {
-		this.objectDescription = objectDescription;
-	}
-
-	public String getObjectName() {
-		return objectName;
-	}
-
-	public void setObjectName(String objectName) {
-		this.objectName = objectName;
+	public void setObjectReference(EavEntity entity) {
+		this.entity = entity;
 	}
 
 }

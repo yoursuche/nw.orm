@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import nw.orm.eav.data.EavValue;
+import nw.orm.eav.EavValue;
 
 @Entity
 @Table(name="STR_VAL")
