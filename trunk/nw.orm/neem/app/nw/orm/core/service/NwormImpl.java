@@ -419,7 +419,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 	@Override
 	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> clazz, List<Serializable> ids) {
 		StatelessSession session = sxnManager.getStatelessSession();
-		if (NwormEntity.class.isAssignableFrom(clazz)) {
+		if (!NwormEntity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
