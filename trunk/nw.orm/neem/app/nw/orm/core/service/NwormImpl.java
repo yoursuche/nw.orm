@@ -404,7 +404,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 
 	@Override
 	public boolean softDelete(Class<? extends NwormEntity<?>> clazz, Serializable id) {
-		if (NwormEntity.class.isAssignableFrom(clazz)) {
+		if (!NwormEntity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}

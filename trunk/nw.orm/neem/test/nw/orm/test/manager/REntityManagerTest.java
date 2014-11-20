@@ -37,7 +37,7 @@ public class REntityManagerTest {
 		String cfg = "hibernate.cfg.xml";
 		Properties props = new Properties();
 		props.put("config.name", "xtra");
-		props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/test_im");
+		props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/nw_orm");
 		rem = Nworm.getInstance();
 		rem2 = Nworm.getInstance(cfg, props);
 		
