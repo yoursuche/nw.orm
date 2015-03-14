@@ -1,14 +1,11 @@
 package nw.orm.core.service;
 
-import java.util.List;
 import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
-import nw.orm.core.RAudit;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
-import nw.orm.examples.model.Person;
 
 /**
  * Neemworks Limited Database.
@@ -112,26 +109,6 @@ public class Nworm extends NwormImpl {
 		if(sxnManager.getFactory() != null){
 			sxnManager.getFactory().close();
 		}
-	}
-
-	public static void main(String[] args) {
-		RAudit ra = new RAudit();
-		ra.setAuditData("Test Audit");
-		ra.setActive(false);
-		System.out.println(ra.toString());
-		
-		Nworm dbService = Nworm.getInstance();
-		Person pa = dbService.getById(Person.class, 9L);
-		System.out.println(pa);
-		
-		Person p = new Person();
-		p.setFullName("OROWLAND");
-		p.setAge(23);
-		
-		dbService.createOrUpdate(p);
-		
-		List<Person> listByHQL = dbService.getListByHQL(Person.class, "FROM Person");
-		System.out.println(listByHQL);
 	}
 
 }
