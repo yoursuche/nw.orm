@@ -31,7 +31,7 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 
 	@Version
 	@Column(name = "LAST_MODIFIED", nullable = false, insertable = true, updatable = true)
-	private Date lastModified = new Date();
+	private Date lastModified;
 
 	/**
 	 * a boolean variable that can be used to activate and deactivate data entries
