@@ -1,7 +1,7 @@
 package nw.orm.core.exception;
 
 /**
- * 
+ * Basic exception for nworm
  * @author Ogwara O. Rowland
  *
  */
@@ -13,10 +13,19 @@ public class NwormException extends Exception {
 		super("nw.orm Exception");
 	}
 
+	/**
+	 * Constructor
+	 * @param msg message to display
+	 */
 	public NwormException(String msg) {
 		this(msg, null);
 	}
-	
+
+	/**
+	 *
+	 * @param msg message to display
+	 * @param cause exception
+	 */
 	public NwormException(String msg, Throwable cause){
 		super(msg, cause);
 	}

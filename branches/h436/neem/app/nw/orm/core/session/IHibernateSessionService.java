@@ -5,10 +5,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 
+// TODO: Auto-generated Javadoc
 /**
- * 
- * @author Ogwara O. Rowland
+ * The Interface IHibernateSessionService.
  *
+ * @author Ogwara O. Rowland
  */
 public interface IHibernateSessionService {
 	
@@ -20,27 +21,53 @@ public interface IHibernateSessionService {
 	
 	/**
 	 * Retrieves a new database session.
-	 * @return
+	 *
+	 * @return the raw session
 	 */
 	public Session getRawSession();
 	
 	/**
-	 * Retrieves the current session specifically
-	 * @return
+	 * Retrieves the current session specifically.
+	 *
+	 * @return the current session
 	 */
 	public Session getCurrentSession();
 	
 	/**
-	 * Controls closing of database sessions when required
+	 * Controls closing of database sessions when required.
+	 *
+	 * @param sxn the sxn
+	 * @throws HibernateException the hibernate exception
 	 */
 	public void closeSession(Session sxn) throws HibernateException;
 	
+	/**
+	 * Commit.
+	 *
+	 * @param sxn the sxn
+	 * @throws HibernateException the hibernate exception
+	 */
 	public void commit(Session sxn) throws HibernateException;
 	
+	/**
+	 * Rollback.
+	 *
+	 * @param sxn the sxn
+	 */
 	public void rollback(Session sxn);
 	
+	/**
+	 * Gets the stateless session.
+	 *
+	 * @return the stateless session
+	 */
 	public StatelessSession getStatelessSession();
 	
+	/**
+	 * Gets the factory.
+	 *
+	 * @return the factory
+	 */
 	public SessionFactory getFactory();
 
 }

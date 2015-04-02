@@ -12,81 +12,94 @@ import javax.persistence.Version;
 
 /**
  * NwormEntity is a shorthand for creating entities. It comes with extra properties
+ *
+ * This class should be extended for customized base entities
+ *
  * @author Ogwara O. Rowland
  * @param <T> Datatype to represent the primary key
  */
 @MappedSuperclass
 public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEntity<T>>{
-	
+
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5965442215210696967L;
-	
+
+	/** Specified whether the entry is active active. */
 	@Column(name = "ACTIVE", nullable = false, insertable = true, updatable = true)
 	private boolean active = true;
 
+	/** Denotes whether the entry has been deleted. Use for the purposes of soft delete.
+	 * meaning the entry is not actually deleted, but just marked as an item to be ignored
+	 */
 	@Column(name = "DELETED", nullable = false, insertable = true, updatable = true)
 	private boolean deleted;
 
+	/** Denotes the date of creation. */
 	@Column(name = "CREATE_DATE", nullable = false, insertable = true, updatable = false)
 	private Date createDate = new Date();
 
+	/** Denotes the last modified date. Updates automatically with successful entry update */
 	@Version
 	@Column(name = "LAST_MODIFIED", nullable = false, insertable = true, updatable = true)
 	private Date lastModified;
 
 	/**
-	 * a boolean variable that can be used to activate and deactivate data entries
-	 * @return true is entry is active, false if it is not
+	 * a boolean variable that can be used to activate and deactivate entries.
+	 *
+	 * @return true if the entry is active, false if it is not
 	 */
 	public boolean isActive() {
 		return active;
 	}
 
 	/**
-	 * Used to activate or deactivate an entry
-	 * @param active
+	 * Used to activate or deactivate an entry.
+	 *
+	 * @param active the new active
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
 	}
 
 	/**
-	 * Determines whether the entry should be soft deleted. As in flagged as deleted and ignored be subsequent queries
-	 * @return
+	 * Determines whether the entry should be soft deleted. As in flagged as deleted and ignored by subsequent queries
+	 *
+	 * @return true, if is deleted
 	 */
 	public boolean isDeleted() {
 		return deleted;
 	}
 
 	/**
-	 * Deletes or undeletes an entry
-	 * @param deleted
+	 * Deletes or undeletes an entry.
+	 *
+	 * @param deleted the new deleted
 	 */
 	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
 
+	/**
+	 * Gets the date of creation.
+	 *
+	 * @return the date of creation
+	 */
 	public Date getCreateDate() {
 		return createDate;
 	}
 
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
 	/**
 	 * retrieve the last date the entry was modified. This field is auto populated
-	 * @return
+	 *
+	 * @return the last modified
 	 */
 	public Date getLastModified() {
 		return lastModified;
 	}
 
-	/**
-	 * Indicates if the argument is of the same type and all values are equal.
-	 *
-	 * @param object
-	 *            The target object to compare with
-	 * @return boolean True if both objects a 'equal'
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -106,15 +119,15 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	}
 
 	/**
-	 * Retrieves the priary key
-	 * @return
+	 * Retrieves the priary key for the entry.
+	 *
+	 * @return the pk
 	 */
 	public abstract T getPk();
 
-	/**
-	 * Returns the hash code value for the current object
-	 *
-	 * @return int The hash code value
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#hashcode
 	 */
 	@Override
 	public int hashCode() {
@@ -123,6 +136,9 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		return hashCode;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(NwormEntity<T> o) {
 		int cmp = 0;
@@ -132,21 +148,24 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 			cmp = -1;
 		return cmp;
 	}
-	
+
 	/**
-	 * deletes this entry
+	 * deletes this entry.
 	 */
 	public void delete(){
 		this.deleted = true;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		String newLine = System.getProperty("line.separator");
 
-		result.append(this.getClass().getName());
-		result.append(" Object {");
+		result.append(this.getClass().getSimpleName());
+		result.append(" {");
 		result.append(newLine);
 
 		// determine fields declared in this class only (no fields of
@@ -161,14 +180,14 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 				result.append(field.getName());
 				result.append(": ");
 				// requires access to private field:Strin
-				
+
 				String name = field.getName();
 				String prefix = "get";
 				if(field.getType().isAssignableFrom(Boolean.class)){
 					prefix = "is";
 				}
 				name = name.substring(0, 1).toUpperCase() + name.substring(1);
-				
+
 				result.append(this.getClass().getMethod(prefix + name).invoke(this));
 			} catch (Exception ex) {
 				System.out.println(ex);
@@ -180,6 +199,11 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		return result.toString();
 	}
 
+	/**
+	 * Gets the table name.
+	 *
+	 * @return the table name
+	 */
 	public String getTableName() {
 		Table table = getClass().getAnnotation(Table.class);
 		String tableName = table.name();

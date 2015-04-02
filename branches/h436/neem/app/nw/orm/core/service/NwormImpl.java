@@ -33,29 +33,51 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.transform.Transformers;
 
+// TODO: Auto-generated Javadoc
 /**
- * Base class for entity management
- * @author Ogwara O. Rowland
+ * Reference implementation for {@link NwormService} for Hibernate Session Management.
  *
+ * @author Ogwara O. Rowland
+ * @see NwormService
  */
 public abstract class NwormImpl extends NeemClazz implements NwormService {
-	
+
+	/** The conf. */
 	protected HibernateSessionFactory conf;
+
+	/** The sxn manager. */
 	protected HibernateSessionService sxnManager;
-	
+
+	/** The initialized successfully. */
 	private boolean initializedSuccessfully;
-	
-	protected boolean useCurrentSession = true;
 
+	/**
+	 * Gets the manager.
+	 *
+	 * @param configFile the config file
+	 * @return the manager
+	 */
 	protected static NwormImpl getManager(String configFile) {
-		NwormCache.getManager(configFile);
-		return (NwormImpl) NwormCache.getManager(configFile);
+		NwormFactory.getManager(configFile);
+		return (NwormImpl) NwormFactory.getManager(configFile);
 	}
 
+	/**
+	 * Put manager.
+	 *
+	 * @param file the file
+	 * @param manager the manager
+	 */
 	protected static void putManager(String file, NwormImpl manager) {
-		NwormCache.putManager(file, manager);
+		NwormFactory.putManager(file, manager);
 	}
-	
+
+	/**
+	 * Configures how nworm uses transactions and sessions.
+	 *
+	 * @param useTxns configures how nworm uses transactions (to use JTA, use false)
+	 * @param useCurrent configures nworm to use current session instead of openning session each time
+	 */
 	public void configureSessionManager(boolean useTxns, boolean useCurrent){
 		if(useCurrent){
 			sxnManager.enableCurrentSession();
@@ -69,24 +91,35 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		}
 	}
 
+	/**
+	 * Checks if is class mapped.
+	 *
+	 * @param clazz the clazz
+	 * @return true, if is class mapped
+	 */
 	public boolean isClassMapped(Class<?> clazz) {
 		try {
 			return sxnManager.getFactory().getClassMetadata(
-					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz
-							.newInstance())) != null;
+					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
 		} catch (InstantiationException e) {
 			this.logger.error("Exception: ", e);
 		} catch (IllegalAccessException e) {
 			this.logger.error("Exception: ", e);
-		} 
+		}
 		return false;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable)
+	 */
 	@Override
 	public <T> T getById(Class<T> clazz, Serializable id) {
 		return getById(clazz, id, false);
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable, boolean)
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
@@ -108,13 +141,19 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return out;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getAll(java.lang.Class)
+	 */
 	@Override
 	public <T> List<T> getAll(Class<T> clazz) {
 		return getListByCriteria(clazz);
 	}
-	
+
 	/**
-	 * Filters out deleted entries from queries
+	 * Filters out deleted entries from queries.
+	 *
+	 * @param te the te
+	 * @param clazz the clazz
 	 */
 	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
 		if (NwormEntity.class.isAssignableFrom(clazz)){
@@ -122,6 +161,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getByCriteria(Class<T> clz, Criterion ... criteria) {
@@ -148,6 +190,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return out;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
@@ -174,12 +219,18 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return out;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.String, java.util.Map, java.lang.Class)
+	 */
 	@Override
 	public <T> T getByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
 		T out = getByHQL(resultClass, hql, QueryParameter.fromMap(parameters));
 		return out;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
@@ -187,16 +238,16 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			
+
 			if (NwormEntity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
-			
+
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			
+
 			if (NwormEntity.class.isAssignableFrom(resultClass)) {
 				query.setParameter("deleted", Boolean.valueOf(false));
 			}
@@ -213,13 +264,19 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(session);
 		return out;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.String, java.util.Map, java.lang.Class)
+	 */
 	@Override
 	public <T> List<T> getListByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
 		List<T> out = getListByHQL(resultClass, hql, QueryParameter.fromMap(parameters));
 		return out;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
@@ -242,7 +299,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 			}else{
 				out = query.setResultTransformer(Transformers.aliasToBean(resultClass)).list();
 			}
-						
+
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
 			this.logger.error("Exception: ", e);
@@ -251,25 +308,28 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(session);
 		return out;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getBySQL(java.lang.Class, java.lang.String, nw.orm.core.query.SQLModifier, nw.orm.core.query.QueryParameter[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params){
 		List<T> out = new ArrayList<T>();
 		Session session = sxnManager.getManagedSession();
 		SQLQuery te = session.createSQLQuery(sql);
-		
+
 		if (params != null) {
 			for (QueryParameter param : params) {
 				te.setParameter(param.getName(), param.getValue());
 			}
 		}
-		
+
 		if(sqlMod != null){
 			if(returnClazz != null && isClassMapped(returnClazz)){
 				te.addEntity(returnClazz);
 			}
-			
+
 			if(returnClazz != null && !isClassMapped(returnClazz)){
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
@@ -281,12 +341,15 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 				te.setMaxResults(sqlMod.getMaxResult());
 			}
 		}
-		
+
 		out = te.list();
 		sxnManager.closeSession(session);
 		return out;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
@@ -311,7 +374,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(session);
 		return out;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
@@ -336,7 +402,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(session);
 		return out;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByExample(java.lang.Class, org.hibernate.criterion.Example)
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T getByExample(Class<T> clazz, Example example){
@@ -344,7 +413,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		Session sxn = sxnManager.getManagedSession();
 		Criteria te = sxn.createCriteria(clazz).add(example);
 		try {
-			System.out.println(te.list());
+//			System.out.println(te.list());
 			out = (T) te.uniqueResult();
 			System.out.println(out);
 			sxnManager.commit(sxn);
@@ -354,7 +423,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(sxn);
 		return out;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByExample(nw.orm.core.query.QueryModifier, org.hibernate.criterion.Example)
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByExample(QueryModifier qm, Example example){
@@ -371,7 +443,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(sxn);
 		return items;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#executeSQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
+	 */
 	@Override
 	public int executeSQLUpdate(String sql, QueryParameter ... params){
 		Session session = sxnManager.getManagedSession();
@@ -386,7 +461,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		sxnManager.closeSession(session);
 		return o;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#executeHQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
+	 */
 	@Override
 	public int executeHQLUpdate(String hql, QueryParameter ... params){
 		Session session = sxnManager.getManagedSession();
@@ -402,6 +480,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return o;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#softDelete(java.lang.Class, java.io.Serializable)
+	 */
 	@Override
 	public boolean softDelete(Class<? extends NwormEntity<?>> clazz, Serializable id) {
 		if (!NwormEntity.class.isAssignableFrom(clazz)) {
@@ -416,6 +497,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return update(bc);
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#bulkSoftDelete(java.lang.Class, java.util.List)
+	 */
 	@Override
 	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> clazz, List<Serializable> ids) {
 		StatelessSession session = sxnManager.getStatelessSession();
@@ -423,7 +507,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
-		
+
 		try {
 			for (Serializable s : ids) {
 				Object entity = session.get(clazz, s);
@@ -445,6 +529,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#remove(java.lang.Object)
+	 */
 	@Override
 	public boolean remove(Object obj) {
 		boolean outcome = false;
@@ -461,6 +548,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return outcome;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#remove(java.lang.Class, java.io.Serializable)
+	 */
 	@Override
 	public boolean remove(Class<?> clazz, Serializable pk) {
 		boolean outcome = false;
@@ -477,6 +567,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return outcome;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#bulkRemove(java.lang.Class, java.util.List)
+	 */
 	@Override
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
 		StatelessSession session = sxnManager.getStatelessSession();
@@ -499,6 +592,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#create(java.lang.Object)
+	 */
 	@Override
 	public Serializable create(Object obj) {
 		Serializable pk = null;
@@ -514,6 +610,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return pk;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#createBulk(java.util.List)
+	 */
 	@Override
 	public List<Serializable> createBulk(List<?> items) {
 		List<Serializable> ids = new ArrayList<Serializable>();
@@ -536,7 +635,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 	}
 
 	/**
-	 * Updates a serializable entity
+	 * Updates a serializable entity.
+	 *
+	 * @param obj the obj
+	 * @return true, if successful
 	 */
 	@Override
 	public boolean update(Object obj) {
@@ -555,8 +657,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 	}
 
 	/**
-	 * @param objs list of objects to update
-	 * @return true if update completed without errors, 
+	 * Update bulk.
+	 *
+	 * @param items the items
+	 * @return true if update completed without errors,
 	 * returns false with rollback if an error occurs
 	 */
 	@Override
@@ -581,6 +685,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return outcome;
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#toggleActive(java.lang.Class, java.io.Serializable)
+	 */
 	@Override
 	public boolean toggleActive(Class<? extends NwormEntity<?>> clazz, Serializable id) {
 		Object bc = getByCriteria(clazz, new Criterion[] { Restrictions.idEq(id) });
@@ -591,6 +698,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return update(bc);
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#createOrUpdate(java.lang.Object)
+	 */
 	@Override
 	public boolean createOrUpdate(Object obj) {
 		boolean outcome = false;
@@ -606,14 +716,27 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return outcome;
 	}
 
+	/**
+	 * Enable jta based session.
+	 */
 	public void enableJTABasedSession() {
-		this.useCurrentSession = true;
+		configureSessionManager(false, true);
 	}
 
+	/**
+	 * Disable jta based session.
+	 */
 	public void disableJTABasedSession() {
 		configureSessionManager(true, false);
 	}
 
+	/**
+	 * Modify hql.
+	 *
+	 * @param hql the hql
+	 * @param clazz the clazz
+	 * @return the string
+	 */
 	protected String modifyHQL(String hql, Class<?> clazz) {
 		if (NwormEntity.class.isAssignableFrom(clazz)) {
 			if (hql.toLowerCase().contains(" where ")) {
@@ -624,6 +747,12 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		return hql;
 	}
 
+	/**
+	 * Modify criteria.
+	 *
+	 * @param te the te
+	 * @param qm the qm
+	 */
 	protected void modifyCriteria(Criteria te, QueryModifier qm) {
 		List<QueryAlias> aliases = qm.getAliases();
 		for (QueryAlias qa : aliases) {
@@ -639,7 +768,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		for(QueryFetchMode fm: fms){
 			te.setFetchMode(fm.getAlias(), fm.getFetchMode());
 		}
-		
+
 		if (qm.isPaginated()) {
 			te.setFirstResult(qm.getPageIndex());
 			te.setMaxResults(qm.getMaxResult());
@@ -661,18 +790,36 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 		addSoftRestrictions(te, qm.getQueryClazz());
 	}
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		System.out.println(NwormEntity.class.isAssignableFrom(Person.class));
 	}
 
+	/**
+	 * Checks if is initialized successfully.
+	 *
+	 * @return true, if is initialized successfully
+	 */
 	public boolean isInitializedSuccessfully() {
 		return initializedSuccessfully;
 	}
 
+	/**
+	 * Sets the initialized successfully.
+	 *
+	 * @param initializedSuccessfully the new initialized successfully
+	 */
 	public void setInitializedSuccessfully(boolean initializedSuccessfully) {
 		this.initializedSuccessfully = initializedSuccessfully;
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getSessionService()
+	 */
 	@Override
 	public HibernateSessionService getSessionService() {
 		if(isInitializedSuccessfully()){
