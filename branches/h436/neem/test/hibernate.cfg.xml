@@ -27,7 +27,6 @@
   <property name="hibernate.c3p0.idle_test_period">300</property>
   <property name="hibernate.current_session_context_class">thread</property>
   <mapping class="nw.orm.examples.model.Person"/>
-  <mapping class="nw.orm.examples.model.Item"/>
 
   <mapping class="nw.orm.entity.geo.Country"/>
   <mapping class="nw.orm.entity.geo.Region"/>

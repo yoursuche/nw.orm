@@ -14,7 +14,6 @@ import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
-import nw.orm.examples.model.Person;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -40,9 +39,9 @@ import org.hibernate.transform.Transformers;
  * @author Ogwara O. Rowland
  * @see NwormService
  */
-public abstract class NwormImpl extends NeemClazz implements NwormService {
+public abstract class NwormImpl extends NeemClazz implements NwormHibernateService {
 
-	/** The conf. */
+	/** Hibernate Session Factory instance. */
 	protected HibernateSessionFactory conf;
 
 	/** The sxn manager. */
@@ -796,7 +795,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 	 * @param args the arguments
 	 */
 	public static void main(String[] args) {
-		System.out.println(NwormEntity.class.isAssignableFrom(Person.class));
+//		System.out.println(NwormEntity.class.isAssignableFrom(Person.class));
 	}
 
 	/**
@@ -826,5 +825,14 @@ public abstract class NwormImpl extends NeemClazz implements NwormService {
 			return this.sxnManager;
 		}
 		return null;
+	}
+
+	/**
+	 * Tells nworm how to local the UserTransaction instance for JTA
+	 * This method should be called as early as possible
+	 * @param jndi the jndi name for UserTransactiondefaults to "java:comp/UserTransaction" if not set
+	 */
+	public void setUserTransactionJNDI(String jndi){
+		sxnManager.setUserTransactionJNDI(jndi);
 	}
 }

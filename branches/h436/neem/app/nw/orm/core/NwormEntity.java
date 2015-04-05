@@ -10,6 +10,8 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+import nw.orm.core.annotations.Coder;
+
 /**
  * NwormEntity is a shorthand for creating entities. It comes with extra properties
  *
@@ -18,6 +20,7 @@ import javax.persistence.Version;
  * @author Ogwara O. Rowland
  * @param <T> Datatype to represent the primary key
  */
+@Coder(author = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
 public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEntity<T>>{
 
@@ -164,7 +167,7 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		StringBuilder result = new StringBuilder();
 		String newLine = System.getProperty("line.separator");
 
-		result.append(this.getClass().getSimpleName());
+		result.append(getTableName());
 		result.append(" {");
 		result.append(newLine);
 

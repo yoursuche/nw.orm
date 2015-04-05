@@ -49,7 +49,10 @@ public class HibernateConfigurationTest {
 
 //	@Test
 //	public void ctestRebuildConfiguration() {
-//		fail("Not yet implemented");
+//		conf.getActiveConfiguration().addAnnotatedClass(Item.class);
+//		conf.rebuildConfiguration();
+//
+//		assertNotNull(conf.getActiveConfiguration());
 //	}
 
 	@Test

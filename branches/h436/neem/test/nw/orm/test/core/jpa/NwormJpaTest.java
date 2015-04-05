@@ -1,6 +1,9 @@
 package nw.orm.test.core.jpa;
 
 import static org.junit.Assert.*;
+
+import java.util.List;
+
 import nw.orm.core.jpa.NwormJpa;
 import nw.orm.entity.geo.City;
 
@@ -17,9 +20,15 @@ public class NwormJpaTest {
 	}
 
 	@Test
-	public void findById() {
+	public void testFindById() {
 		City city = jpaService.getById(City.class, 1L);
 		assertNull(city);
+	}
+
+	@Test
+	public void testGetAll(){
+		List<City> all = jpaService.getAll(City.class);
+		assertEquals(1, all.size());
 	}
 
 }
