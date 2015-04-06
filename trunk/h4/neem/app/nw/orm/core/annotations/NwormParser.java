@@ -23,7 +23,7 @@ public class NwormParser extends NeemClazz{
 				Nworm dbService = Nworm.getInstance(nwt.configFile());
 
 				Session sxn = dbService.getSessionService().getManagedSession();
-				
+
 			}
 		}
 
