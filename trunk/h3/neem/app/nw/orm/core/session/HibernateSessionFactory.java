@@ -5,8 +5,6 @@ import java.util.Properties;
 import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 import nw.commons.NeemClazz;
 
@@ -15,7 +13,6 @@ import nw.commons.NeemClazz;
  *
  * @author kulgan
  */
-@SuppressWarnings("deprecation")
 public class HibernateSessionFactory extends NeemClazz{
 
 	/** The hibernate props. */
@@ -74,11 +71,7 @@ public class HibernateSessionFactory extends NeemClazz{
 				hibernateProps.remove("config.name");
 				activeConfiguration.addProperties(hibernateProps);
 			}
-
-			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-					.applySettings(activeConfiguration.getProperties())
-					.buildServiceRegistry();
-			return activeConfiguration.buildSessionFactory(serviceRegistry);
+			return activeConfiguration.buildSessionFactory();
 		} catch (Throwable ex) {
 			logger.error("Initial SessionFactory creation failed.", ex);
 			throw new ExceptionInInitializerError(ex);
@@ -133,10 +126,7 @@ public class HibernateSessionFactory extends NeemClazz{
 				activeConfiguration.addProperties(hibernateProps);
 			}
 
-			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-					.applySettings(activeConfiguration.getProperties())
-					.buildServiceRegistry();
-			activeConfiguration.buildSessionFactory(serviceRegistry);
+			activeConfiguration.buildSessionFactory();
 		} catch (Throwable ex) {
 			logger.error("Initial SessionFactory creation failed.", ex);
 			throw new ExceptionInInitializerError(ex);

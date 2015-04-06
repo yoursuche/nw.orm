@@ -1,11 +1,10 @@
 /*
- * Property of Neemworks Nigeria 
+ * Property of Neemworks Nigeria
  * Copyright 2013 - 2015, all rights reserved
  */
 package nw.orm.core.query;
 
 import org.hibernate.criterion.Criterion;
-import org.hibernate.sql.JoinType;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -17,13 +16,13 @@ public class QueryAlias {
 
 	/** The association path. */
 	private String associationPath;
-	
+
 	/** The alias. */
 	private String alias;
-	
+
 	/** The join type. */
-	private JoinType joinType;
-	
+	private int joinType = -1;
+
 	/** The with clause. */
 	private Criterion withClause;
 
@@ -48,7 +47,7 @@ public class QueryAlias {
 	 * @param alias the alias
 	 * @param joinType the join type
 	 */
-	public QueryAlias(String associationPath, String alias, JoinType joinType) {
+	public QueryAlias(String associationPath, String alias, int joinType) {
 		super();
 		this.associationPath = associationPath;
 		this.alias = alias;
@@ -64,7 +63,7 @@ public class QueryAlias {
 	 * @param joinType the join type
 	 * @param withClause the with clause
 	 */
-	public QueryAlias(String associationPath, String alias, JoinType joinType,
+	public QueryAlias(String associationPath, String alias, int joinType,
 			Criterion withClause) {
 		super();
 		this.associationPath = associationPath;
@@ -82,7 +81,7 @@ public class QueryAlias {
 	public String getAssociationPath() {
 		return associationPath;
 	}
-	
+
 	/**
 	 * Sets the association path.
 	 *
@@ -91,7 +90,7 @@ public class QueryAlias {
 	public void setAssociationPath(String associationPath) {
 		this.associationPath = associationPath;
 	}
-	
+
 	/**
 	 * Gets the alias.
 	 *
@@ -100,7 +99,7 @@ public class QueryAlias {
 	public String getAlias() {
 		return alias;
 	}
-	
+
 	/**
 	 * Sets the alias.
 	 *
@@ -109,25 +108,25 @@ public class QueryAlias {
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
-	
+
 	/**
 	 * Gets the join type.
 	 *
 	 * @return the join type
 	 */
-	public JoinType getJoinType() {
+	public int getJoinType() {
 		return joinType;
 	}
-	
+
 	/**
 	 * Sets the join type.
 	 *
 	 * @param joinType the new join type
 	 */
-	public void setJoinType(JoinType joinType) {
+	public void setJoinType(int joinType) {
 		this.joinType = joinType;
 	}
-	
+
 	/**
 	 * Gets the with clause.
 	 *
@@ -136,7 +135,7 @@ public class QueryAlias {
 	public Criterion getWithClause() {
 		return withClause;
 	}
-	
+
 	/**
 	 * Sets the with clause.
 	 *

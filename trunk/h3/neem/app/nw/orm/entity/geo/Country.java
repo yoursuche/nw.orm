@@ -6,9 +6,10 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Index;
 
 import nw.orm.core.IEntity;
 
@@ -17,30 +18,29 @@ import nw.orm.core.IEntity;
  * The Class Country.
  */
 @Entity
-@Table(name = "COUNTRY", indexes = {
-		@Index(columnList= "NAME", unique = true)
-})
+@Table(name = "COUNTRY")
 public class Country extends IEntity {
-	
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -1518248137801443711L;
 
 	/** The name. */
+	@Index(name = "CTR_NMAE_IDX")
 	@Column(name = "NAME", nullable = false, unique = true)
 	private String name;
-	
+
 	/** The iso alpha2. */
 	@Column(name = "ALPHA_2", nullable = false)
 	private String isoAlpha2;
-	
+
 	/** The iso alpha3. */
 	@Column(name = "ALPHA_3", nullable = false)
 	private String isoAlpha3;
-	
+
 	/** The phone code. */
 	@Column(name = "PHONE_CODE", nullable = false)
 	private String phoneCode;
-	
+
 	/** The regions. */
 	@OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
 	private List<Region> regions;
@@ -156,7 +156,7 @@ public class Country extends IEntity {
 	public void setRegions(List<Region> regions) {
 		this.regions = regions;
 	}
-	
+
 	/**
 	 * Adds the region.
 	 *
@@ -168,5 +168,5 @@ public class Country extends IEntity {
 		}
 		this.regions.add(region);
 	}
-	
+
 }

@@ -755,9 +755,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	protected void modifyCriteria(Criteria te, QueryModifier qm) {
 		List<QueryAlias> aliases = qm.getAliases();
 		for (QueryAlias qa : aliases) {
-			if ((qa.getJoinType() == null) && (qa.getWithClause() == null))
+			if ((qa.getJoinType() == -1) && (qa.getWithClause() == null))
 				te.createAlias(qa.getAssociationPath(), qa.getAlias());
-			else if ((qa.getWithClause() == null) && (qa.getJoinType() != null))
+			else if ((qa.getWithClause() == null) && (qa.getJoinType() != -1))
 				te.createAlias(qa.getAssociationPath(), qa.getAlias(), qa.getJoinType());
 			else {
 				te.createAlias(qa.getAssociationPath(), qa.getAlias(), qa.getJoinType(), qa.getWithClause());
