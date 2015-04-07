@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nimworks</groupId>
   <artifactId>nw.orm-h3</artifactId>
-  <version>3.0.0-Final</version>
+  <version>3.0.1-Alpha1</version>
   <name>nw.orm</name>
   <build>
     <sourceDirectory>neem/app</sourceDirectory>
@@ -71,7 +71,7 @@
   	<dependency>
   		<groupId>com.nimworks</groupId>
   		<artifactId>nw.commons</artifactId>
-  		<version>1.2</version>
+  		<version>1.2.1-Final</version>
   	</dependency>
   	<dependency>
   		<groupId>org.postgresql</groupId>
@@ -124,6 +124,6 @@
   	<name>Neemworks Nigeria</name>
   	<url>http://www.nimworks.com</url>
   </organization>
-  <description>Orm wrapper for hibernate</description>
+  <description>Orm wrapper for hibernate supports h3+ to 3.6.10</description>
   <url>http://nworm.nimworks.com</url>
 </project>
