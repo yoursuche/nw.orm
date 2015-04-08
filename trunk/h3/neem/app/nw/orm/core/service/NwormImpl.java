@@ -21,6 +21,7 @@ import java.util.Map;
 
 import nw.commons.NeemClazz;
 import nw.orm.core.NwormEntity;
+import nw.orm.core.exception.NwormArgumentException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
 import nw.orm.core.query.QueryModifier;
@@ -146,11 +147,13 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 				out = (T) session.get(clazz, id, LockOptions.UPGRADE);
 			}
 			sxnManager.commit(session);
+			sxnManager.closeSession(session);
 		} catch (HibernateException e) {
 			sxnManager.rollback(session);
 			this.logger.error("Exception: ", e);
+			sxnManager.closeSession(session);
+			throw new NwormArgumentException("Exception", e);
 		}
-		sxnManager.closeSession(session);
 		return out;
 	}
 
@@ -733,7 +736,17 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * Enable use of jta. Transactions will now use UserTransactions
 	 */
 	public void enableJTA() {
+		enableJTA("java:comp/UserTransaction");
+	}
+
+	/**
+	 * Enable use of jta. Transactions will now use UserTransactions
+	 *
+	 * @param userTransactionJndiName the JTA user transaction jndi name
+	 */
+	public void enableJTA(String userTransactionJndiName) {
 		sxnManager.disableTransactions();
+		sxnManager.setUserTransactionJNDI(userTransactionJndiName);
 	}
 
 	/**

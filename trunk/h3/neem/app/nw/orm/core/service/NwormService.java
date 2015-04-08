@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 - 2015, Neemworks Nigeria <nw.orm@nimworks.com>
  Permission to use, copy, modify, and distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -21,7 +21,6 @@ import nw.orm.core.NwormEntity;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface NwormService.
  */

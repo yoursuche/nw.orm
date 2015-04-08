@@ -16,11 +16,6 @@ package nw.orm.core.session;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import org.hibernate.FlushMode;
@@ -30,6 +25,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 
 import nw.commons.NeemClazz;
+import nw.orm.core.exception.NwormArgumentException;
 
 /**
  * An entry point for manipulating hibernate sessions and session factory.
@@ -127,20 +123,9 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		}else{
 			try {
 				getUserTransaction().commit();
-			} catch (SystemException e) {
+			} catch (Exception e) {
 				logger.error("Exception ", e);
-			} catch (NamingException e) {
-				logger.error("Exception ", e);
-			} catch (SecurityException e) {
-				logger.error("Exception ", e);
-			} catch (IllegalStateException e) {
-				logger.error("Exception ", e);
-			} catch (RollbackException e) {
-				logger.error("Exception ", e);
-			} catch (HeuristicMixedException e) {
-				logger.error("Exception ", e);
-			} catch (HeuristicRollbackException e) {
-				logger.error("Exception ", e);
+				throw new NwormArgumentException("Exception while committing session ", e);
 			}
 		}
 	}
@@ -156,10 +141,9 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		}else{
 			try {
 				getUserTransaction().rollback();
-			} catch (SystemException e) {
+			} catch (Exception e) {
 				logger.error("Exception ", e);
-			} catch (NamingException e) {
-				logger.error("Exception ", e);
+				throw new NwormArgumentException("Exception while performing rollback ", e);
 			}
 		}
 	}
@@ -176,12 +160,9 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		}else{
 			try {
 				getUserTransaction().begin();
-			} catch (NotSupportedException e) {
+			} catch (Exception e) {
 				logger.error("Exception ", e);
-			} catch (SystemException e) {
-				logger.error("Exception ", e);
-			} catch (NamingException e) {
-				logger.error("Exception ", e);
+				throw new NwormArgumentException("Exception while beginging transaction for stateless session ", e);
 			}
 		}
 		return ss;
@@ -206,12 +187,9 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		}else{
 			try {
 				getUserTransaction().begin();
-			} catch (NotSupportedException e) {
+			} catch (Exception e) {
 				logger.error("Exception ", e);
-			} catch (SystemException e) {
-				logger.error("Exception ", e);
-			} catch (NamingException e) {
-				logger.error("Exception ", e);
+				throw new NwormArgumentException("Exception while beginging session ", e);
 			}
 		}
 	}
