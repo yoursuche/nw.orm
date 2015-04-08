@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 - 2015, Neemworks Nigeria <nw.orm@nimworks.com>
  Permission to use, copy, modify, and distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -16,8 +16,7 @@ package nw.orm.core.service;
 
 import java.util.Properties;
 
-import javax.naming.OperationNotSupportedException;
-
+import nw.orm.core.exception.NwormArgumentException;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 
@@ -27,8 +26,6 @@ import nw.orm.core.session.HibernateSessionService;
  * Transaction processing using HQL, and criteria.
  *
  * @author Ogwara O. Rowland
- * @version 0.6
- * @since 6th Nov, 2013
  *
  *
  */
@@ -37,6 +34,7 @@ public class Nworm extends NwormImpl {
 	/**
 	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
 	 * @return a single database service instance
+	 * @throws NwormArgumentException if initialization is unsuccessful
 	 */
 
 	public static Nworm getInstance() {
@@ -50,16 +48,11 @@ public class Nworm extends NwormImpl {
 	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
 	 * 		is case sensitive only for case sensitive file system
 	 * @return a single database service instance
+	 * @throws NwormArgumentException if initialization is unsuccessful
 	 */
 
 	public static Nworm getInstance(String configFile) {
-		Nworm service = null;
-		try {
-			service = getInstance(configFile, null);
-		} catch (OperationNotSupportedException e) {
-			se(Nworm.class, "Exception ", e);
-		}
-		return service;
+		return getInstance(configFile, null);
 	}
 
 	/**
@@ -70,15 +63,15 @@ public class Nworm extends NwormImpl {
 	 * @param props 		Extra configuration parameters. Useful in cases where modification of some properties from an exisiting config is needed
 	 * 		It must contain a property named config.name
 	 * @return a single database service instance
-	 * @throws OperationNotSupportedException the operation not supported exception
+	 * @throws NwormArgumentException if initialization is unsuccessful
 	 */
 
-	public static Nworm getInstance(String configFile, Properties props) throws OperationNotSupportedException {
+	public static Nworm getInstance(String configFile, Properties props){
 		Nworm service = null;
 		if(props != null){
 			String cname = props.getProperty("config.name");
 			if(cname == null || (cname != null && cname.isEmpty())){
-				throw new OperationNotSupportedException("A Property named config.name must be specified in this property object");
+				throw new NwormArgumentException("A Property named config.name must be specified in this property object");
 			}
 			service = (Nworm) getManager(configFile + "_" + cname);
 		}else{
@@ -89,7 +82,7 @@ public class Nworm extends NwormImpl {
 				service = new Nworm();
 				service.init(configFile, props);
 				if(!service.isInitializedSuccessfully()){
-					throw new OperationNotSupportedException("Initialization of the configuration was unsuccessful.");
+					throw new NwormArgumentException("Initialization of the configuration was unsuccessful.");
 				}
 			}
 		}
@@ -104,7 +97,7 @@ public class Nworm extends NwormImpl {
 	}
 
 	/**
-	 * Inits the.
+	 * Initializes nw.orm.
 	 *
 	 * @param configFile the config file
 	 * @param props the props
@@ -118,6 +111,7 @@ public class Nworm extends NwormImpl {
 		} catch (Exception e) {
 			logger.error("Exception ", e);
 			setInitializedSuccessfully(false);
+			throw new NwormArgumentException("Initialization of the configuration was unsuccessful.", e);
 		}
 		if(props == null){
 			putManager(configFile, this);

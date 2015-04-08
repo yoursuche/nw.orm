@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 - 2015, Neemworks Nigeria <nw.orm@nimworks.com>
  Permission to use, copy, modify, and distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -24,7 +24,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import nw.orm.core.annotations.Coder;
 
 /**
  * NwormEntity is a shorthand for creating entities. It comes with extra properties
@@ -34,7 +33,6 @@ import nw.orm.core.annotations.Coder;
  * @author Ogwara O. Rowland
  * @param <T> Datatype to represent the primary key
  */
-@Coder(author = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
 public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEntity<T>>{
 
@@ -97,7 +95,7 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	}
 
 	/**
-	 * Gets the date of creation.
+	 * The date the entry was created, this is automatically generated.
 	 *
 	 * @return the date of creation
 	 */
@@ -106,7 +104,7 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	}
 
 	/**
-	 * retrieve the last date the entry was modified. This field is auto populated
+	 * retrieve the last date the entry was modified. This field is auto updated
 	 *
 	 * @return the last modified
 	 */

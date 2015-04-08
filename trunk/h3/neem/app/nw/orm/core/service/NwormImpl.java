@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 - 2015, Neemworks Nigeria <nw.orm@nimworks.com>
  Permission to use, copy, modify, and distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -730,15 +730,46 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	}
 
 	/**
-	 * Enable jta based session. Transactions will now use UserTransactions
+	 * Enable use of jta. Transactions will now use UserTransactions
 	 */
+	public void enableJTA() {
+		sxnManager.disableTransactions();
+	}
+
+	/**
+	 * Disable use of jta.
+	 */
+	public void disableJTA() {
+		sxnManager.enableTransactions();
+	}
+
+	/**
+	 * Enable use of context based session.
+	 */
+	public void enableSessionByContext() {
+		sxnManager.enableCurrentSession();
+	}
+
+	/**
+	 * Disable context based session. This is disabled by default
+	 */
+	public void disableSessionByContext() {
+		sxnManager.disableCurrentSession();
+	}
+
+	/**
+	 * Enable jta based session. Transactions will now use UserTransactions
+	 * use {@link #enableJTA()}
+	 */
+	@Deprecated
 	public void enableJTABasedSession() {
 		configureSessionManager(false, true);
 	}
 
 	/**
-	 * Disable jta based session.
+	 * Disable jta based session. use {@link #disableJTA()}
 	 */
+	@Deprecated
 	public void disableJTABasedSession() {
 		configureSessionManager(true, false);
 	}

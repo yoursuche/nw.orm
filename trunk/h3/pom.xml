@@ -89,6 +89,12 @@
   		<artifactId>hibernate-entitymanager</artifactId>
   		<version>3.6.10.Final</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-simple</artifactId>
+  		<version>1.7.12</version>
+  		<scope>test</scope>
+  	</dependency>
   </dependencies>
   <distributionManagement>
 	  <snapshotRepository>

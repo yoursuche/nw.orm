@@ -42,6 +42,8 @@ public class REntityManagerTest {
 		props.put("config.name", "xtra");
 		props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/nw_orm");
 		rem = Nworm.getInstance();
+		rem.enableSessionByContext();
+//		rem.enableJTA();
 		rem2 = Nworm.getInstance(cfg, props);
 
 		Person p = new Person();
@@ -56,6 +58,7 @@ public class REntityManagerTest {
 	@Test
 	public void testGetInstance() {
 		assertNotNull(rem);
+		System.out.println(rem.getSessionService().useTransactions() + " : use of local txn");
 		assertNotNull(rem2);
 		assertNotEquals(rem, rem2);
 	}

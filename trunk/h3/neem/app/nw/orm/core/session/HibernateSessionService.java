@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2013 - 2015, Neemworks Nigeria <nw.orm@nimworks.com>
  Permission to use, copy, modify, and distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -47,13 +47,15 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	/** Default flush mode. */
 	private FlushMode flushMode = FlushMode.COMMIT;
 
-	/** Configures the system use currentSession instead of opening a new session each time.
+	/**
+	 * Configures the system use currentSession instead of opening a new session each time.
 	 * true uses currentSession  bound to context
 	 *
 	 */
-	private boolean useCurrentSession = true;
+	private boolean useCurrentSession = false;
 
-	/** Whether to use JTA or Local transactions
+	/**
+	 * Whether to use JTA or Local transactions
 	 * true for Local transactions, false for JTA based transactions
 	 */
 	private boolean useTransactions = true;
@@ -215,28 +217,28 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	}
 
 	/**
-	 * Enable current session.
+	 * Enable use of context current session.
 	 */
 	public void enableCurrentSession(){
 		this.useCurrentSession = true;
 	}
 
 	/**
-	 * Enable transactions.
+	 * Enable use of local transactions.
 	 */
 	public void enableTransactions(){
 		this.useTransactions = true;
 	}
 
 	/**
-	 * Disable current session.
+	 * Disable use of context current session.
 	 */
 	public void disableCurrentSession(){
 		this.useCurrentSession = false;
 	}
 
 	/**
-	 * Disable transactions.
+	 * Disable use of local transactions, thereby enabling JTA.
 	 */
 	public void disableTransactions(){
 		this.useTransactions = false;
