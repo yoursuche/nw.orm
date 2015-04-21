@@ -14,10 +14,6 @@
  */
 package nw.orm.core.session;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.transaction.UserTransaction;
-
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -25,7 +21,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 
 import nw.commons.NeemClazz;
-import nw.orm.core.exception.NwormArgumentException;
 
 /**
  * An entry point for manipulating hibernate sessions and session factory.
@@ -56,7 +51,6 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	 */
 	private boolean useTransactions = true;
 
-	private String userTransactionJNDI = "java:comp/UserTransaction";
 
 	/**
 	 * Instantiates a new hibernate session service.
@@ -120,13 +114,6 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		logger.trace("Commit in progress ");
 		if(useTransactions()){
 			sxn.getTransaction().commit();
-		}else{
-			try {
-				getUserTransaction().commit();
-			} catch (Exception e) {
-				logger.error("Exception ", e);
-				throw new NwormArgumentException("Exception while committing session ", e);
-			}
 		}
 	}
 
@@ -138,13 +125,6 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		logger.trace("Rollback in progress ");
 		if(useTransactions()){
 			sxn.getTransaction().rollback();
-		}else{
-			try {
-				getUserTransaction().rollback();
-			} catch (Exception e) {
-				logger.error("Exception ", e);
-				throw new NwormArgumentException("Exception while performing rollback ", e);
-			}
 		}
 	}
 
@@ -157,13 +137,6 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 		StatelessSession ss = sf.openStatelessSession();
 		if(useTransactions()){
 			ss.beginTransaction();
-		}else{
-			try {
-				getUserTransaction().begin();
-			} catch (Exception e) {
-				logger.error("Exception ", e);
-				throw new NwormArgumentException("Exception while beginging transaction for stateless session ", e);
-			}
 		}
 		return ss;
 	}
@@ -184,13 +157,6 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	public void beginTransaction(Session sxn){
 		if(useTransactions()){
 			sxn.beginTransaction();
-		}else{
-			try {
-				getUserTransaction().begin();
-			} catch (Exception e) {
-				logger.error("Exception ", e);
-				throw new NwormArgumentException("Exception while beginging session ", e);
-			}
 		}
 	}
 
@@ -229,33 +195,6 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	 */
 	public boolean useTransactions() {
 		return useTransactions;
-	}
-
-	/**
-	 * Retrieves the current user transaction
-	 * @return UserTransaction
-	 * @throws NamingException if name was not found in context
-	 */
-	public UserTransaction getUserTransaction() throws NamingException{
-		UserTransaction utx = (UserTransaction) new InitialContext().lookup(getUserTransactionJNDI());
-
-		return utx;
-	}
-
-	/**
-	 *
-	 * @return userTransaction JNDI
-	 */
-	public String getUserTransactionJNDI() {
-		return userTransactionJNDI;
-	}
-
-	/**
-	 * Specifies the jndi for userTransactions
-	 * @param userTransactionJNDI
-	 */
-	public void setUserTransactionJNDI(String userTransactionJNDI) {
-		this.userTransactionJNDI = userTransactionJNDI;
 	}
 
 }
