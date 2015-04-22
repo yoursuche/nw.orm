@@ -32,7 +32,6 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.transform.Transformers;
 
-// TODO: Auto-generated Javadoc
 /**
  * Reference implementation for {@link NwormService} for Hibernate Session Management.
  *
@@ -716,8 +715,40 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	}
 
 	/**
+	 * Enables jta by disabling all references to transactions.
+	 * Its expected that starting and controlling the transaction will be controlleed by the user
+	 */
+	public void enableJTA() {
+		this.sxnManager.disableTransactions();
+	}
+
+	/**
+	 * Disables jta by enabling all references to transactions.
+	 * Its expected that starting and controlling the transaction will be controlleed by nworm
+	 */
+	public void disableJTA() {
+		this.sxnManager.enableTransactions();
+	}
+
+	/**
+	 * Enables the use of current session from session actory
+	 */
+	public void enableSessionByContext() {
+		this.sxnManager.enableCurrentSession();
+	}
+
+	/**
+	 * Disables the use of current session, all new session will call openSession
+	 */
+	public void disableSessionByContext() {
+		this.sxnManager.disableCurrentSession();
+	}
+
+
+	/**
 	 * Enable jta based session.
 	 */
+	@Deprecated
 	public void enableJTABasedSession() {
 		configureSessionManager(false, true);
 	}
@@ -725,6 +756,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	/**
 	 * Disable jta based session.
 	 */
+	@Deprecated
 	public void disableJTABasedSession() {
 		configureSessionManager(true, false);
 	}
@@ -747,10 +779,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	}
 
 	/**
-	 * Modify criteria.
+	 * Modify a given criteria.
 	 *
-	 * @param te the te
-	 * @param qm the qm
+	 * @param te the criteria to be modified
+	 * @param qm {@link QueryModifier} reference
 	 */
 	protected void modifyCriteria(Criteria te, QueryModifier qm) {
 		List<QueryAlias> aliases = qm.getAliases();
@@ -790,15 +822,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	}
 
 	/**
-	 * The main method.
-	 *
-	 * @param args the arguments
-	 */
-	public static void main(String[] args) {
-//		System.out.println(NwormEntity.class.isAssignableFrom(Person.class));
-	}
-
-	/**
 	 * Checks if is initialized successfully.
 	 *
 	 * @return true, if is initialized successfully
@@ -825,14 +848,5 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			return this.sxnManager;
 		}
 		return null;
-	}
-
-	/**
-	 * Tells nworm how to local the UserTransaction instance for JTA
-	 * This method should be called as early as possible
-	 * @param jndi the jndi name for UserTransactiondefaults to "java:comp/UserTransaction" if not set
-	 */
-	public void setUserTransactionJNDI(String jndi){
-		sxnManager.setUserTransactionJNDI(jndi);
 	}
 }
