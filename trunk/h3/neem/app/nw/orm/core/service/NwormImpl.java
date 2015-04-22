@@ -735,7 +735,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	/**
 	 * Enable use of jta. Transactions will now use UserTransactions
 	 *
-	 * @param userTransactionJndiName the JTA user transaction jndi name
 	 */
 	public void enableJTA() {
 		sxnManager.disableTransactions();
