@@ -1,9 +1,5 @@
 package nw.orm.test.session.core;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-
 public class SessionManagerTest {
 
 //	@Test
