@@ -37,6 +37,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
@@ -874,6 +875,14 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			return this.sxnManager;
 		}
 		return null;
+	}
+
+	public Transaction getHibernateTransaction(){
+		org.hibernate.Transaction txn = getSessionService().getManagedSession().getTransaction();
+
+
+
+		return txn;
 	}
 
 }

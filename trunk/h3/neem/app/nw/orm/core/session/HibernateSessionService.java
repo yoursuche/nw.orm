@@ -32,6 +32,16 @@ import nw.commons.NeemClazz;
  */
 public class HibernateSessionService extends NeemClazz implements IHibernateSessionService{
 
+	/**
+	 * A localized copy of session used through a transaction
+	 */
+	private volatile Session localalizedSession;
+
+	/**
+	 * Flags used to specify use of localized transactions
+	 */
+	private volatile boolean useLocalizedTransaction;
+
 	/** The Hibernate Session Factory reference */
 	private HibernateSessionFactory conf;
 
@@ -66,6 +76,11 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	 */
 	@Override
 	public Session getManagedSession() {
+
+		if(useLocalizedTransaction){
+			return localalizedSession;
+		}
+
 		if(useCurrentSession){
 			return getCurrentSession();
 		}
@@ -112,7 +127,7 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	@Override
 	public void commit(Session sxn) throws HibernateException{
 		logger.trace("Commit in progress ");
-		if(useTransactions()){
+		if(useTransactions() && !useLocalizedTransaction){
 			sxn.getTransaction().commit();
 		}
 	}
@@ -123,7 +138,7 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	@Override
 	public void rollback(Session sxn) throws HibernateException{
 		logger.trace("Rollback in progress ");
-		if(useTransactions()){
+		if(useTransactions() && !useLocalizedTransaction){
 			sxn.getTransaction().rollback();
 		}
 	}
@@ -195,6 +210,35 @@ public class HibernateSessionService extends NeemClazz implements IHibernateSess
 	 */
 	public boolean useTransactions() {
 		return useTransactions;
+	}
+
+	/**
+	 * Begins a new localized transactions
+	 */
+	public void beginLocalTransaction() {
+		useLocalizedTransaction = false;
+		localalizedSession = getManagedSession();
+		localalizedSession.beginTransaction();
+		useLocalizedTransaction = true;
+
+	}
+
+	/**
+	 * Rolls back the localized transaction
+	 */
+	public void rollbackLocalTransaction() {
+		localalizedSession.getTransaction().rollback();
+		useLocalizedTransaction = false;
+
+	}
+
+	/**
+	 * commits a localized transaction
+	 */
+	public void commitLocalTransaction() {
+		localalizedSession.getTransaction().commit();
+		useLocalizedTransaction = false;
+
 	}
 
 }

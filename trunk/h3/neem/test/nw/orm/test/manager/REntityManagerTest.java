@@ -179,6 +179,25 @@ public class REntityManagerTest {
 		assertEquals(be.getPk(), personPk);
 	}
 
+	@Test
+	public void testLocalizedSession(){
+		rem.getSessionService().beginLocalTransaction();
+		Person p = new Person();
+		p.setAge(12);
+		p.setFullName("Salla Mamam");
+
+		rem.create(p);
+
+		Person p2 = new Person();
+		p2.setAge(120);
+		p2.setFullName("Salla Xtra Mamam");
+
+		rem.create(p2);
+
+		rem.getSessionService().commitLocalTransaction();
+
+	}
+
 //	@Test
 //	public void testExecuteSQLUpdate() {
 //		fail("Not yet implemented");
