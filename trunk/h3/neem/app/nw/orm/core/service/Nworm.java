@@ -138,4 +138,27 @@ public class Nworm extends NwormImpl {
 		}
 	}
 
+	/**
+	 * Begins a new localized transactions
+	 */
+	public void beginLocalTransaction() {
+		getSessionService().beginLocalTransaction();
+	}
+
+	/**
+	 * Rolls back the localized transaction
+	 */
+	public void rollbackLocalTransaction() {
+		getSessionService().rollbackLocalTransaction();
+
+	}
+
+	/**
+	 * commits a localized transaction
+	 */
+	public void commitLocalTransaction() {
+		getSessionService().commitLocalTransaction();
+
+	}
+
 }

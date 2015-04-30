@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nimworks</groupId>
   <artifactId>nw.orm-h3</artifactId>
-  <version>3.1.1-Final</version>
+  <version>3.1.2-beta1</version>
   <name>nw.orm</name>
   <build>
     <sourceDirectory>neem/app</sourceDirectory>

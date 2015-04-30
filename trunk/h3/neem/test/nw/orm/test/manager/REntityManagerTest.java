@@ -181,7 +181,7 @@ public class REntityManagerTest {
 
 	@Test
 	public void testLocalizedSession(){
-		rem.getSessionService().beginLocalTransaction();
+		rem.beginLocalTransaction();
 		Person p = new Person();
 		p.setAge(12);
 		p.setFullName("Salla Mamam");
@@ -194,7 +194,7 @@ public class REntityManagerTest {
 
 		rem.create(p2);
 
-		rem.getSessionService().commitLocalTransaction();
+		rem.commitLocalTransaction();
 
 	}
 
