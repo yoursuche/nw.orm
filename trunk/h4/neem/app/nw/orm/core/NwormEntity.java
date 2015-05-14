@@ -208,8 +208,15 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	 * @return the table name
 	 */
 	public String getTableName() {
-		Table table = getClass().getAnnotation(Table.class);
-		String tableName = table.name();
+		String tableName = "";
+		try {
+			Table table = getClass().getAnnotation(Table.class);
+			tableName = table.name();
+		} catch (Exception e) {
+			e.printStackTrace();
+			tableName = getClass().getSimpleName();
+		}
+
 		return tableName;
 	}
 

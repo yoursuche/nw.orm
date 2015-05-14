@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import nw.orm.core.NwormEntity;
+import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 
@@ -14,63 +15,67 @@ import nw.orm.core.query.SQLModifier;
 public interface NwormService {
 
 	/**
-	 * Retrieves a database entry by its primary key with default lockoption of READ.
+	 * Retrieves an entity by its primary key with default lock option of READ.
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass target entity class
-	 * @param paramSerializable primary key
-	 * @return target entity
+	 * @param <T> The target entity type
+	 * @param entityClass target entity class
+	 * @param primaryKey primary key
+	 * @return Entity instance with the specified primary key or null
+	 * @throws NwormQueryException
 	 */
-	public <T> T getById(Class<T> paramClass, Serializable paramSerializable);
+	public <T> T getById(Class<T> entityClass, Serializable primaryKey);
 
 	/**
 	 * Retrieves a database entry by its primary key while locking the table.
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass target entity class
-	 * @param paramSerializable primary key
-	 * @param paramBoolean enable lockoption upgrade
-	 * @return target entity
+	 * @param <T> The target entity type
+	 * @param entityClass target entity class
+	 * @param primaryKey primary key
+	 * @param lockOption enable lock option upgrade
+	 * @return Entity instance with the specified primary key or null
+	 * @throws NwormQueryException
 	 */
-	public <T> T getById(Class<T> paramClass, Serializable paramSerializable, boolean paramBoolean);
+	public <T> T getById(Class<T> entityClass, Serializable primaryKey, boolean lockOption);
 
 	/**
 	 * Retrieves a none paginated list of tables represented by the entity class spscified.
 	 * This method should be used cautiously, as loading the entire entries might be resource intensive.
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass target entity
+	 * @param <T> The target entity type
+	 * @param entityClass target entity class
 	 * @return List containing all entries
+	 * @throws NwormQueryException
 	 */
-	public <T> List<T> getAll(Class<T> paramClass);
+	public <T> List<T> getAll(Class<T> entityClass);
 
 	/**
 	 * Gets the by sql.
 	 *
-	 * @param <T> the generic type
+	 * @param <T> The target entity type
 	 * @param returnClazz return type for the entity
-	 * @param sql the sql
+	 * @param sql the sql to be executed
 	 * @param sqlMod see {@link SQLModifier}
 	 * @param params see {@link QueryParameter}
-	 * @return the by sql
+	 * @return the output of the sql statement
+	 * @throws NwormQueryException
 	 */
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params);
 
 	/**
 	 * Performs raw sql insert, update or delete (DML) operation .
 	 *
-	 * @param sql insert/update/delete
-	 * @param params the params
-	 * @return the int
+	 * @param sql insert/update/delete query to be executed
+	 * @param params parameter list
+	 * @return an int representing the state of the execution
 	 */
 	public int executeSQLUpdate(String sql, QueryParameter ... params);
 
 	/**
 	 * Execute hql update.
 	 *
-	 * @param hql the hql
-	 * @param params the params
-	 * @return the int
+	 * @param hql the hql for the crud operation
+	 * @param params parameter list
+	 * @return an int representing the state of the execution
 	 */
 	public int executeHQLUpdate(String hql, QueryParameter ...params);
 

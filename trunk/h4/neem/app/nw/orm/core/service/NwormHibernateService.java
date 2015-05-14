@@ -3,6 +3,7 @@ package nw.orm.core.service;
 import java.util.List;
 import java.util.Map;
 
+import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.session.HibernateSessionService;
@@ -15,103 +16,104 @@ public interface NwormHibernateService extends NwormService {
 	/**
 	 * Retrieves a unique entry using the specified criteria.
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass the param class
-	 * @param paramArrayOfCriterion the param array of criterion
-	 * @return the by criteria
+	 * @param <T> The target entity type
+	 * @param entityClass The target entity class reference
+	 * @param criteria query filter criteria
+	 * @return the entity instance matching the provided criteria or null if no match is found
+	 * @throws NwormQueryException
 	 */
-	public abstract <T> T getByCriteria(Class<T> paramClass,
-			Criterion... paramArrayOfCriterion);
+	public abstract <T> T getByCriteria(Class<T> entityClass, Criterion... criteria);
 
 	/**
 	 * Retrieves a list of entries based on the specified criteria.
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass the param class
-	 * @param paramArrayOfCriterion the param array of criterion
-	 * @return the list by criteria
+	 * @param <T> The target entity type
+	 * @param entityClass The target entity class reference
+	 * @param criteria query filter criteria
+	 * @return the list of entity instances that match the criteria or an empty list if nothing matches
+	 * @throws NwormQueryException
 	 */
-	public abstract <T> List<T> getListByCriteria(Class<T> paramClass,
-			Criterion... paramArrayOfCriterion);
+	public abstract <T> List<T> getListByCriteria(Class<T> entityClass, Criterion... criteria);
 
 	/**
 	 * Retrieves an entry based specified HQL and parameters.
 	 *
-	 * @param <T> the generic type
-	 * @param hql HQL for querying
-	 * @param paramMap key value parameter map
-	 * @param paramClass target entity class
-	 * @return A unique entry representing the entity
+	 * @param <T> The target entity type
+	 * @param hql target hql with specified restraictions to retrieve data set
+	 * @param paramaeterMap key value parameter map
+	 * @param entityClass target entity class
+	 * @return A unique entry representing the filtered entity
+	 * @throws NwormQueryException
 	 */
-	public abstract <T> T getByHQL(String hql, Map<String, Object> paramMap,
-			Class<T> paramClass);
+	public abstract <T> T getByHQL(String hql, Map<String, Object> paramaeterMap, Class<T> entityClass);
 
 	/**
-	 * Gets the by hql.
+	 * Gets an item using the specified hql string
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass the param class
-	 * @param hql the hql
-	 * @param paramArrayOfQueryParameter the param array of query parameter
-	 * @return the by hql
+	 * @param <T> The target entity type
+	 * @param entityClass The target entity class reference
+	 * @param hql target hql with specified restraictions to retrieve data set
+	 * @param queryParameters array of query parameters defined in the hql
+	 * @return A unique entry representing the filtered entity
+	 * @throws NwormQueryException
 	 * @see #getByHQL(String, Map, Class)
 	 */
-	public abstract <T> T getByHQL(Class<T> paramClass, String hql,
-			QueryParameter... paramArrayOfQueryParameter);
+	public abstract <T> T getByHQL(Class<T> entityClass, String hql, QueryParameter... queryParameters);
 
 	/**
 	 * Retrieves a list based on the specified hql and parameter.
 	 *
-	 * @param <T> the generic type
+	 * @param <T> The target entity type
 	 * @param hql the hql
-	 * @param paramMap the param map
-	 * @param paramClass the param class
-	 * @return the list by hql
+	 * @param parameterMap the param map
+	 * @param entityClass The target entity class reference
+	 * @return list of entities matching hql restrictions
+	 * @throws NwormQueryException
 	 */
-	public abstract <T> List<T> getListByHQL(String hql,
-			Map<String, Object> paramMap, Class<T> paramClass);
+	public abstract <T> List<T> getListByHQL(String hql, Map<String, Object> parameterMap, Class<T> entityClass);
 
 	/**
-	 * Gets the list by hql.
+	 * Retrieves a list based on the specified hql and parameter.
 	 *
-	 * @param <T> the generic type
-	 * @param paramClass the param class
-	 * @param paramString the param string
-	 * @param paramArrayOfQueryParameter the param array of query parameter
+	 * @param <T> The target entity type
+	 * @param entityClass The target entity class reference
+	 * @param hql target hql with specified restraictions to retrieve data set
+	 * @param queryParameters array of query parameters defined in the hql
 	 * @return the list by hql
+	 * @throws NwormQueryException
 	 * @see getListByHQL
 	 */
-	public abstract <T> List<T> getListByHQL(Class<T> paramClass,
-			String paramString, QueryParameter... paramArrayOfQueryParameter);
+	public abstract <T> List<T> getListByHQL(Class<T> entityClass, String hql, QueryParameter... queryParameters);
 
 	/**
-	 * Gets the by criteria.
+	 * Retrieves a unique entry using the specified criteria.
 	 *
-	 * @param <T> the generic type
-	 * @param returnClazz the return clazz
-	 * @param qm the qm
-	 * @param criterion the param array of criterion
-	 * @return the by criteria
+	 * @param <T> The target entity type
+	 * @param returnClazz the return class reference type
+	 * @param qm the query modifier used to garnish the search
+	 * @param criterion query filter criteria
+	 * @return a unique entry matching the criteria
+	 * @throws NwormQueryException
 	 */
-	public abstract <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm,
-			Criterion... criterion);
+	public abstract <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion... criterion);
 
 	/**
-	 * Gets the list by criteria.
+	 * Gets a list using the specified criteria.
 	 *
-	 * @param <T> the generic type
-	 * @param returnClazz the return clazz
-	 * @param qm the qm
-	 * @param paramArrayOfCriterion the param array of criterion
-	 * @return the list by criteria
+	 *
+	 * @param <T> The target entity type
+	 * @param returnClazz the return class reference
+	 * @param qm the query modifier used to garnish the search
+	 * @param criteria query filter criteria
+	 * @return the list of entities matching the criteria
+	 * @throws NwormQueryException
 	 */
-	public abstract <T> List<T> getListByCriteria(Class<T> returnClazz,
-			QueryModifier qm, Criterion... paramArrayOfCriterion);
+	public abstract <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion... criteria);
 
 	/**
 	 * Gets the by example.
 	 *
-	 * @param <T> the generic type
+	 * @param <T> The target entity type
 	 * @param clazz the clazz
 	 * @param example the example
 	 * @return the by example
@@ -121,7 +123,7 @@ public interface NwormHibernateService extends NwormService {
 	/**
 	 * Gets the list by example.
 	 *
-	 * @param <T> the generic type
+	 * @param <T> The target entity type
 	 * @param qm the qm
 	 * @param example the example
 	 * @return the list by example

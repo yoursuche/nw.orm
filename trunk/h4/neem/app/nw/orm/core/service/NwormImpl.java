@@ -7,6 +7,7 @@ import java.util.Map;
 
 import nw.commons.NeemClazz;
 import nw.orm.core.NwormEntity;
+import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
 import nw.orm.core.query.QueryModifier;
@@ -133,7 +134,8 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
 			sxnManager.rollback(session);
-			this.logger.error("Exception: ", e);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -164,25 +166,26 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T getByCriteria(Class<T> clz, Criterion ... criteria) {
+	public <T> T getByCriteria(Class<T> entityClass, Criterion ... criteria) {
 		T out = null;
-		boolean isMapped = isClassMapped(clz);
+		boolean isMapped = isClassMapped(entityClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			Criteria te = session.createCriteria(clz);
+			Criteria te = session.createCriteria(entityClass);
 			for (Criterion c : criteria) {
 				te.add(c);
 			}
-			addSoftRestrictions(te, clz);
+			addSoftRestrictions(te, entityClass);
 			if (isMapped){
 				out = (T) te.uniqueResult();
 			}else{
-				out = (T) te.setResultTransformer(Transformers.aliasToBean(clz)).uniqueResult();
+				out = (T) te.setResultTransformer(Transformers.aliasToBean(entityClass)).uniqueResult();
 			}
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
 			sxnManager.rollback(session);
-			logger.error("Exception: ", e);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -210,8 +213,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			}
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
-			this.logger.error("Exception: ", e);
 			sxnManager.rollback(session);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -256,8 +260,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			}
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
-			this.logger.error("Exception: ", e);
 			sxnManager.rollback(session);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -300,8 +305,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 
 			sxnManager.commit(session);
 		} catch (HibernateException e) {
-			this.logger.error("Exception: ", e);
 			sxnManager.rollback(session);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -340,7 +346,13 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			}
 		}
 
-		out = te.list();
+		try {
+			out = te.list();
+		} catch (Exception e) {
+			sxnManager.rollback(session);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
+		}
 		sxnManager.closeSession(session);
 		return out;
 	}
@@ -366,8 +378,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			}
 			sxnManager.commit(session);
 		} catch (Exception e) {
-			logger.error("Exception: ", e);
 			sxnManager.rollback(session);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -394,8 +407,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			}
 			sxnManager.commit(session);
 		} catch (Exception e) {
-			logger.error("Exception: ", e);
 			sxnManager.rollback(session);
+			sxnManager.closeSession(session);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(session);
 		return out;
@@ -411,12 +425,14 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		Session sxn = sxnManager.getManagedSession();
 		Criteria te = sxn.createCriteria(clazz).add(example);
 		try {
-//			System.out.println(te.list());
-			out = (T) te.uniqueResult();
+			logger.debug(te.list() + "");
+			out = (T) te.list().get(0);
 			System.out.println(out);
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
-			logger.error("Exception ", e);
+			sxnManager.rollback(sxn);
+			sxnManager.closeSession(sxn);
+			throw new NwormQueryException("", e);
 		}
 		sxnManager.closeSession(sxn);
 		return out;

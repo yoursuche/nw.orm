@@ -166,13 +166,16 @@ public class REntityManagerTest {
 		assertTrue(!bs.isEmpty());
 	}
 
-//	@Test
+	@Test
 	public void testGetByExample() {
-		Person p = new Person();
-		p.setSex(Sex.FEMALE);
-		p.setPk(personPk);
-		Example eg = Example.create(p);
-		Person be = rem.getByExample(Person.class, eg);
+		Country c = new Country();
+		c.setName("NIGERIA");
+		c.setIsoAlpha2("NG");
+		c.setIsoAlpha3("NGA");
+		c.setPhoneCode("234");
+		Example eg = Example.create(c);
+		eg.excludeNone().ignoreCase();
+		Country be = rem.getByExample(Country.class, eg);
 		assertEquals(be.getPk(), personPk);
 	}
 
