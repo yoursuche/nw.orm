@@ -1,17 +1,20 @@
 package nw.orm.core.jpa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import nw.orm.core.NwormEntity;
+import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 import nw.orm.core.service.NwormFactory;
@@ -54,7 +57,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	 * @param query the query
 	 * @param params the params
 	 */
-	protected <X> void addQueryParameters(TypedQuery<X> query, QueryParameter ... params){
+	protected <X> void addQueryParameters(Query query, QueryParameter ... params){
 		if(params != null){
 			for(QueryParameter qp: params){
 				query.setParameter(qp.getName(), qp.getValue());
@@ -91,13 +94,23 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	 */
 	@Override
 	public <T> List<T> getAll(Class<T> resultClazz) {
+
+		List<T> out = new ArrayList<T>();
+
 		EntityManager em = emFactory.createEntityManager();
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		CriteriaQuery<T> query = builder.createQuery(resultClazz);
 		Root<T> from = query.from(resultClazz);
 		query.select(from);
 		TypedQuery<T> tq = em.createQuery(query);
-		return tq.getResultList();
+
+		try {
+			out = tq.getResultList();
+		} catch (Exception e) {
+			throw new NwormQueryException("", e);
+		}
+
+		return out;
 	}
 
 	/**
@@ -122,7 +135,9 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	 */
 	@Override
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter... params) {
-		// TODO Auto-generated method stub
+		EntityManager em = emFactory.createEntityManager();
+		Query query = em.createQuery(sql);
+		addQueryParameters(query, params);
 		return null;
 	}
 

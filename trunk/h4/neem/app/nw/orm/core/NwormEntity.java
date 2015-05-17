@@ -10,7 +10,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import nw.orm.core.annotations.Coder;
+import nw.orm.annotations.Developer;
 
 /**
  * NwormEntity is a shorthand for creating entities. It comes with extra properties
@@ -20,7 +20,7 @@ import nw.orm.core.annotations.Coder;
  * @author Ogwara O. Rowland
  * @param <T> Datatype to represent the primary key
  */
-@Coder(author = "Ogwara O. Rowland", date = "")
+@Developer(name = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
 public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEntity<T>>{
 

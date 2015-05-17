@@ -67,6 +67,7 @@ public interface NwormService {
 	 * @param sql insert/update/delete query to be executed
 	 * @param params parameter list
 	 * @return an int representing the state of the execution
+	 * @throws NwormQueryException
 	 */
 	public int executeSQLUpdate(String sql, QueryParameter ... params);
 
@@ -76,22 +77,24 @@ public interface NwormService {
 	 * @param hql the hql for the crud operation
 	 * @param params parameter list
 	 * @return an int representing the state of the execution
+	 * @throws NwormQueryException
 	 */
 	public int executeHQLUpdate(String hql, QueryParameter ...params);
 
 	/**
 	 * sets the deleted field for this entity to true. All queries ignores this entry
 	 *
-	 * @param paramClass the param class
-	 * @param paramSerializable the param serializable
+	 * @param entityClass the entity class
+	 * @param id primary key
 	 * @return true, if successful
+	 * @throws NwormQueryException
 	 */
-	public boolean softDelete(Class<? extends NwormEntity<?>> paramClass, Serializable paramSerializable);
+	public boolean softDelete(Class<? extends NwormEntity<?>> entityClass, Serializable id);
 
 	/**
 	 * sets the deleted field for all entries in the list. All entries will be ignored in all queries
 	 *
-	 * @param paramClass the param class
+	 * @param paramClass the entity class
 	 * @param paramList the param list
 	 * @return true, if successful
 	 */

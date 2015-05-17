@@ -1,4 +1,4 @@
-package nw.orm.examples.rm;
+package nw.orm.test.manager;
 
 import java.util.Date;
 

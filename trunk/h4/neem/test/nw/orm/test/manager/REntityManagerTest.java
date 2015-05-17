@@ -66,7 +66,7 @@ public class REntityManagerTest {
 		assertTrue(rem2.getSessionService().getFactory().isClosed());
 	}
 
-	@Test
+//	@Test
 	public void testGeo(){
 		Country c = new Country();
 		c.setName("NIGERIA");
@@ -166,7 +166,7 @@ public class REntityManagerTest {
 		assertTrue(!bs.isEmpty());
 	}
 
-	@Test
+//	@Test
 	public void testGetByExample() {
 		Country c = new Country();
 		c.setName("NIGERIA");
