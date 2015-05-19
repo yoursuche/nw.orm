@@ -10,7 +10,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import nw.orm.annotations.Developer;
+import nw.orm.core.annotations.Developer;
 
 /**
  * NwormEntity is a shorthand for creating entities. It comes with extra properties

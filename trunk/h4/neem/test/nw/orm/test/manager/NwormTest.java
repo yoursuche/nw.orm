@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class REntityManagerTest {
+public class NwormTest {
 
 	private static Nworm rem;
 	private static Nworm rem2;
@@ -57,7 +57,7 @@ public class REntityManagerTest {
 	public void testGetInstance() {
 		assertNotNull(rem);
 		assertNotNull(rem2);
-		assertNotEquals(rem, rem2);
+		assertNotEquals(rem.getClassId(), rem2.getClassId());
 	}
 
 	@Test

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nimworks</groupId>
   <artifactId>nw.orm-h4</artifactId>
-  <version>3.1.1</version>
+  <version>3.1.2</version>
   <name>nw.orm</name>
   <build>
     <sourceDirectory>neem/app</sourceDirectory>
@@ -89,11 +89,6 @@
   		<artifactId>postgresql</artifactId>
   		<version>9.4-1201-jdbc4</version>
   		<scope>test</scope>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.nimworks</groupId>
-  		<artifactId>nw.orm.processor</artifactId>
-  		<version>1.0.0</version>
   	</dependency>
   	<dependency>
   		<groupId>org.hibernate</groupId>

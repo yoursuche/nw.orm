@@ -1,7 +1,5 @@
 package nw.orm.core.exception;
 
-import nw.orm.annotations.NwormTransaction;
-
 public class NwormQueryException extends IllegalArgumentException{
 
 	/**
@@ -18,7 +16,6 @@ public class NwormQueryException extends IllegalArgumentException{
 	}
 
 	@Override
-	@NwormTransaction
 	public String getMessage() {
 		// TODO Auto-generated method stub
 		return super.getMessage();

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import nw.commons.NeemClazz;
 import nw.orm.core.NwormEntity;
@@ -49,6 +50,8 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 
 	/** The initialized successfully. */
 	private boolean initializedSuccessfully;
+
+	private String classId = UUID.randomUUID().toString();
 
 	/**
 	 * Gets the manager.
@@ -885,5 +888,13 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			return this.sxnManager;
 		}
 		return null;
+	}
+
+	public String getClassId() {
+		return classId;
+	}
+
+	public void setClassId(String classId) {
+		this.classId = classId;
 	}
 }
