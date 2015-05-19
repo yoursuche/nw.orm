@@ -21,7 +21,7 @@ public interface NwormService {
 	 * @param entityClass target entity class
 	 * @param primaryKey primary key
 	 * @return Entity instance with the specified primary key or null
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public <T> T getById(Class<T> entityClass, Serializable primaryKey);
 
@@ -33,7 +33,7 @@ public interface NwormService {
 	 * @param primaryKey primary key
 	 * @param lockOption enable lock option upgrade
 	 * @return Entity instance with the specified primary key or null
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public <T> T getById(Class<T> entityClass, Serializable primaryKey, boolean lockOption);
 
@@ -44,7 +44,7 @@ public interface NwormService {
 	 * @param <T> The target entity type
 	 * @param entityClass target entity class
 	 * @return List containing all entries
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public <T> List<T> getAll(Class<T> entityClass);
 
@@ -57,7 +57,7 @@ public interface NwormService {
 	 * @param sqlMod see {@link SQLModifier}
 	 * @param params see {@link QueryParameter}
 	 * @return the output of the sql statement
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params);
 
@@ -67,7 +67,7 @@ public interface NwormService {
 	 * @param sql insert/update/delete query to be executed
 	 * @param params parameter list
 	 * @return an int representing the state of the execution
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public int executeSQLUpdate(String sql, QueryParameter ... params);
 
@@ -77,7 +77,7 @@ public interface NwormService {
 	 * @param hql the hql for the crud operation
 	 * @param params parameter list
 	 * @return an int representing the state of the execution
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public int executeHQLUpdate(String hql, QueryParameter ...params);
 
@@ -87,7 +87,7 @@ public interface NwormService {
 	 * @param entityClass the entity class
 	 * @param id primary key
 	 * @return true, if successful
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public boolean softDelete(Class<? extends NwormEntity<?>> entityClass, Serializable id);
 

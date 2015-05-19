@@ -20,7 +20,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param entityClass The target entity class reference
 	 * @param criteria query filter criteria
 	 * @return the entity instance matching the provided criteria or null if no match is found
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public abstract <T> T getByCriteria(Class<T> entityClass, Criterion... criteria);
 
@@ -31,7 +31,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param entityClass The target entity class reference
 	 * @param criteria query filter criteria
 	 * @return the list of entity instances that match the criteria or an empty list if nothing matches
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public abstract <T> List<T> getListByCriteria(Class<T> entityClass, Criterion... criteria);
 
@@ -43,7 +43,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param paramaeterMap key value parameter map
 	 * @param entityClass target entity class
 	 * @return A unique entry representing the filtered entity
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public abstract <T> T getByHQL(String hql, Map<String, Object> paramaeterMap, Class<T> entityClass);
 
@@ -55,7 +55,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param hql target hql with specified restraictions to retrieve data set
 	 * @param queryParameters array of query parameters defined in the hql
 	 * @return A unique entry representing the filtered entity
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 * @see #getByHQL(String, Map, Class)
 	 */
 	public abstract <T> T getByHQL(Class<T> entityClass, String hql, QueryParameter... queryParameters);
@@ -68,7 +68,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param parameterMap the param map
 	 * @param entityClass The target entity class reference
 	 * @return list of entities matching hql restrictions
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public abstract <T> List<T> getListByHQL(String hql, Map<String, Object> parameterMap, Class<T> entityClass);
 
@@ -80,7 +80,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param hql target hql with specified restraictions to retrieve data set
 	 * @param queryParameters array of query parameters defined in the hql
 	 * @return the list by hql
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 * @see getListByHQL
 	 */
 	public abstract <T> List<T> getListByHQL(Class<T> entityClass, String hql, QueryParameter... queryParameters);
@@ -93,7 +93,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param qm the query modifier used to garnish the search
 	 * @param criterion query filter criteria
 	 * @return a unique entry matching the criteria
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public abstract <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion... criterion);
 
@@ -106,7 +106,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param qm the query modifier used to garnish the search
 	 * @param criteria query filter criteria
 	 * @return the list of entities matching the criteria
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException when an error occurs
 	 */
 	public abstract <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion... criteria);
 

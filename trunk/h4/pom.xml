@@ -9,12 +9,14 @@
     <testSourceDirectory>neem/test</testSourceDirectory>
     <resources>
       <resource>
-        <directory>neem/app</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
+        <directory>neem/app/resources</directory>
       </resource>
     </resources>
+    <testResources>
+      <testResource>
+        <directory>D:\Workspace\luna.r2\nw.orm\neem\test\resources</directory>
+      </testResource>
+    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -93,7 +95,13 @@
   	<dependency>
   		<groupId>org.hibernate</groupId>
   		<artifactId>hibernate-spatial</artifactId>
-  		<version>4.0</version>
+  		<version>4.3</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-simple</artifactId>
+  		<version>1.7.12</version>
+  		<scope>test</scope>
   	</dependency>
   </dependencies>
   <repositories>
