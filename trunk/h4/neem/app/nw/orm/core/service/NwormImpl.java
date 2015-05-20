@@ -126,7 +126,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	@SuppressWarnings("unchecked")
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
 		T out = null;
-		sxnManager.getManagedSession();
 		Session session = sxnManager.getManagedSession();
 		try {
 			if (!lock){
