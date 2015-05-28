@@ -64,8 +64,20 @@ public interface NwormHibernateService extends NwormService {
 	 * @return A unique entry for the target entity
 	 * @throws NwormArgumentException if a exception occurs during operation
 	 */
-	public abstract <T> T getByHQL(String hql, Map<String, Object> paramMap,
-			Class<T> paramClass);
+	public abstract <T> T getByHQL(String hql, Map<String, Object> paramMap, Class<T> paramClass);
+
+	/**
+	 * Retrieves an entity entry based specified HQL and parameters.
+	 *
+	 * @param <T> Target Entity Type
+	 * @param hql HQL for querying
+	 * @param paramMap key value parameter map
+	 * @param paramClass target entity class
+	 * @param skipDeleted whether to ignore softly deleted entries or not
+	 * @return A unique entry for the target entity
+	 * @throws NwormArgumentException if a exception occurs during operation
+	 */
+	public abstract <T> T getByHQL(String hql, Map<String, Object> paramMap, Class<T> paramClass, boolean skipDeleted);
 
 	/**
 	 * Gets an entity entry based specified HQL and parameters.
@@ -78,8 +90,21 @@ public interface NwormHibernateService extends NwormService {
 	 * @see #getByHQL(String, Map, Class)
 	 * @throws NwormArgumentException if a exception occurs during operation
 	 */
-	public abstract <T> T getByHQL(Class<T> paramClass, String hql,
-			QueryParameter... paramArrayOfQueryParameter);
+	public abstract <T> T getByHQL(Class<T> paramClass, String hql, QueryParameter... paramArrayOfQueryParameter);
+
+	/**
+	 * Gets an entity entry based specified HQL and parameters.
+	 *
+	 * @param <T> Target Entity Type
+	 * @param paramClass target entity class
+	 * @param hql the hql for querying
+	 * @param skipDeleted whether to ignore softly deleted entries or not
+	 * @param paramArrayOfQueryParameter parameter list used by the hql
+	 * @return A unique entry representing the entity
+	 * @see #getByHQL(String, Map, Class)
+	 * @throws NwormArgumentException if a exception occurs during operation
+	 */
+	public abstract <T> T getByHQL(Class<T> paramClass, String hql, boolean skipDeleted, QueryParameter... paramArrayOfQueryParameter);
 
 	/**
 	 * Retrieves a list based on the specified hql and parameter.
@@ -91,8 +116,20 @@ public interface NwormHibernateService extends NwormService {
 	 * @return the list with entries from the hql
 	 * @throws NwormArgumentException if a exception occurs during operation
 	 */
-	public abstract <T> List<T> getListByHQL(String hql,
-			Map<String, Object> paramMap, Class<T> paramClass);
+	public abstract <T> List<T> getListByHQL(String hql, Map<String, Object> paramMap, Class<T> paramClass);
+
+	/**
+	 * Retrieves a list based on the specified hql and parameter.
+	 *
+	 * @param <T> Target Entity Type
+	 * @param hql the hql for querying
+	 * @param paramMap key value parameter map
+	 * @param paramClass target entity class
+	 * @param skipDeleted  whether to ignore softly deleted entries or not
+	 * @return the list with entries from the hql
+	 * @throws NwormArgumentException if a exception occurs during operation
+	 */
+	public abstract <T> List<T> getListByHQL(String hql, Map<String, Object> paramMap, Class<T> paramClass, boolean skipDeleted);
 
 	/**
 	 * Gets a list of entries by the specified criteria
@@ -104,8 +141,20 @@ public interface NwormHibernateService extends NwormService {
 	 * @return the list with entries from the hql
 	 * @see getListByHQL
 	 */
-	public abstract <T> List<T> getListByHQL(Class<T> paramClass,
-			String paramString, QueryParameter... paramArrayOfQueryParameter);
+	public abstract <T> List<T> getListByHQL(Class<T> paramClass, String paramString, QueryParameter... paramArrayOfQueryParameter);
+
+	/**
+	 * Gets a list of entries by the specified criteria
+	 *
+	 * @param <T> Target Entity Type
+	 * @param paramClass the param class
+	 * @param paramString the param string
+	 * @param skipDeleted  whether to ignore softly deleted entries or not
+	 * @param paramArrayOfQueryParameter the param array of query parameter
+	 * @return the list with entries from the hql
+	 * @see getListByHQL
+	 */
+	public abstract <T> List<T> getListByHQL(Class<T> paramClass, String paramString, boolean skipDeleted, QueryParameter... paramArrayOfQueryParameter);
 
 	/**
 	 * Gets the by criteria.
@@ -117,8 +166,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @return an instance of the target entity
 	 * @throws NwormArgumentException if a exception occurs during operation
 	 */
-	public abstract <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm,
-			Criterion... criterion);
+	public abstract <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion... criterion);
 
 	/**
 	 * Gets the list by criteria.
@@ -129,8 +177,7 @@ public interface NwormHibernateService extends NwormService {
 	 * @param paramArrayOfCriterion the param array of criterion
 	 * @return the list by criteria
 	 */
-	public abstract <T> List<T> getListByCriteria(Class<T> returnClazz,
-			QueryModifier qm, Criterion... paramArrayOfCriterion);
+	public abstract <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion... paramArrayOfCriterion);
 
 	/**
 	 * Gets the by example.

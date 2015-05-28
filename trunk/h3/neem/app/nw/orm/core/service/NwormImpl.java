@@ -139,7 +139,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	@SuppressWarnings("unchecked")
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
 		T out = null;
-		sxnManager.getManagedSession();
 		Session session = sxnManager.getManagedSession();
 		try {
 			if (!lock){
@@ -248,17 +247,35 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	}
 
 	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.String, java.util.Map, java.lang.Class, boolean)
+	 */
+	@Override
+	public <T> T getByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass, boolean skipDeleted) {
+		T out = getByHQL(resultClass, hql, skipDeleted, QueryParameter.fromMap(parameters));
+		return out;
+	}
+
+	/* (non-Javadoc)
 	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
+
+		return getByHQL(resultClass, hql, false, parameters);
+	}
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.Class, java.lang.String, boolean, nw.orm.core.query.QueryParameter[])
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T getByHQL(Class<T> resultClass, String hql, boolean skipDeleted, QueryParameter ... parameters) {
 		T out = null;
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
 
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (!skipDeleted && NwormEntity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 
@@ -295,16 +312,33 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	}
 
 	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.String, java.util.Map, java.lang.Class, boolean)
+	 */
+	@Override
+	public <T> List<T> getListByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass, boolean skipDeleted) {
+		List<T> out = getListByHQL(resultClass, hql, skipDeleted, QueryParameter.fromMap(parameters));
+		return out;
+	}
+
+	/* (non-Javadoc)
 	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
+		return getListByHQL(resultClass, hql, false, parameters);
+	}
+
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.Class, java.lang.String, boolean, nw.orm.core.query.QueryParameter[])
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, boolean skipDeleted, QueryParameter ... parameters) {
 		List<T> out = new ArrayList<T>();
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (!skipDeleted && NwormEntity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 			Query query = session.createQuery(hql);
