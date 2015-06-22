@@ -69,7 +69,7 @@ public class REntityManagerTest {
 		assertTrue(rem2.getSessionService().getFactory().isClosed());
 	}
 
-	@Test
+//	@Test
 	public void testGeo(){
 		Country c = new Country();
 		c.setName("NIGERIA");

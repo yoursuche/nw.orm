@@ -284,7 +284,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 				query.setParameter(rp.getName(), rp.getValue());
 			}
 
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (!skipDeleted && NwormEntity.class.isAssignableFrom(resultClass)) {
 				query.setParameter("deleted", Boolean.valueOf(false));
 			}
 			if (isMapped){
@@ -345,7 +345,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (!skipDeleted && NwormEntity.class.isAssignableFrom(resultClass)) {
 				query.setBoolean("deleted", false);
 			}
 			if (isMapped){
