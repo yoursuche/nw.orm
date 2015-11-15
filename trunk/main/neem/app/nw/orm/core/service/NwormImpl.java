@@ -123,7 +123,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable, boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
 		T out = null;
 		Session session = sxnManager.getManagedSession();
