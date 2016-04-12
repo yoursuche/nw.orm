@@ -6,7 +6,7 @@
   <property name="hibernate.show_sql">true</property>
   <property name="hibernate.format_sql">true</property>
   <property name="use_sql_comments">false</property>
-  <property name="hbm2ddl.auto">update</property>
+  <!-- <property name="hbm2ddl.auto">update</property> -->
   <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property>
   <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
   <!-- <property name="hibernate.connection.url">jdbc:postgresql://127.4.242.2:5432/nimblarapi</property>
