@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <session-factory>
+  <property name="hibernate.show_sql">true</property>
+  <property name="hibernate.format_sql">true</property>
+  <property name="use_sql_comments">false</property>
+  <property name="hbm2ddl.auto">update</property>
+  <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+  <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+  <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/nw_orm</property>
+  <property name="hibernate.connection.username">postgres</property>
+  <property name="hibernate.connection.password">openMinds</property>
+  <property name="hibernate.c3p0.min_size">5</property>
+  <!-- Determines how many connections at a time c3p0 will try to acquire when the pool is exhausted. -->
+  <property name="hibernate.c3p0.max_size">30</property>
+  <!-- seconds -->
+  <property name="hibernate.c3p0.timeout">1800</property>
+  <!--The size of c3p0's PreparedStatement cache. Zero means statement caching is turned off.-->
+  <property name="hibernate.c3p0.max_statements">50</property>
+  <property name="hibernate.c3p0.acquire_increment">1</property>
+  <property name="hibernate.c3p0.idle_test_period">300</property>
+  <property name="hibernate.current_session_context_class">thread</property>
+  <mapping class="nw.orm.examples.model.Person"/>
+
+  <mapping class="nw.orm.entity.geo.Country"/>
+  <mapping class="nw.orm.entity.geo.Region"/>
+  <mapping class="nw.orm.entity.geo.City"/>
+ </session-factory>
+</hibernate-configuration>
