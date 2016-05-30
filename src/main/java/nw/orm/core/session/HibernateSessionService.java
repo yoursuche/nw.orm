@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 
-import nw.commons.NeemClazz;
+import nw.commons.logging.Loggable;
 
 /**
  * An entry point for manipulating hibernate sessions and session factory.
@@ -16,7 +16,7 @@ import nw.commons.NeemClazz;
  *
  * @author Ogwara O. Rowland
  */
-public class HibernateSessionService extends NeemClazz implements IHibernateSessionService{
+public class HibernateSessionService extends Loggable implements IHibernateSessionService{
 
 	/** The Hibernate Session Factory reference */
 	private HibernateSessionFactory conf;

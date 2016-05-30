@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
+import nw.commons.exception.NwException;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 
@@ -43,7 +44,7 @@ public class Nworm extends NwormImpl {
 		try {
 			service = getInstance(configFile, null);
 		} catch (OperationNotSupportedException e) {
-			se(Nworm.class, "Exception ", e);
+			throw new NwException("Exception", e);
 		}
 		return service;
 	}
