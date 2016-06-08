@@ -31,6 +31,21 @@ public class Nworm extends NwormImpl {
 	}
 
 	/**
+	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
+	 * @return a single database service instance
+	 */
+	/**
+	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
+	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
+	 * @return a single database service instance
+	 */
+
+	public static Nworm getInstance(boolean reInitialize) {
+		String configFile = "hibernate.cfg.xml";
+		return getInstance(configFile, reInitialize);
+	}
+
+	/**
 	 * Gets the single instance of Nworm.
 	 *
 	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
@@ -53,6 +68,25 @@ public class Nworm extends NwormImpl {
 	 *
 	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
 	 * 		is case sensitive only for case sensitive file system
+	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
+	 * @return a single database service instance
+	 */
+
+	public static Nworm getInstance(String configFile, boolean reInitialize) {
+		Nworm service = null;
+		try {
+			service = getInstance(configFile, null, reInitialize);
+		} catch (OperationNotSupportedException e) {
+			se(Nworm.class, "Exception ", e);
+		}
+		return service;
+	}
+
+	/**
+	 * Gets the single instance of Nworm.
+	 *
+	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
+	 * 		is case sensitive only for case sensitive file system
 	 * @param props 		Extra configuration parameters. Useful in cases where modification of some properties from an exisiting config is needed
 	 * 		It must contain a property named config.name
 	 * @return a single database service instance
@@ -60,6 +94,22 @@ public class Nworm extends NwormImpl {
 	 */
 
 	public static Nworm getInstance(String configFile, Properties props) throws OperationNotSupportedException {
+		return getInstance(configFile, props, false);
+	}
+
+	/**
+	 * Gets the single instance of Nworm.
+	 *
+	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
+	 * 		is case sensitive only for case sensitive file system
+	 * @param props 		Extra configuration parameters. Useful in cases where modification of some properties from an exisiting config is needed
+	 * 		It must contain a property named config.name
+	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
+	 * @return a single database service instance
+	 * @throws OperationNotSupportedException the operation not supported exception
+	 */
+
+	public static Nworm getInstance(String configFile, Properties props, boolean reInitialize) throws OperationNotSupportedException {
 		Nworm service = null;
 		if(props != null){
 			String cname = props.getProperty("config.name");
@@ -70,6 +120,13 @@ public class Nworm extends NwormImpl {
 		}else{
 			service = (Nworm) getManager(configFile);
 		}
+		
+		if(reInitialize && service != null){
+//			we close the session factory if it exists and then nullify to trigger the creation of another db service object
+			service.closeFactory();
+			service = null;
+		}
+		
 		if (service == null) {
 			synchronized (Nworm.class) {
 				service = new Nworm();
