@@ -32,10 +32,6 @@ public class Nworm extends NwormImpl {
 
 	/**
 	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
-	 * @return a single database service instance
-	 */
-	/**
-	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
 	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
 	 * @return a single database service instance
 	 */
