@@ -13,7 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import nw.orm.core.NwormEntity;
+import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
@@ -163,7 +163,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	 * @see nw.orm.core.service.NwormService#softDelete(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean softDelete(Class<? extends NwormEntity<?>> paramClass,
+	public boolean softDelete(Class<? extends Entity> paramClass,
 			Serializable paramSerializable) {
 		// TODO Auto-generated method stub
 		return false;
@@ -173,7 +173,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	 * @see nw.orm.core.service.NwormService#bulkSoftDelete(java.lang.Class, java.util.List)
 	 */
 	@Override
-	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> paramClass,
+	public boolean bulkSoftDelete(Class<? extends Entity> paramClass,
 			List<Serializable> paramList) {
 		// TODO Auto-generated method stub
 		return false;
@@ -246,7 +246,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	 * @see nw.orm.core.service.NwormService#toggleActive(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean toggleActive(Class<? extends NwormEntity<?>> paramClass,
+	public boolean toggleActive(Class<? extends Entity> paramClass,
 			Serializable paramSerializable) {
 		// TODO Auto-generated method stub
 		return false;

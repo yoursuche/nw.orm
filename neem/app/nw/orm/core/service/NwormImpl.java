@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import nw.commons.NeemClazz;
-import nw.orm.core.NwormEntity;
+import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
@@ -158,7 +158,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @param clazz the clazz
 	 */
 	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
-		if (NwormEntity.class.isAssignableFrom(clazz)){
+		if (Entity.class.isAssignableFrom(clazz)){
 			te.add(Restrictions.eq("deleted", Boolean.valueOf(false)));
 		}
 	}
@@ -243,7 +243,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		Session session = sxnManager.getManagedSession();
 		try {
 
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 
@@ -252,7 +252,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 				query.setParameter(rp.getName(), rp.getValue());
 			}
 
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				query.setParameter("deleted", Boolean.valueOf(false));
 			}
 			if (isMapped){
@@ -289,14 +289,14 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				query.setBoolean("deleted", false);
 			}
 			if (isMapped){
@@ -339,7 +339,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			if(returnClazz != null && !isClassMapped(returnClazz)){
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
-			if(NwormEntity.class.isAssignableFrom(returnClazz)){
+			if(Entity.class.isAssignableFrom(returnClazz)){
 				te.setParameter("deleted", false);
 			}
 			if(sqlMod.isPaginated()){
@@ -515,14 +515,14 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @see nw.orm.core.service.NwormService#softDelete(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean softDelete(Class<? extends NwormEntity<?>> clazz, Serializable id) {
-		if (!NwormEntity.class.isAssignableFrom(clazz)) {
+	public boolean softDelete(Class<? extends Entity> clazz, Serializable id) {
+		if (!Entity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
 		Object bc = getByCriteria(clazz, Restrictions.idEq(id));
-		if ((bc instanceof NwormEntity)) {
-			NwormEntity<?> e = (NwormEntity<?>) bc;
+		if ((bc instanceof Entity)) {
+			Entity e = (Entity) bc;
 			e.setDeleted(true);
 		}
 		return update(bc);
@@ -532,9 +532,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @see nw.orm.core.service.NwormService#bulkSoftDelete(java.lang.Class, java.util.List)
 	 */
 	@Override
-	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> clazz, List<Serializable> ids) {
+	public boolean bulkSoftDelete(Class<? extends Entity> clazz, List<Serializable> ids) {
 		StatelessSession session = sxnManager.getStatelessSession();
-		if (!NwormEntity.class.isAssignableFrom(clazz)) {
+		if (!Entity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
@@ -542,7 +542,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		try {
 			for (Serializable s : ids) {
 				Object entity = session.get(clazz, s);
-				NwormEntity<?> e = (NwormEntity<?>) entity;
+				Entity e = (Entity) entity;
 				e.setDeleted(true);
 				session.update(entity);
 			}
@@ -725,10 +725,10 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @see nw.orm.core.service.NwormService#toggleActive(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean toggleActive(Class<? extends NwormEntity<?>> clazz, Serializable id) {
+	public boolean toggleActive(Class<? extends Entity> clazz, Serializable id) {
 		Object bc = getByCriteria(clazz, new Criterion[] { Restrictions.idEq(id) });
-		if ((bc instanceof NwormEntity)) {
-			NwormEntity<?> e = (NwormEntity<?>) bc;
+		if ((bc instanceof Entity)) {
+			Entity e = (Entity) bc;
 			e.setActive(!e.isActive());
 		}
 		return update(bc);
@@ -808,7 +808,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @return the string
 	 */
 	protected String modifyHQL(String hql, Class<?> clazz) {
-		if (NwormEntity.class.isAssignableFrom(clazz)) {
+		if (Entity.class.isAssignableFrom(clazz)) {
 			if (hql.toLowerCase().contains(" where ")) {
 				return hql + " and deleted = :deleted";
 			}

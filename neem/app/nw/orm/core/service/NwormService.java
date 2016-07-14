@@ -3,7 +3,7 @@ package nw.orm.core.service;
 import java.io.Serializable;
 import java.util.List;
 
-import nw.orm.core.NwormEntity;
+import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
@@ -89,7 +89,7 @@ public interface NwormService {
 	 * @return true, if successful
 	 * @throws NwormQueryException when an error occurs
 	 */
-	public boolean softDelete(Class<? extends NwormEntity<?>> entityClass, Serializable id);
+	public boolean softDelete(Class<? extends Entity> entityClass, Serializable id);
 
 	/**
 	 * sets the deleted field for all entries in the list. All entries will be ignored in all queries
@@ -98,7 +98,7 @@ public interface NwormService {
 	 * @param paramList the param list
 	 * @return true, if successful
 	 */
-	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> paramClass, List<Serializable> paramList);
+	public boolean bulkSoftDelete(Class<? extends Entity> paramClass, List<Serializable> paramList);
 
 	/**
 	 * Deletes an entry from the database.
@@ -165,7 +165,7 @@ public interface NwormService {
 	 * @param paramSerializable the param serializable
 	 * @return true, if successful
 	 */
-	public boolean toggleActive(Class<? extends NwormEntity<?>> paramClass, Serializable paramSerializable);
+	public boolean toggleActive(Class<? extends Entity> paramClass, Serializable paramSerializable);
 
 	/**
 	 * Creates the or update.
