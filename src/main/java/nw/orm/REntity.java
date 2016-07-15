@@ -1,10 +1,12 @@
-package com.nimworks.nworm;
+package nw.orm;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.GenericGenerator;
+
+import nw.orm.core.Entity;
 
 /**
  * A base implementation of an Entity that uses a UUID based primary key string.

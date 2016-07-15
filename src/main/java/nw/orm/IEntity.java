@@ -1,9 +1,11 @@
-package com.nimworks.nworm;
+package nw.orm;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+
+import nw.orm.core.Entity;
 
 /**
  * A base implementation of an Entity that uses a sequence based primary key.

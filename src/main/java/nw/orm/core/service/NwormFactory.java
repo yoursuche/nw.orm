@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class NwormFactory {
 
 	/** The active managers. */
-	private static ConcurrentHashMap<String, NwormService> activeManagers = new ConcurrentHashMap<String, NwormService>();
+	private static ConcurrentHashMap<String, IService> activeManagers = new ConcurrentHashMap<String, IService>();
 
 	/**
 	 * get a data service manager by its reference.
@@ -19,7 +19,7 @@ public abstract class NwormFactory {
 	 * @param configFile the config file
 	 * @return the manager
 	 */
-	public static NwormService getManager(String configFile) {
+	public static IService getManager(String configFile) {
 		return activeManagers.get(configFile);
 	}
 
@@ -29,7 +29,7 @@ public abstract class NwormFactory {
 	 * @param file refernce key
 	 * @param manager reference service
 	 */
-	public static void putManager(String file, NwormService manager) {
+	public static void putManager(String file, IService manager) {
 		NwormFactory.activeManagers.put(file, manager);
 	}
 

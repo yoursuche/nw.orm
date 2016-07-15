@@ -13,7 +13,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import nw.orm.core.NwormEntity;
+import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
@@ -66,7 +66,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#getById(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
 	public <T> T getById(Class<T> entityClass, Serializable id) {
@@ -74,7 +74,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable, boolean)
+	 * @see nw.orm.core.service.IService#getById(java.lang.Class, java.io.Serializable, boolean)
 	 */
 	@Override
 	public <T> T getById(Class<T> entityClass, Serializable id, boolean lock) {
@@ -90,7 +90,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getAll(java.lang.Class)
+	 * @see nw.orm.core.service.IService#getAll(java.lang.Class)
 	 */
 	@Override
 	public <T> List<T> getAll(Class<T> resultClazz) {
@@ -131,7 +131,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getBySQL(java.lang.Class, java.lang.String, nw.orm.core.query.SQLModifier, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#getBySQL(java.lang.Class, java.lang.String, nw.orm.core.query.SQLModifier, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter... params) {
@@ -142,7 +142,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#executeSQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#executeSQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	public int executeSQLUpdate(String sql, QueryParameter... params) {
@@ -151,7 +151,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#executeHQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#executeHQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	public int executeHQLUpdate(String hql, QueryParameter... params) {
@@ -160,27 +160,27 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#softDelete(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#softDelete(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean softDelete(Class<? extends NwormEntity<?>> paramClass,
+	public boolean softDelete(Class<? extends Entity<?>> paramClass,
 			Serializable paramSerializable) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#bulkSoftDelete(java.lang.Class, java.util.List)
+	 * @see nw.orm.core.service.IService#bulkSoftDelete(java.lang.Class, java.util.List)
 	 */
 	@Override
-	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> paramClass,
+	public boolean bulkSoftDelete(Class<? extends Entity<?>> paramClass,
 			List<Serializable> paramList) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#remove(java.lang.Object)
+	 * @see nw.orm.core.service.IService#remove(java.lang.Object)
 	 */
 	@Override
 	public boolean remove(Object paramObject) {
@@ -189,7 +189,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#remove(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#remove(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
 	public boolean remove(Class<?> paramClass, Serializable paramSerializable) {
@@ -198,7 +198,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#bulkRemove(java.lang.Class, java.util.List)
+	 * @see nw.orm.core.service.IService#bulkRemove(java.lang.Class, java.util.List)
 	 */
 	@Override
 	public boolean bulkRemove(Class<?> paramClass, List<Serializable> paramList) {
@@ -207,7 +207,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#create(java.lang.Object)
+	 * @see nw.orm.core.service.IService#create(java.lang.Object)
 	 */
 	@Override
 	public Serializable create(Object paramObject) {
@@ -216,7 +216,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#createBulk(java.util.List)
+	 * @see nw.orm.core.service.IService#createBulk(java.util.List)
 	 */
 	@Override
 	public List<Serializable> createBulk(List<?> paramList) {
@@ -225,7 +225,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#update(java.lang.Object)
+	 * @see nw.orm.core.service.IService#update(java.lang.Object)
 	 */
 	@Override
 	public boolean update(Object paramObject) {
@@ -234,7 +234,7 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#updateBulk(java.util.List)
+	 * @see nw.orm.core.service.IService#updateBulk(java.util.List)
 	 */
 	@Override
 	public boolean updateBulk(List<?> paramList) {
@@ -243,17 +243,17 @@ public abstract class NwormJpaImpl implements NwormJpaService {
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#toggleActive(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#toggleActive(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean toggleActive(Class<? extends NwormEntity<?>> paramClass,
+	public boolean toggleActive(Class<? extends Entity<?>> paramClass,
 			Serializable paramSerializable) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#createOrUpdate(java.lang.Object)
+	 * @see nw.orm.core.service.IService#createOrUpdate(java.lang.Object)
 	 */
 	@Override
 	public boolean createOrUpdate(Object paramObject) {

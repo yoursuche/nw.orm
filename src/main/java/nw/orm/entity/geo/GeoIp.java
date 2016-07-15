@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import nw.orm.core.NwormEntity;
+import nw.orm.core.Entity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -12,7 +12,7 @@ import nw.orm.core.NwormEntity;
  */
 @javax.persistence.Entity
 @Table(name = "GEO_IP")
-public class GeoIp extends NwormEntity<String>{
+public class GeoIp extends Entity<String>{
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 77385623074926543L;

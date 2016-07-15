@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import nw.commons.logging.Loggable;
-import nw.orm.core.NwormEntity;
+import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
@@ -35,10 +35,10 @@ import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.transform.Transformers;
 
 /**
- * Reference implementation for {@link NwormService} for Hibernate Session Management.
+ * Reference implementation for {@link IService} for Hibernate Session Management.
  *
  * @author Ogwara O. Rowland
- * @see NwormService
+ * @see IService
  */
 public abstract class NwormImpl extends Loggable implements NwormHibernateService {
 
@@ -112,7 +112,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#getById(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
 	public <T> T getById(Class<T> clazz, Serializable id) {
@@ -120,7 +120,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable, boolean)
+	 * @see nw.orm.core.service.IService#getById(java.lang.Class, java.io.Serializable, boolean)
 	 */
 	@Override
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
@@ -143,7 +143,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getAll(java.lang.Class)
+	 * @see nw.orm.core.service.IService#getAll(java.lang.Class)
 	 */
 	@Override
 	public <T> List<T> getAll(Class<T> clazz) {
@@ -157,13 +157,13 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @param clazz the clazz
 	 */
 	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
-		if (NwormEntity.class.isAssignableFrom(clazz)){
+		if (Entity.class.isAssignableFrom(clazz)){
 			te.add(Restrictions.eq("deleted", Boolean.valueOf(false)));
 		}
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
+	 * @see nw.orm.core.service.IService#getByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -193,7 +193,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
+	 * @see nw.orm.core.service.IService#getListByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -223,7 +223,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.String, java.util.Map, java.lang.Class)
+	 * @see nw.orm.core.service.IService#getByHQL(java.lang.String, java.util.Map, java.lang.Class)
 	 */
 	@Override
 	public <T> T getByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
@@ -232,7 +232,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#getByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -242,7 +242,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 		Session session = sxnManager.getManagedSession();
 		try {
 
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 
@@ -251,7 +251,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 				query.setParameter(rp.getName(), rp.getValue());
 			}
 
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				query.setParameter("deleted", Boolean.valueOf(false));
 			}
 			if (isMapped){
@@ -270,7 +270,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.String, java.util.Map, java.lang.Class)
+	 * @see nw.orm.core.service.IService#getListByHQL(java.lang.String, java.util.Map, java.lang.Class)
 	 */
 	@Override
 	public <T> List<T> getListByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
@@ -279,7 +279,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#getListByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -288,14 +288,14 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				hql = modifyHQL(hql, resultClass);
 			}
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			if (NwormEntity.class.isAssignableFrom(resultClass)) {
+			if (Entity.class.isAssignableFrom(resultClass)) {
 				query.setBoolean("deleted", false);
 			}
 			if (isMapped){
@@ -315,7 +315,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getBySQL(java.lang.Class, java.lang.String, nw.orm.core.query.SQLModifier, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#getBySQL(java.lang.Class, java.lang.String, nw.orm.core.query.SQLModifier, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -338,7 +338,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 			if(returnClazz != null && !isClassMapped(returnClazz)){
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
-			if(NwormEntity.class.isAssignableFrom(returnClazz)){
+			if(Entity.class.isAssignableFrom(returnClazz)){
 				te.setParameter("deleted", false);
 			}
 			if(sqlMod.isPaginated()){
@@ -359,7 +359,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
+	 * @see nw.orm.core.service.IService#getByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -388,7 +388,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
+	 * @see nw.orm.core.service.IService#getListByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -417,7 +417,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getByExample(java.lang.Class, org.hibernate.criterion.Example)
+	 * @see nw.orm.core.service.IService#getByExample(java.lang.Class, org.hibernate.criterion.Example)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -440,7 +440,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getListByExample(nw.orm.core.query.QueryModifier, org.hibernate.criterion.Example)
+	 * @see nw.orm.core.service.IService#getListByExample(nw.orm.core.query.QueryModifier, org.hibernate.criterion.Example)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -461,7 +461,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#executeSQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#executeSQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	public int executeSQLUpdate(String sql, QueryParameter ... params){
@@ -486,7 +486,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#executeHQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
+	 * @see nw.orm.core.service.IService#executeHQLUpdate(java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
 	public int executeHQLUpdate(String hql, QueryParameter ... params){
@@ -511,29 +511,29 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#softDelete(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#softDelete(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean softDelete(Class<? extends NwormEntity<?>> clazz, Serializable id) {
-		if (!NwormEntity.class.isAssignableFrom(clazz)) {
+	public boolean softDelete(Class<? extends Entity<?>> clazz, Serializable id) {
+		if (!Entity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
 		Object bc = getByCriteria(clazz, Restrictions.idEq(id));
-		if ((bc instanceof NwormEntity)) {
-			NwormEntity<?> e = (NwormEntity<?>) bc;
+		if ((bc instanceof Entity)) {
+			Entity<?> e = (Entity<?>) bc;
 			e.setDeleted(true);
 		}
 		return update(bc);
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#bulkSoftDelete(java.lang.Class, java.util.List)
+	 * @see nw.orm.core.service.IService#bulkSoftDelete(java.lang.Class, java.util.List)
 	 */
 	@Override
-	public boolean bulkSoftDelete(Class<? extends NwormEntity<?>> clazz, List<Serializable> ids) {
+	public boolean bulkSoftDelete(Class<? extends Entity<?>> clazz, List<Serializable> ids) {
 		StatelessSession session = sxnManager.getStatelessSession();
-		if (!NwormEntity.class.isAssignableFrom(clazz)) {
+		if (!Entity.class.isAssignableFrom(clazz)) {
 			logger.debug("Unsupported class specified.");
 			return false;
 		}
@@ -541,7 +541,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 		try {
 			for (Serializable s : ids) {
 				Object entity = session.get(clazz, s);
-				NwormEntity<?> e = (NwormEntity<?>) entity;
+				Entity<?> e = (Entity<?>) entity;
 				e.setDeleted(true);
 				session.update(entity);
 			}
@@ -560,7 +560,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#remove(java.lang.Object)
+	 * @see nw.orm.core.service.IService#remove(java.lang.Object)
 	 */
 	@Override
 	public boolean remove(Object obj) {
@@ -580,7 +580,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#remove(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#remove(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
 	public boolean remove(Class<?> clazz, Serializable pk) {
@@ -600,7 +600,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#bulkRemove(java.lang.Class, java.util.List)
+	 * @see nw.orm.core.service.IService#bulkRemove(java.lang.Class, java.util.List)
 	 */
 	@Override
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
@@ -624,7 +624,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#create(java.lang.Object)
+	 * @see nw.orm.core.service.IService#create(java.lang.Object)
 	 */
 	@Override
 	public Serializable create(Object obj) {
@@ -643,7 +643,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#createBulk(java.util.List)
+	 * @see nw.orm.core.service.IService#createBulk(java.util.List)
 	 */
 	@Override
 	public List<Serializable> createBulk(List<?> items) {
@@ -721,20 +721,20 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#toggleActive(java.lang.Class, java.io.Serializable)
+	 * @see nw.orm.core.service.IService#toggleActive(java.lang.Class, java.io.Serializable)
 	 */
 	@Override
-	public boolean toggleActive(Class<? extends NwormEntity<?>> clazz, Serializable id) {
+	public boolean toggleActive(Class<? extends Entity<?>> clazz, Serializable id) {
 		Object bc = getByCriteria(clazz, new Criterion[] { Restrictions.idEq(id) });
-		if ((bc instanceof NwormEntity)) {
-			NwormEntity<?> e = (NwormEntity<?>) bc;
+		if ((bc instanceof Entity)) {
+			Entity<?> e = (Entity<?>) bc;
 			e.setActive(!e.isActive());
 		}
 		return update(bc);
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#createOrUpdate(java.lang.Object)
+	 * @see nw.orm.core.service.IService#createOrUpdate(java.lang.Object)
 	 */
 	@Override
 	public boolean createOrUpdate(Object obj) {
@@ -807,7 +807,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @return the string
 	 */
 	protected String modifyHQL(String hql, Class<?> clazz) {
-		if (NwormEntity.class.isAssignableFrom(clazz)) {
+		if (Entity.class.isAssignableFrom(clazz)) {
 			if (hql.toLowerCase().contains(" where ")) {
 				return hql + " and deleted = :deleted";
 			}
@@ -878,7 +878,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	}
 
 	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getSessionService()
+	 * @see nw.orm.core.service.IService#getSessionService()
 	 */
 	@Override
 	public HibernateSessionService getSessionService() {

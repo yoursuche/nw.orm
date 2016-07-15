@@ -8,12 +8,10 @@ import java.lang.reflect.Modifier;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
-import javax.persistence.Version;
-
 import nw.orm.core.annotations.Developer;
 
 /**
- * NwormEntity is a shorthand for creating entities. It comes with extra properties
+ * Entity is a shorthand for creating entities. It comes with extra properties
  *
  * This class should be extended for customized base entities
  *
@@ -22,7 +20,7 @@ import nw.orm.core.annotations.Developer;
  */
 @Developer(name = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
-public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEntity<T>>{
+public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5965442215210696967L;
@@ -42,7 +40,6 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	private Date createDate = new Date();
 
 	/** Denotes the last modified date. Updates automatically with successful entry update */
-	@Version
 	@Column(name = "LAST_MODIFIED", nullable = false, insertable = true, updatable = true)
 	private Date lastModified;
 
@@ -100,6 +97,15 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		return lastModified;
 	}
 
+	/**
+	 * Updates the last modified timestamp, this method is called just before any Create
+	 * Update and Delete statement
+	 * @param lastModified the last modified date
+	 */
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals
@@ -110,10 +116,10 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 		if (this == object) {
 			return true;
 		}
-		if (!(object instanceof NwormEntity)) {
+		if (!(object instanceof Entity)) {
 			return false;
 		}
-		final NwormEntity<T> that = (NwormEntity<T>) object;
+		final Entity<T> that = (Entity<T>) object;
 		if (this.getPk() == null || that.getPk() == null
 				|| !this.getPk().equals(that.getPk())) {
 			return false;
@@ -134,18 +140,19 @@ public abstract class NwormEntity<T> implements Serializable, Comparable<NwormEn
 	 */
 	@Override
 	public int hashCode() {
-		int hashCode = 0;
-		hashCode = 29 * hashCode + (getPk() == null ? 0 : getPk().hashCode());
-		return hashCode;
+		int hashCode = 101;
+		return 29 * hashCode + (getPk() == null ? 0 : getPk().hashCode()) + getTableName().hashCode();
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(NwormEntity<T> o) {
+	public int compareTo(Entity<T> o) {
 		int cmp = 0;
-		if (this.getPk() != null && (this.getPk() == o.getPk() || this.getPk().equals(o.getPk()))) {
+		if(!this.getTableName().equalsIgnoreCase(o.getTableName())){
+			cmp = -1;
+		}else if (this.getPk() != null && (this.getPk() == o.getPk() || this.getPk().equals(o.getPk()))) {
 			cmp = 0;
 		}else
 			cmp = -1;

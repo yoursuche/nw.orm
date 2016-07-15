@@ -11,7 +11,7 @@ import nw.orm.core.session.HibernateSessionService;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 
-public interface NwormHibernateService extends NwormService {
+public interface NwormHibernateService extends IService {
 
 	/**
 	 * Retrieves a unique entry using the specified criteria.
