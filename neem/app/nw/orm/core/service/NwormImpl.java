@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import nw.commons.NeemClazz;
+import nw.commons.logging.Loggable;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
@@ -40,7 +40,7 @@ import org.hibernate.transform.Transformers;
  * @author Ogwara O. Rowland
  * @see NwormService
  */
-public abstract class NwormImpl extends NeemClazz implements NwormHibernateService {
+public abstract class NwormImpl extends Loggable implements NwormHibernateService {
 
 	/** Hibernate Session Factory instance. */
 	protected HibernateSessionFactory conf;

@@ -8,7 +8,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
-import nw.commons.NeemClazz;
+import nw.commons.logging.Loggable;
 
 /**
  * Hibernate SessionFactory builder.
@@ -16,7 +16,7 @@ import nw.commons.NeemClazz;
  * @author kulgan
  */
 @SuppressWarnings("deprecation")
-public class HibernateSessionFactory extends NeemClazz{
+public class HibernateSessionFactory extends Loggable {
 
 	/** The hibernate props. */
 	private Properties hibernateProps;
