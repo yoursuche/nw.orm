@@ -22,7 +22,7 @@ import nw.orm.core.annotations.Developer;
  */
 @Developer(name = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
-public abstract class Entity<T> implements Serializable {
+public abstract class Entity implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5965442215210696967L;
@@ -99,58 +99,6 @@ public abstract class Entity<T> implements Serializable {
 	public Date getLastModified() {
 		return lastModified;
 	}
-
-//	/*
-//	 * (non-Javadoc)
-//	 * @see java.lang.Object#equals
-//	 */
-//	@Override
-//	@SuppressWarnings("unchecked")
-//	public boolean equals(Object object) {
-//		if (this == object) {
-//			return true;
-//		}
-//		if (!(object instanceof Entity)) {
-//			return false;
-//		}
-//		final Entity<T> that = (Entity<T>) object;
-//		if (this.getPk() == null || that.getPk() == null
-//				|| !this.getPk().equals(that.getPk())) {
-//			return false;
-//		}
-//		return true;
-//	}
-
-//	/**
-//	 * Retrieves the primary key for the entry.
-//	 *
-//	 * @return the pk
-//	 */
-//	public abstract T getPk();
-
-//	/*
-//	 * (non-Javadoc)
-//	 * @see java.lang.Object#hashcode
-//	 */
-//	@Override
-//	public int hashCode() {
-//		int hashCode = 0;
-//		hashCode = 29 * hashCode + (getPk() == null ? 0 : getPk().hashCode());
-//		return hashCode;
-//	}
-
-//	/* (non-Javadoc)
-//	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-//	 */
-//	@Override
-//	public int compareTo(Entity<T> o) {
-//		int cmp = 0;
-//		if (this.getPk() != null && (this.getPk() == o.getPk() || this.getPk().equals(o.getPk()))) {
-//			cmp = 0;
-//		}else
-//			cmp = -1;
-//		return cmp;
-//	}
 
 	/**
 	 * deletes this entry.
