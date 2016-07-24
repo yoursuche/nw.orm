@@ -7,38 +7,38 @@ import javax.naming.OperationNotSupportedException;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 
-// TODO: Auto-generated Javadoc
 /**
- * Neemworks Limited Database.
- * Transaction processing using HQL, and criteria.
+ * This represents a single interface for querying the
+ * database using hibernate. It is just a wrapper around a few of
+ * hibernate's query methods.
+ * Each database configuration file maps to a single instance of this
+ * class.
+ * For Example: calling
+ * <code>
+ * <p>Nworm.getInstance()</p>
+ * </code>
+ * twice or more will return the same object
  *
  * @author Ogwara O. Rowland
- * @version 0.6
- * @since 6th Nov, 2013
+ * @version 0.7
  *
  *
  */
 public class Nworm extends NwormImpl {
+	
+	/**
+	 * Target hibernate configuration used to connect to the database
+	 */
+	private String configFile;
 
 	/**
-	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
+	 * Creates or return existing Entity Manager using default configuration file name hibernate.cfg.xml
 	 * @return a single database service instance
 	 */
 
 	public static Nworm getInstance() {
 		String configFile = "hibernate.cfg.xml";
 		return getInstance(configFile);
-	}
-
-	/**
-	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
-	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
-	 * @return a single database service instance
-	 */
-
-	public static Nworm getInstance(boolean reInitialize) {
-		String configFile = "hibernate.cfg.xml";
-		return getInstance(configFile, reInitialize);
 	}
 
 	/**
@@ -64,48 +64,14 @@ public class Nworm extends NwormImpl {
 	 *
 	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
 	 * 		is case sensitive only for case sensitive file system
-	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
-	 * @return a single database service instance
-	 */
-
-	public static Nworm getInstance(String configFile, boolean reInitialize) {
-		Nworm service = null;
-		try {
-			service = getInstance(configFile, null, reInitialize);
-		} catch (OperationNotSupportedException e) {
-			se(Nworm.class, "Exception ", e);
-		}
-		return service;
-	}
-
-	/**
-	 * Gets the single instance of Nworm.
-	 *
-	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
-	 * 		is case sensitive only for case sensitive file system
 	 * @param props 		Extra configuration parameters. Useful in cases where modification of some properties from an exisiting config is needed
 	 * 		It must contain a property named config.name
+	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
 	 * @return a single database service instance
 	 * @throws OperationNotSupportedException the operation not supported exception
 	 */
 
 	public static Nworm getInstance(String configFile, Properties props) throws OperationNotSupportedException {
-		return getInstance(configFile, props, false);
-	}
-
-	/**
-	 * Gets the single instance of Nworm.
-	 *
-	 * @param configFile 		Hibernate configuration file name to be used for this connection. The file name
-	 * 		is case sensitive only for case sensitive file system
-	 * @param props 		Extra configuration parameters. Useful in cases where modification of some properties from an exisiting config is needed
-	 * 		It must contain a property named config.name
-	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
-	 * @return a single database service instance
-	 * @throws OperationNotSupportedException the operation not supported exception
-	 */
-
-	public static Nworm getInstance(String configFile, Properties props, boolean reInitialize) throws OperationNotSupportedException {
 		Nworm service = null;
 		if(props != null){
 			String cname = props.getProperty("config.name");
@@ -117,19 +83,11 @@ public class Nworm extends NwormImpl {
 			service = (Nworm) getManager(configFile);
 		}
 		
-		if(reInitialize && service != null){
-//			we close the session factory if it exists and then nullify to trigger the creation of another db service object
-			service.closeFactory();
-			service = null;
-		}
-		
 		if (service == null) {
 			synchronized (Nworm.class) {
 				service = new Nworm();
+				service.setConfigFile(configFile);
 				service.init(configFile, props);
-				if(!service.isInitializedSuccessfully()){
-					throw new OperationNotSupportedException("Initialization of the configuration was unsuccessful.");
-				}
 			}
 		}
 		return service;
@@ -147,8 +105,9 @@ public class Nworm extends NwormImpl {
 	 *
 	 * @param configFile the config file
 	 * @param props the props
+	 * @throws OperationNotSupportedException 
 	 */
-	private void init(String configFile, Properties props){
+	private void init(String configFile, Properties props) throws OperationNotSupportedException{
 		conf = new HibernateSessionFactory();
 		try {
 			conf.init(props, configFile);
@@ -156,7 +115,7 @@ public class Nworm extends NwormImpl {
 			setInitializedSuccessfully(true);
 		} catch (Exception e) {
 			logger.error("Exception ", e);
-			setInitializedSuccessfully(false);
+			throw new OperationNotSupportedException("Initialization of the configuration was unsuccessful.");
 		}
 		if(props == null){
 			putManager(configFile, this);
@@ -173,6 +132,14 @@ public class Nworm extends NwormImpl {
 	public void log(String msg) {
 		logger.info(msg);
 	}
+	
+	public void setConfigFile(String configFile) {
+		this.configFile = configFile;
+	}
+	
+	public String getConfigFile() {
+		return configFile;
+	}
 
 	/**
 	 * Close factory.
@@ -182,5 +149,9 @@ public class Nworm extends NwormImpl {
 			sxnManager.getFactory().close();
 		}
 	}
-
+	
+	public void reInitialize(Properties props) throws OperationNotSupportedException{
+		closeFactory();
+		init(getConfigFile(), props);
+	}
 }

@@ -78,6 +78,7 @@ public class HibernateSessionFactory extends Loggable {
 					.applySettings(activeConfiguration.getProperties())
 					.build();
 			return activeConfiguration.buildSessionFactory(serviceRegistry);
+//			return new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
 		} catch (Throwable ex) {
 			logger.error("Initial SessionFactory creation failed.", ex);
 			throw new ExceptionInInitializerError(ex);

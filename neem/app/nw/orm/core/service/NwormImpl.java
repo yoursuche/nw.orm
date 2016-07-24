@@ -20,7 +20,6 @@ import nw.orm.core.session.HibernateSessionService;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.LockOptions;
-import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.StatelessSession;
@@ -32,6 +31,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxyHelper;
+import org.hibernate.query.Query;
 import org.hibernate.transform.Transformers;
 
 /**
@@ -101,8 +101,10 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 */
 	public boolean isClassMapped(Class<?> clazz) {
 		try {
-			return sxnManager.getFactory().getClassMetadata(
-					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
+			sxnManager.getFactory().getMetamodel().entity(HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance()));
+			HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance());
+//			return sxnManager.getFactory().getClassMetadata(
+//					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
 		} catch (InstantiationException e) {
 			this.logger.error("Exception: ", e);
 		} catch (IllegalAccessException e) {
