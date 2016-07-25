@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import nw.commons.NeemClazz;
+import nw.commons.logging.Loggable;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
@@ -40,7 +40,7 @@ import org.hibernate.transform.Transformers;
  * @author Ogwara O. Rowland
  * @see NwormService
  */
-public abstract class NwormImpl extends NeemClazz implements NwormHibernateService {
+public abstract class NwormImpl extends Loggable implements NwormHibernateService {
 
 	/** Hibernate Session Factory instance. */
 	protected HibernateSessionFactory conf;
@@ -60,7 +60,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 	 * @return the manager
 	 */
 	protected static NwormImpl getManager(String configFile) {
-		NwormFactory.getManager(configFile);
 		return (NwormImpl) NwormFactory.getManager(configFile);
 	}
 
@@ -243,20 +242,21 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		Session session = sxnManager.getManagedSession();
 		try {
 
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				hql = modifyHQL(hql, resultClass);
-			}
+//	TODO		if (Entity.class.isAssignableFrom(resultClass)) {
+//				hql = modifyHQL(hql, resultClass);
+//			}
 
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
 
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				query.setParameter("deleted", Boolean.valueOf(false));
-			}
 			if (isMapped){
 				out = (T) query.uniqueResult();
+				Entity entity = (Entity)out;
+				if(entity.isDeleted()){
+					out = null;
+				}
 			}else {
 				out = (T) query.setResultTransformer(Transformers.aliasToBean(resultClass)).uniqueResult();
 			}
@@ -289,16 +289,16 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				hql = modifyHQL(hql, resultClass);
-			}
+//			if (Entity.class.isAssignableFrom(resultClass)) {
+//	TODO			hql = modifyHQL(hql, resultClass);
+//			}
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				query.setBoolean("deleted", false);
-			}
+//			if (Entity.class.isAssignableFrom(resultClass)) {
+//				query.setBoolean("deleted", false);
+//			}
 			if (isMapped){
 				out = query.list();
 			}else{
@@ -339,9 +339,9 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			if(returnClazz != null && !isClassMapped(returnClazz)){
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
-			if(Entity.class.isAssignableFrom(returnClazz)){
-				te.setParameter("deleted", false);
-			}
+//			if(Entity.class.isAssignableFrom(returnClazz)){
+//				te.setParameter("deleted", false);
+//			}
 			if(sqlMod.isPaginated()){
 				te.setFirstResult(sqlMod.getPageIndex());
 				te.setMaxResults(sqlMod.getMaxResult());
@@ -355,6 +355,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			sxnManager.closeSession(session);
 			throw new NwormQueryException("", e);
 		}
+		sxnManager.commit(session);
 		sxnManager.closeSession(session);
 		return out;
 	}
@@ -429,7 +430,6 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 		try {
 			logger.debug(te.list() + "");
 			out = (T) te.list().get(0);
-			System.out.println(out);
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
 			sxnManager.rollback(sxn);
@@ -454,6 +454,7 @@ public abstract class NwormImpl extends NeemClazz implements NwormHibernateServi
 			items = te.list();
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
+			sxnManager.rollback(sxn);
 			sxnManager.closeSession(sxn);
 			throw new NwormQueryException("", e);
 		}
