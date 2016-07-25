@@ -5,18 +5,6 @@
   <version>3.2.1</version>
   <name>nw.orm</name>
   <build>
-    <sourceDirectory>neem/app</sourceDirectory>
-    <testSourceDirectory>neem/test</testSourceDirectory>
-    <resources>
-      <resource>
-        <directory>neem/app/resources</directory>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>D:\Workspace\luna.r2\nw.orm\neem\test\resources</directory>
-      </testResource>
-    </testResources>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

@@ -12,7 +12,7 @@
 		<property name="hbm2ddl.auto">update</property>
 		<property name="show_sql">false</property>
 
-        <property name="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <!-- <property name="hibernate.connection.url">jdbc:postgresql://127.4.242.2:5432/nimblarapi</property>
         <property name="hibernate.connection.username">adminqkk14nq</property>

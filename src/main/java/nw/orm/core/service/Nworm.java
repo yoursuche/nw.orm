@@ -15,7 +15,7 @@ import nw.orm.core.session.HibernateSessionService;
  * class.
  * For Example: calling
  * <code>
- * <p>Nworm.getInstance()</p>
+ * Nworm.getInstance()
  * </code>
  * twice or more will return the same object
  *
@@ -66,7 +66,6 @@ public class Nworm extends NwormImpl {
 	 * 		is case sensitive only for case sensitive file system
 	 * @param props 		Extra configuration parameters. Useful in cases where modification of some properties from an exisiting config is needed
 	 * 		It must contain a property named config.name
-	 * @param reInitialize if true, closes the previous database session factory instance if it exists and returns a new instance
 	 * @return a single database service instance
 	 * @throws OperationNotSupportedException the operation not supported exception
 	 */
@@ -150,6 +149,11 @@ public class Nworm extends NwormImpl {
 		}
 	}
 	
+	/**
+	 * Used to reinitialize the session factory
+	 * @param props config pros
+	 * @throws OperationNotSupportedException when something goes wrong
+	 */
 	public void reInitialize(Properties props) throws OperationNotSupportedException{
 		closeFactory();
 		init(getConfigFile(), props);

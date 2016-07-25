@@ -18,7 +18,6 @@ import nw.orm.core.annotations.Developer;
  * This class should be extended for customized base entities
  *
  * @author Ogwara O. Rowland
- * @param <T> Datatype to represent the primary key
  */
 @Developer(name = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
