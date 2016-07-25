@@ -20,6 +20,7 @@ import nw.orm.core.session.HibernateSessionService;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.LockOptions;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.StatelessSession;
@@ -31,7 +32,6 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxyHelper;
-import org.hibernate.query.Query;
 import org.hibernate.transform.Transformers;
 
 /**
@@ -60,7 +60,6 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @return the manager
 	 */
 	protected static NwormImpl getManager(String configFile) {
-		NwormFactory.getManager(configFile);
 		return (NwormImpl) NwormFactory.getManager(configFile);
 	}
 
@@ -101,9 +100,8 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 */
 	public boolean isClassMapped(Class<?> clazz) {
 		try {
-			return sxnManager.getFactory().getMetamodel().entity(HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
-//			return sxnManager.getFactory().getClassMetadata(
-//					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
+			return sxnManager.getFactory().getClassMetadata(
+					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
 		} catch (InstantiationException e) {
 			this.logger.error("Exception: ", e);
 		} catch (IllegalAccessException e) {
@@ -244,20 +242,21 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 		Session session = sxnManager.getManagedSession();
 		try {
 
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				hql = modifyHQL(hql, resultClass);
-			}
+//	TODO		if (Entity.class.isAssignableFrom(resultClass)) {
+//				hql = modifyHQL(hql, resultClass);
+//			}
 
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
 
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				query.setParameter("deleted", Boolean.valueOf(false));
-			}
 			if (isMapped){
 				out = (T) query.uniqueResult();
+				Entity entity = (Entity)out;
+				if(entity.isDeleted()){
+					out = null;
+				}
 			}else {
 				out = (T) query.setResultTransformer(Transformers.aliasToBean(resultClass)).uniqueResult();
 			}
@@ -290,16 +289,16 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 		boolean isMapped = isClassMapped(resultClass);
 		Session session = sxnManager.getManagedSession();
 		try {
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				hql = modifyHQL(hql, resultClass);
-			}
+//			if (Entity.class.isAssignableFrom(resultClass)) {
+//	TODO			hql = modifyHQL(hql, resultClass);
+//			}
 			Query query = session.createQuery(hql);
 			for (QueryParameter rp : parameters) {
 				query.setParameter(rp.getName(), rp.getValue());
 			}
-			if (Entity.class.isAssignableFrom(resultClass)) {
-				query.setBoolean("deleted", false);
-			}
+//			if (Entity.class.isAssignableFrom(resultClass)) {
+//				query.setBoolean("deleted", false);
+//			}
 			if (isMapped){
 				out = query.list();
 			}else{
@@ -340,9 +339,9 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 			if(returnClazz != null && !isClassMapped(returnClazz)){
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
-			if(Entity.class.isAssignableFrom(returnClazz)){
-				te.setParameter("deleted", false);
-			}
+//			if(Entity.class.isAssignableFrom(returnClazz)){
+//				te.setParameter("deleted", false);
+//			}
 			if(sqlMod.isPaginated()){
 				te.setFirstResult(sqlMod.getPageIndex());
 				te.setMaxResults(sqlMod.getMaxResult());
@@ -356,6 +355,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 			sxnManager.closeSession(session);
 			throw new NwormQueryException("", e);
 		}
+		sxnManager.commit(session);
 		sxnManager.closeSession(session);
 		return out;
 	}
@@ -430,7 +430,6 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 		try {
 			logger.debug(te.list() + "");
 			out = (T) te.list().get(0);
-			System.out.println(out);
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
 			sxnManager.rollback(sxn);
@@ -455,6 +454,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 			items = te.list();
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
+			sxnManager.rollback(sxn);
 			sxnManager.closeSession(sxn);
 			throw new NwormQueryException("", e);
 		}

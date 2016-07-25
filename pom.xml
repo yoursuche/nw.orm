@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.nimworks</groupId>
   <artifactId>nw.orm</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.1</version>
   <name>nw.orm</name>
   <build>
     <sourceDirectory>neem/app</sourceDirectory>
@@ -68,7 +68,7 @@
   	<dependency>
   		<groupId>org.hibernate</groupId>
   		<artifactId>hibernate-core</artifactId>
-  		<version>5.2.1.Final</version>
+  		<version>4.3.8.Final</version>
   	</dependency>
   	<dependency>
   		<groupId>junit</groupId>
@@ -84,7 +84,7 @@
   	<dependency>
   		<groupId>org.hibernate</groupId>
   		<artifactId>hibernate-entitymanager</artifactId>
-  		<version>5.2.1.Final</version>
+  		<version>4.3.8.Final</version>
   	</dependency>
   	<dependency>
   		<groupId>org.postgresql</groupId>
