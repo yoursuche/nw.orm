@@ -101,8 +101,7 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 */
 	public boolean isClassMapped(Class<?> clazz) {
 		try {
-			sxnManager.getFactory().getMetamodel().entity(HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance()));
-			HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance());
+			return sxnManager.getFactory().getMetamodel().entity(HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
 //			return sxnManager.getFactory().getClassMetadata(
 //					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
 		} catch (InstantiationException e) {

@@ -42,7 +42,7 @@ public class NwormTest {
 		props.put("config.name", "xtra");
 		props.put("hibernate.connection.url", "jdbc:postgresql://localhost:5432/nw_orm");
 		rem = Nworm.getInstance();
-		rem2 = Nworm.getInstance(cfg, props);
+//		rem2 = Nworm.getInstance(cfg, props);
 
 		Person p = new Person();
 		p.setAge(223);

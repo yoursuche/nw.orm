@@ -1,14 +1,18 @@
 package nw.orm.core.session;
 
+import java.io.File;
+import java.net.URL;
 import java.util.Properties;
 
 import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
 import nw.commons.logging.Loggable;
+import nw.orm.examples.model.Person;
 
 /**
  * Hibernate SessionFactory builder.
@@ -68,12 +72,13 @@ public class HibernateSessionFactory extends Loggable {
 			if(interceptor != null){
 				activeConfiguration.setInterceptor(interceptor);
 			}
-			activeConfiguration.configure(configFilename);
+			URL rsr = this.getClass().getResource("/" + configFilename);
+			activeConfiguration = activeConfiguration.configure(rsr);
 			if (hibernateProps != null) {
 				hibernateProps.remove("config.name");
-				activeConfiguration.addProperties(hibernateProps);
+				activeConfiguration = activeConfiguration.addProperties(hibernateProps);
 			}
-
+			activeConfiguration.addAnnotatedClass(Person.class);
 			StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 					.applySettings(activeConfiguration.getProperties())
 					.build();
