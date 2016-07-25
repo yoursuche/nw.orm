@@ -1,4 +1,8 @@
 /target/
+<<<<<<< HEAD
 /.settings/
 /.classpath
 /.project
+=======
+.[cps]*
+>>>>>>> refs/heads/dev-h4

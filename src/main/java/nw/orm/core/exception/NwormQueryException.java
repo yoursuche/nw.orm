@@ -1,10 +1,6 @@
+
 package nw.orm.core.exception;
 
-/**
- *
- * @author Ogwara O. Rowland
- *
- */
 public class NwormQueryException extends IllegalArgumentException{
 
 	/**

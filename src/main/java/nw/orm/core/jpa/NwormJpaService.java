@@ -1,10 +1,11 @@
+
 package nw.orm.core.jpa;
 
-import nw.orm.core.service.IService;
+import nw.orm.core.service.NwormService;
 
 /**
  * The Interface NwormJpaService.
  */
-public interface NwormJpaService extends IService{
+public interface NwormJpaService extends NwormService{
 
 }

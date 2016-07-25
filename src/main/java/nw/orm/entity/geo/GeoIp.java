@@ -1,10 +1,11 @@
+
 package nw.orm.entity.geo;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import nw.orm.core.Entity;
+import nw.orm.core.NwormEntity;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -12,8 +13,8 @@ import nw.orm.core.Entity;
  */
 @javax.persistence.Entity
 @Table(name = "GEO_IP")
-public class GeoIp extends Entity<String>{
-
+public class GeoIp extends NwormEntity<String>{
+	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 77385623074926543L;
 
@@ -21,15 +22,15 @@ public class GeoIp extends Entity<String>{
 	@Column(name = "PK", nullable = false, insertable = true, updatable = false, length = 15)
 	@Id
 	private String pk;
-
+	
 	/** The country. */
 	@Column(name = "COUNTRY_CODE", nullable = false)
 	private String country;
-
+	
 	/** The region. */
 	@Column(name = "REGION", nullable = true)
 	private String region;
-
+	
 	/** The city. */
 	@Column(name = "CITY", nullable = true)
 	private String city;
@@ -41,7 +42,7 @@ public class GeoIp extends Entity<String>{
 	public String getPk() {
 		return pk;
 	}
-
+	
 	/**
 	 * Sets the pk.
 	 *
@@ -104,7 +105,7 @@ public class GeoIp extends Entity<String>{
 	public void setCity(String city) {
 		this.city = city;
 	}
-
+	
 	/**
 	 * From response.
 	 *

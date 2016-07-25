@@ -2,25 +2,26 @@ package nw.orm.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.Date;
 import java.lang.reflect.Modifier;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Table;
+import javax.persistence.Version;
+
 import nw.orm.core.annotations.Developer;
 
 /**
- * Entity is a shorthand for creating entities. It comes with extra properties
+ * NwormEntity is a shorthand for creating entities. It comes with extra properties
  *
  * This class should be extended for customized base entities
  *
  * @author Ogwara O. Rowland
- * @param <T> Datatype to represent the primary key
  */
 @Developer(name = "Ogwara O. Rowland", date = "")
 @MappedSuperclass
-public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
+public abstract class Entity implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5965442215210696967L;
@@ -40,6 +41,7 @@ public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
 	private Date createDate = new Date();
 
 	/** Denotes the last modified date. Updates automatically with successful entry update */
+	@Version
 	@Column(name = "LAST_MODIFIED", nullable = false, insertable = true, updatable = true)
 	private Date lastModified;
 
@@ -95,68 +97,6 @@ public abstract class Entity<T> implements Serializable, Comparable<Entity<T>>{
 	 */
 	public Date getLastModified() {
 		return lastModified;
-	}
-
-	/**
-	 * Updates the last modified timestamp, this method is called just before any Create
-	 * Update and Delete statement
-	 * @param lastModified the last modified date
-	 */
-	public void setLastModified(Date lastModified) {
-		this.lastModified = lastModified;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#equals
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		}
-		if (!(object instanceof Entity)) {
-			return false;
-		}
-		final Entity<T> that = (Entity<T>) object;
-		if (this.getPk() == null || that.getPk() == null
-				|| !this.getPk().equals(that.getPk())) {
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Retrieves the priary key for the entry.
-	 *
-	 * @return the pk
-	 */
-	public abstract T getPk();
-
-	/*
-	 * (non-Javadoc)
-	 * @see java.lang.Object#hashcode
-	 */
-	@Override
-	public int hashCode() {
-		int hashCode = 101;
-		return 29 * hashCode + (getPk() == null ? 0 : getPk().hashCode()) + getTableName().hashCode();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(Entity<T> o) {
-		int cmp = 0;
-		if(!this.getTableName().equalsIgnoreCase(o.getTableName())){
-			cmp = -1;
-		}else if (this.getPk() != null && (this.getPk() == o.getPk() || this.getPk().equals(o.getPk()))) {
-			cmp = 0;
-		}else
-			cmp = -1;
-		return cmp;
 	}
 
 	/**

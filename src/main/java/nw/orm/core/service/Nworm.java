@@ -1,28 +1,39 @@
+
 package nw.orm.core.service;
 
 import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
-import nw.commons.exception.NwException;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 
-// TODO: Auto-generated Javadoc
 /**
- * Neemworks Limited Database.
- * Transaction processing using HQL, and criteria.
+ * This represents a single interface for querying the
+ * database using hibernate. It is just a wrapper around a few of
+ * hibernate's query methods.
+ * Each database configuration file maps to a single instance of this
+ * class.
+ * For Example: calling
+ * <code>
+ * Nworm.getInstance()
+ * </code>
+ * twice or more will return the same object
  *
  * @author Ogwara O. Rowland
- * @version 0.6
- * @since 6th Nov, 2013
+ * @version 0.7
  *
  *
  */
 public class Nworm extends NwormImpl {
+	
+	/**
+	 * Target hibernate configuration used to connect to the database
+	 */
+	private String configFile;
 
 	/**
-	 * Creates and Entity Manager using default configuration file name hibernate.cfg.xml
+	 * Creates or return existing Entity Manager using default configuration file name hibernate.cfg.xml
 	 * @return a single database service instance
 	 */
 
@@ -44,7 +55,7 @@ public class Nworm extends NwormImpl {
 		try {
 			service = getInstance(configFile, null);
 		} catch (OperationNotSupportedException e) {
-			throw new NwException("Exception", e);
+			se(Nworm.class, "Exception ", e);
 		}
 		return service;
 	}
@@ -71,13 +82,12 @@ public class Nworm extends NwormImpl {
 		}else{
 			service = (Nworm) getManager(configFile);
 		}
+		
 		if (service == null) {
 			synchronized (Nworm.class) {
 				service = new Nworm();
+				service.setConfigFile(configFile);
 				service.init(configFile, props);
-				if(!service.isInitializedSuccessfully()){
-					throw new OperationNotSupportedException("Initialization of the configuration was unsuccessful.");
-				}
 			}
 		}
 		return service;
@@ -95,8 +105,9 @@ public class Nworm extends NwormImpl {
 	 *
 	 * @param configFile the config file
 	 * @param props the props
+	 * @throws OperationNotSupportedException 
 	 */
-	private void init(String configFile, Properties props){
+	private void init(String configFile, Properties props) throws OperationNotSupportedException{
 		conf = new HibernateSessionFactory();
 		try {
 			conf.init(props, configFile);
@@ -104,7 +115,7 @@ public class Nworm extends NwormImpl {
 			setInitializedSuccessfully(true);
 		} catch (Exception e) {
 			logger.error("Exception ", e);
-			setInitializedSuccessfully(false);
+			throw new OperationNotSupportedException("Initialization of the configuration was unsuccessful.");
 		}
 		if(props == null){
 			putManager(configFile, this);
@@ -121,6 +132,14 @@ public class Nworm extends NwormImpl {
 	public void log(String msg) {
 		logger.info(msg);
 	}
+	
+	public void setConfigFile(String configFile) {
+		this.configFile = configFile;
+	}
+	
+	public String getConfigFile() {
+		return configFile;
+	}
 
 	/**
 	 * Close factory.
@@ -130,5 +149,14 @@ public class Nworm extends NwormImpl {
 			sxnManager.getFactory().close();
 		}
 	}
-
+	
+	/**
+	 * Used to reinitialize the session factory
+	 * @param props config pros
+	 * @throws OperationNotSupportedException when something goes wrong
+	 */
+	public void reInitialize(Properties props) throws OperationNotSupportedException{
+		closeFactory();
+		init(getConfigFile(), props);
+	}
 }

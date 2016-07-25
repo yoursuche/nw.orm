@@ -10,9 +10,9 @@ import nw.orm.core.query.SQLModifier;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Interface IService.
+ * The Interface NwormService.
  */
-public interface IService {
+public interface NwormService {
 
 	/**
 	 * Retrieves an entity by its primary key with default lock option of READ.

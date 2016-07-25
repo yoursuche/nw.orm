@@ -1,12 +1,13 @@
+
 package nw.orm.core.session;
 
 import java.util.Properties;
-
 import org.hibernate.Interceptor;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
+
 import nw.commons.logging.Loggable;
 
 /**
@@ -14,7 +15,7 @@ import nw.commons.logging.Loggable;
  *
  * @author kulgan
  */
-public class HibernateSessionFactory extends Loggable{
+public class HibernateSessionFactory extends Loggable {
 
 	/** The hibernate props. */
 	private Properties hibernateProps;
@@ -67,13 +68,12 @@ public class HibernateSessionFactory extends Loggable{
 			if(interceptor != null){
 				activeConfiguration.setInterceptor(interceptor);
 			}
-			activeConfiguration.configure(configFilename);
+			activeConfiguration = activeConfiguration.configure(configFilename);
 			if (hibernateProps != null) {
 				hibernateProps.remove("config.name");
-				activeConfiguration.addProperties(hibernateProps);
+				activeConfiguration = activeConfiguration.addProperties(hibernateProps);
 			}
-
-			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+			StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 					.applySettings(activeConfiguration.getProperties())
 					.build();
 			return activeConfiguration.buildSessionFactory(serviceRegistry);
@@ -131,7 +131,7 @@ public class HibernateSessionFactory extends Loggable{
 				activeConfiguration.addProperties(hibernateProps);
 			}
 
-			ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+			StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
 					.applySettings(activeConfiguration.getProperties())
 					.build();
 			activeConfiguration.buildSessionFactory(serviceRegistry);
