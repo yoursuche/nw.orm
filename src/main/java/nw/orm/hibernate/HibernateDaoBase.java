@@ -22,11 +22,16 @@ import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
 import nw.orm.core.query.QueryModifier;
-import nw.orm.dao.Dao;
 
-public abstract class HibernateDaoBase<T> implements Dao<T> {
+/**
+ * This is just a base class with lots of method stubs used by
+ * the hibernate dao class
+ * @author Ogwara O. Rowland
+ *
+ * @param <T> Entity class
+ */
+public abstract class HibernateDaoBase {
 	
-	protected Class<T> entityClass;
 	
 	/**
 	 * Enabling JTA disables beginning and committing transaction
@@ -42,23 +47,14 @@ public abstract class HibernateDaoBase<T> implements Dao<T> {
 	protected SessionFactory sxnFactory;
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 	
-	public HibernateDaoBase(SessionFactory sxnFactory, Class<T> clazz, boolean jtaEnabled, boolean useCurrentSession) {
+	public HibernateDaoBase(SessionFactory sxnFactory, boolean jtaEnabled, boolean useCurrentSession) {
 		
-		this.entityClass = clazz;
 		this.sxnFactory = sxnFactory;
 		this.jtaEnabled = jtaEnabled;
 		this.useCurrentSession = useCurrentSession;
 		
-		isClassMapped();
 	}
 	
-	/**
-	 * Checks if is class mapped.
-	 *
-	 */
-	protected void isClassMapped() {
-		isClassMapped(entityClass);
-	}
 	
 	/**
 	 * Checks if is class mapped.
@@ -72,15 +68,6 @@ public abstract class HibernateDaoBase<T> implements Dao<T> {
 		} catch (Exception e) {
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
-	}
-	
-	/**
-	 * Filters out deleted entries from queries.
-	 *
-	 * @param te the te
-	 */
-	protected void addSoftRestrictions(Criteria te) {
-		addSoftRestrictions(te, entityClass);
 	}
 	
 	/**

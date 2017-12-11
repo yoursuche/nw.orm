@@ -10,7 +10,6 @@ import java.util.List;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projection;
 
-// TODO: Auto-generated Javadoc
 /**
  * Adds extra parameters to criteria operation.
  *
@@ -78,7 +77,7 @@ public class QueryModifier extends SQLModifier{
 	 * @param alias the alias
 	 */
 	public void addAlias(QueryAlias alias) {
-		aliases.add(alias);// aliases;
+		aliases.add(alias); // aliases;
 	}
 
 	/**

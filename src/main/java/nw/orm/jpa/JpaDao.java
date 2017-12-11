@@ -143,4 +143,10 @@ public class JpaDao<T> implements Dao<T> {
 		return false;
 	}
 
+	@Override
+	public boolean bulkDelete(List<Serializable> pks) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

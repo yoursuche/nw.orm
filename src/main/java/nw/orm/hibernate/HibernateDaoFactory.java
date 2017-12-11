@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import nw.orm.dao.Dao;
 import nw.orm.dao.DaoFactory;
+import nw.orm.dao.GenericQueryDao;
 
 public class HibernateDaoFactory implements DaoFactory {
 	
@@ -88,6 +89,11 @@ public class HibernateDaoFactory implements DaoFactory {
 			// so destroy it manually.
 			StandardServiceRegistryBuilder.destroy( registry );
 		}
+	}
+
+	@Override
+	public GenericQueryDao getGenericQueryDao() {
+		return new HibernateQueryDao(factory, enableJta, useCurrentSession);
 	}
 
 }

@@ -17,6 +17,7 @@ import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 import nw.orm.dao.Dao;
 import nw.orm.dao.DaoFactory;
+import nw.orm.dao.GenericQueryDao;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -453,19 +454,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean remove(Object obj) {
-		boolean outcome = false;
-		Session session = sxnManager.getManagedSession();
-		try {
-			session.delete(obj);
-			sxnManager.commit(session);
-			outcome = true;
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
-		return outcome;
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.delete(obj);
 	}
 
 	/* (non-Javadoc)
@@ -473,7 +463,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean remove(Class<?> clazz, Serializable pk) {
-		
 		Dao<?> dao = factory.getGenericDao(clazz);
 		dao.deleteById(pk);
 		return true;
@@ -484,23 +473,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
-		StatelessSession session = sxnManager.getStatelessSession();
-		try {
-			for (Serializable pk : pks) {
-				session.delete(session.get(clazz, pk));
-			}
-			if(sxnManager.useTransactions()){
-				session.getTransaction().commit();
-			}
-			session.close();
-			return true;
-		} catch (HibernateException e) {
-			if(sxnManager.useTransactions()){
-				session.getTransaction().rollback();
-			}
-			session.close();
-			throw new NwormQueryException("", e);
-		}
+		Dao<?> dao = factory.getGenericDao(clazz);
+		return dao.bulkDelete(pks);
 	}
 
 	/* (non-Javadoc)
@@ -508,18 +482,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public Serializable create(Object obj) {
-		Serializable pk = null;
-		Session session = sxnManager.getManagedSession();
-		try {
-			pk = session.save(obj);
-			sxnManager.commit(session);
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
-		return pk;
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.save(obj);
 	}
 
 	/* (non-Javadoc)
@@ -527,24 +491,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public List<Serializable> createBulk(List<?> items) {
-		List<Serializable> ids = new ArrayList<Serializable>();
-		StatelessSession session = sxnManager.getStatelessSession();
-		try {
-			for (Object item: items) {
-				ids.add(session.insert(item));
-			}
-			if(sxnManager.useTransactions()){
-				session.getTransaction().commit();
-			}
-		} catch (HibernateException e) {
-			if(sxnManager.useTransactions()){
-				session.getTransaction().rollback();
-			}
-			session.close();
-			throw new NwormQueryException("", e);
-		}
-		session.close();
-		return ids;
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.bulkSave(items);
 	}
 
 	/**
@@ -555,19 +503,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean update(Object obj) {
-		boolean outcome = false;
-		Session session = sxnManager.getManagedSession();
-		try {
-			session.update(obj);
-			sxnManager.commit(session);
-			outcome = true;
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
-		return outcome;
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.update(obj);
 	}
 
 	/**
@@ -579,25 +516,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean updateBulk(List<?> items) {
-		boolean outcome = false;
-		StatelessSession session = sxnManager.getStatelessSession();
-		try {
-			for (Object item: items) {
-				session.update(item);
-			}
-			if(sxnManager.useTransactions()){
-				session.getTransaction().commit();
-			}
-			outcome = true;
-		} catch (HibernateException e) {
-			if(sxnManager.useTransactions()){
-				session.getTransaction().rollback();
-			}
-			session.close();
-			throw new NwormQueryException("", e);
-		}
-		session.close();
-		return outcome;
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.bulkUpdate(items);
 	}
 
 	/* (non-Javadoc)
@@ -618,18 +538,9 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean createOrUpdate(Object obj) {
-		boolean outcome = false;
-		Session session = sxnManager.getManagedSession();
-		try {
-			session.saveOrUpdate(obj);
-			sxnManager.commit(session);
-			outcome = true;
-		} catch (Exception e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		return outcome;
+		
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.saveOrUpdate(obj);
 	}
 
 	/**

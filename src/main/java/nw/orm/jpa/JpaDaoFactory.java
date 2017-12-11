@@ -5,6 +5,7 @@ import javax.persistence.Persistence;
 
 import nw.orm.dao.Dao;
 import nw.orm.dao.DaoFactory;
+import nw.orm.dao.GenericQueryDao;
 
 public class JpaDaoFactory implements DaoFactory {
 	
@@ -29,6 +30,12 @@ public class JpaDaoFactory implements DaoFactory {
 	@Override
 	public void clean() {
 		em.close();
+	}
+
+	@Override
+	public GenericQueryDao getGenericQueryDao() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

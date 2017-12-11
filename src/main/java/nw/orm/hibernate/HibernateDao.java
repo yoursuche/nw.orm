@@ -18,11 +18,15 @@ import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
+import nw.orm.dao.Dao;
 
-public class HibernateDao<T> extends HibernateDaoBase<T> {
+public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
+	
+	protected Class<T> entityClass;
 	
 	public HibernateDao(SessionFactory sxnFactory, Class<T> clazz, boolean jtaEnabled, boolean useCurrentSession) {
-		super(sxnFactory, clazz, jtaEnabled, useCurrentSession);
+		super(sxnFactory, jtaEnabled, useCurrentSession);
+		this.entityClass = clazz;
 	}
 
 	@Override
@@ -32,19 +36,29 @@ public class HibernateDao<T> extends HibernateDaoBase<T> {
 		try {
 			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
 			commit(session);
+			closeSession(session);
+			return out;
 		} catch (HibernateException e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("", e);
 		}
-		closeSession(session);
-		return out;
+		
 	}
 
 	@Override
 	public T save(T item) {
-		// TODO Auto-generated method stub
-		return null;
+		Session session = getSession();
+		try {
+			session.save(item);
+			commit(session);
+			closeSession(session);
+			return item;
+		} catch (HibernateException e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
 	}
 
 	@Override
@@ -54,12 +68,12 @@ public class HibernateDao<T> extends HibernateDaoBase<T> {
 		try {
 			session.delete(item);
 			commit(session);
+			closeSession(session);
 		} catch (HibernateException e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
-		closeSession(session);
 	}
 	
 	@Override
@@ -69,18 +83,49 @@ public class HibernateDao<T> extends HibernateDaoBase<T> {
 		try {
 			session.delete(session.get(entityClass, pk));
 			commit(session);
+			closeSession(session);
 		} catch (HibernateException e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
-		closeSession(session);
+	}
+	
+	@Override
+	public boolean bulkDelete(List<Serializable> pks) {
+		StatelessSession session = getStatelessSession();
+		try {
+			for (Serializable pk : pks) {
+				session.delete(session.get(entityClass, pk));
+			}
+			if(!jtaEnabled){
+				session.getTransaction().commit();
+			}
+			session.close();
+			return true;
+		} catch (HibernateException e) {
+			if(!jtaEnabled){
+				session.getTransaction().rollback();
+			}
+			session.close();
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
 	}
 
 	@Override
 	public T update(T item) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		Session session = getSession();
+		try {
+			session.update(item);
+			commit(session);
+			closeSession(session);
+			return item;
+		} catch (HibernateException e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
 	}
 
 	@Override

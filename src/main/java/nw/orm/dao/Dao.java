@@ -17,6 +17,11 @@ public interface Dao<T> {
 	 */
 	T getById(Serializable id);
 	
+	/**
+	 * Use of this method cautiously as it loads everything in the database for this
+	 * entity. There are not where clauses, it just loads the entire table
+	 * @return list of entity instances
+	 */
 	List<T> getAll();
 	
 	List<T> getListByCriteria(Criterion ... criteria);
@@ -40,5 +45,7 @@ public interface Dao<T> {
 	T update(T item);
 	
 	T getByQuery(String query, QueryParameter ... parameters);
+
+	boolean bulkDelete(List<Serializable> pks);
 
 }

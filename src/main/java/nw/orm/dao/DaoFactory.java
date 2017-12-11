@@ -18,5 +18,7 @@ public interface DaoFactory {
 	 * @return a generic DAO associated with provided class
 	 */
 	<T> Dao<T> getGenericDao(Class<T> clazz);
+	
+	GenericQueryDao getGenericQueryDao();
 
 }
