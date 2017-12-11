@@ -55,7 +55,7 @@ public class Nworm extends NwormImpl {
 		try {
 			service = getInstance(configFile, null);
 		} catch (OperationNotSupportedException e) {
-			se(Nworm.class, "Exception ", e);
+			throw new IllegalArgumentException(e);
 		}
 		return service;
 	}

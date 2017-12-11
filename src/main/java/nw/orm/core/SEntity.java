@@ -3,6 +3,7 @@ package nw.orm.core;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Standard Entity, uses id as primary key
@@ -10,6 +11,7 @@ import javax.persistence.Id;
  * @author Ogwara O. Rowland
  *
  */
+@MappedSuperclass
 public abstract class SEntity extends Entity implements Comparable<SEntity>{
 
 	/**

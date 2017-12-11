@@ -7,15 +7,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-
-import nw.commons.logging.Loggable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hibernate SessionFactory builder.
  *
  * @author kulgan
  */
-public class HibernateSessionFactory extends Loggable {
+public class HibernateSessionFactory {
 
 	/** The hibernate props. */
 	private Properties hibernateProps;
@@ -31,6 +31,8 @@ public class HibernateSessionFactory extends Loggable {
 
 	/** A Basic hibernate interceptor. */
 	private Interceptor interceptor;
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Inits the class with specified properties.

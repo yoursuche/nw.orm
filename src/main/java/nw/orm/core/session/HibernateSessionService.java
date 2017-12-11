@@ -6,8 +6,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 
-import nw.commons.logging.Loggable;
-
 /**
  * An entry point for manipulating hibernate sessions and session factory.
  *
@@ -16,7 +14,7 @@ import nw.commons.logging.Loggable;
  *
  * @author Ogwara O. Rowland
  */
-public class HibernateSessionService extends Loggable implements IHibernateSessionService{
+public class HibernateSessionService implements IHibernateSessionService{
 
 	/** The Hibernate Session Factory reference */
 	private HibernateSessionFactory conf;
@@ -94,7 +92,7 @@ public class HibernateSessionService extends Loggable implements IHibernateSessi
 	 */
 	@Override
 	public void commit(Session sxn) throws HibernateException{
-		logger.trace("Commit in progress ");
+//		logger.trace("Commit in progress ");
 		if(useTransactions()){
 			sxn.getTransaction().commit();
 		}
@@ -105,7 +103,7 @@ public class HibernateSessionService extends Loggable implements IHibernateSessi
 	 */
 	@Override
 	public void rollback(Session sxn) throws HibernateException{
-		logger.trace("Rollback in progress ");
+//		logger.trace("Rollback in progress ");
 		if(useTransactions()){
 			sxn.getTransaction().rollback();
 		}

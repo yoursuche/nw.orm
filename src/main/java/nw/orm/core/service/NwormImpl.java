@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import nw.commons.logging.Loggable;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
@@ -16,6 +15,8 @@ import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
+import nw.orm.dao.Dao;
+import nw.orm.dao.DaoFactory;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -33,6 +34,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.hibernate.transform.Transformers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reference implementation for {@link NwormService} for Hibernate Session Management.
@@ -40,7 +43,7 @@ import org.hibernate.transform.Transformers;
  * @author Ogwara O. Rowland
  * @see NwormService
  */
-public abstract class NwormImpl extends Loggable implements NwormHibernateService {
+public abstract class NwormImpl implements NwormHibernateService {
 
 	/** Hibernate Session Factory instance. */
 	protected HibernateSessionFactory conf;
@@ -52,6 +55,10 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	private boolean initializedSuccessfully;
 
 	private String classId = UUID.randomUUID().toString();
+	
+	private DaoFactory factory;
+	
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * Gets the manager.
@@ -122,23 +129,10 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable, boolean)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
-		T out = null;
-		Session session = sxnManager.getManagedSession();
-		try {
-			if (!lock){
-				out = (T) session.get(clazz, id, LockOptions.READ);
-			}else{
-				out = (T) session.get(clazz, id, LockOptions.UPGRADE);
-			}
-			sxnManager.commit(session);
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
+		
+		Dao<T> dao = factory.getGenericDao(clazz);
+		T out = dao.getById(clazz);
 		return out;
 	}
 
@@ -166,29 +160,9 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @see nw.orm.core.service.NwormService#getByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getByCriteria(Class<T> entityClass, Criterion ... criteria) {
-		T out = null;
-		boolean isMapped = isClassMapped(entityClass);
-		Session session = sxnManager.getManagedSession();
-		try {
-			Criteria te = session.createCriteria(entityClass);
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			addSoftRestrictions(te, entityClass);
-			if (isMapped){
-				out = (T) te.uniqueResult();
-			}else{
-				out = (T) te.setResultTransformer(Transformers.aliasToBean(entityClass)).uniqueResult();
-			}
-			sxnManager.commit(session);
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
+		Dao<T> dao = factory.getGenericDao(entityClass);
+		T out = dao.getByCriteria(criteria);
 		return out;
 	}
 
@@ -196,29 +170,10 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
-		List<T> out = new ArrayList<T>();
-		boolean isMapped = isClassMapped(clz);
-		Session session = sxnManager.getManagedSession();
-		try {
-			Criteria te = session.createCriteria(clz);
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			addSoftRestrictions(te, clz);
-			if (isMapped){
-				out = te.list();
-			}else{
-				out = te.setResultTransformer(Transformers.aliasToBean(clz)).list();
-			}
-			sxnManager.commit(session);
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
+		
+		Dao<T> dao = factory.getGenericDao(clz);
+		List<T> out = dao.getListByCriteria(criteria);
 		return out;
 	}
 
@@ -364,28 +319,9 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @see nw.orm.core.service.NwormService#getByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		T out = null;
-		Session session = sxnManager.getManagedSession();
-		try {
-			Criteria te = session.createCriteria(qm.getQueryClazz());
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			modifyCriteria(te, qm);
-			if(!qm.isTransformResult()){
-				out = (T) te.uniqueResult();
-			}else{
-				out = (T) te.setResultTransformer(Transformers.aliasToBean(returnClazz)).uniqueResult();
-			}
-			sxnManager.commit(session);
-		} catch (Exception e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
+		Dao<T> dao = factory.getGenericDao(returnClazz);
+		T out = dao.getByCriteria(qm, criteria);
 		return out;
 	}
 
@@ -393,28 +329,9 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, nw.orm.core.query.QueryModifier, org.hibernate.criterion.Criterion[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		List<T> out = new ArrayList<T>();
-		Session session = sxnManager.getManagedSession();
-		try {
-			Criteria te = session.createCriteria(qm.getQueryClazz());
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			modifyCriteria(te, qm);
-			if(!qm.isTransformResult()){
-				out = te.list();
-			}else{
-				out = te.setResultTransformer(Transformers.aliasToBean(returnClazz)).list();
-			}
-			sxnManager.commit(session);
-		} catch (Exception e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
+		Dao<T> dao = factory.getGenericDao(returnClazz);
+		List<T> out = dao.getListByCriteria(qm, criteria);
 		return out;
 	}
 
@@ -517,16 +434,9 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 */
 	@Override
 	public boolean softDelete(Class<? extends Entity> clazz, Serializable id) {
-		if (!Entity.class.isAssignableFrom(clazz)) {
-			logger.debug("Unsupported class specified.");
-			return false;
-		}
-		Object bc = getByCriteria(clazz, Restrictions.idEq(id));
-		if ((bc instanceof Entity)) {
-			Entity e = (Entity) bc;
-			e.setDeleted(true);
-		}
-		return update(bc);
+		
+		Dao<? extends Entity> dao = factory.getGenericDao(clazz);
+		return dao.softDelete(id);
 	}
 
 	/* (non-Javadoc)
@@ -534,31 +444,8 @@ public abstract class NwormImpl extends Loggable implements NwormHibernateServic
 	 */
 	@Override
 	public boolean bulkSoftDelete(Class<? extends Entity> clazz, List<Serializable> ids) {
-		StatelessSession session = sxnManager.getStatelessSession();
-		if (!Entity.class.isAssignableFrom(clazz)) {
-			logger.debug("Unsupported class specified.");
-			return false;
-		}
-
-		try {
-			for (Serializable s : ids) {
-				Object entity = session.get(clazz, s);
-				Entity e = (Entity) entity;
-				e.setDeleted(true);
-				session.update(entity);
-			}
-			if(sxnManager.useTransactions()){
-				session.getTransaction().commit();
-			}
-			session.close();
-			return true;
-		} catch (HibernateException e) {
-			if(sxnManager.useTransactions()){
-				session.getTransaction().rollback();
-			}
-			session.close();
-			throw new NwormQueryException("", e);
-		}
+		Dao<? extends Entity> dao = factory.getGenericDao(clazz);
+		return dao.bulkSoftDelete(ids);
 	}
 
 	/* (non-Javadoc)

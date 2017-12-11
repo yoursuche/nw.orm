@@ -26,7 +26,7 @@ import nw.orm.core.service.NwormFactory;
  *
  * @author Rowland
  */
-public abstract class NwormJpaImpl implements NwormJpaService {
+public abstract class NwormJpaImpl implements JpaService {
 
 	/** The entity manager factory. */
 	protected EntityManagerFactory emFactory;
