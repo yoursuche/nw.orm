@@ -10,15 +10,12 @@ import nw.orm.core.query.QueryParameter;
 
 public interface Dao<T> {
 	
+	/**
+	 * Retrieves Entity instance by the primary key
+	 * @param id primary key
+	 * @return T entity instance
+	 */
 	T getById(Serializable id);
-	
-	T save(T item);
-	
-	void delete(T item);
-
-	T update(T item);
-	
-	T getByQuery(String query, QueryParameter ... parameters);
 	
 	List<T> getAll();
 	
@@ -33,5 +30,15 @@ public interface Dao<T> {
 	boolean softDelete(Serializable id);
 
 	boolean bulkSoftDelete(List<Serializable> ids);
+	
+	T save(T item);
+	
+	void delete(T item);
+	
+	void deleteById(Serializable pk);
+
+	T update(T item);
+	
+	T getByQuery(String query, QueryParameter ... parameters);
 
 }

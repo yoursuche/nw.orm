@@ -15,20 +15,32 @@ public class HibernateDaoFactory implements DaoFactory {
 	private String resourceName;
 	private SessionFactory factory;
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	private boolean enableJta;
+	private boolean useCurrentSession;
 	
 	/**
 	 * Uses hibernate.cfg.xml as resource
 	 */
 	public HibernateDaoFactory() {
-		this("hibernate.cfg.xml");
+		this("hibernate.cfg.xml", false, false);
+	}
+	
+	/**
+	 * Uses hibernate.cfg.xml as resource
+	 */
+	public HibernateDaoFactory(boolean useCurrentSession) {
+		this("hibernate.cfg.xml", false, useCurrentSession);
 	}
 	
 	/**
 	 * 
 	 * @param resourceName Hibernate configuration file
 	 */
-	public HibernateDaoFactory(String resourceName) {
+	public HibernateDaoFactory(String resourceName, boolean enableJta, boolean useCurrentSession) {
+		
+		this.enableJta = enableJta;
 		this.resourceName = resourceName;
+		this.useCurrentSession = useCurrentSession;
 	}
 
 	@Override
@@ -53,8 +65,7 @@ public class HibernateDaoFactory implements DaoFactory {
 
 	@Override
 	public <T> Dao<T> getGenericDao(Class<T> clazz) {
-		// TODO Auto-generated method stub
-		return null;
+		return new HibernateDao<T>(factory, clazz, this.enableJta, this.useCurrentSession);
 	}
 	
 	/**

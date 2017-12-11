@@ -473,19 +473,10 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean remove(Class<?> clazz, Serializable pk) {
-		boolean outcome = false;
-		Session session = sxnManager.getManagedSession();
-		try {
-			session.delete(session.get(clazz, pk));
-			sxnManager.commit(session);
-			outcome = true;
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
-		return outcome;
+		
+		Dao<?> dao = factory.getGenericDao(clazz);
+		dao.deleteById(pk);
+		return true;
 	}
 
 	/* (non-Javadoc)

@@ -21,11 +21,6 @@ import nw.orm.core.query.QueryParameter;
 
 public class HibernateDao<T> extends HibernateDaoBase<T> {
 	
-	
-	public HibernateDao(SessionFactory sxnFactory, Class<T> clazz) {
-		super(sxnFactory, clazz, false, false);
-	}
-	
 	public HibernateDao(SessionFactory sxnFactory, Class<T> clazz, boolean jtaEnabled, boolean useCurrentSession) {
 		super(sxnFactory, clazz, jtaEnabled, useCurrentSession);
 	}
@@ -54,8 +49,32 @@ public class HibernateDao<T> extends HibernateDaoBase<T> {
 
 	@Override
 	public void delete(T item) {
-		// TODO Auto-generated method stub
 		
+		Session session = getSession();
+		try {
+			session.delete(item);
+			commit(session);
+		} catch (HibernateException e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+		closeSession(session);
+	}
+	
+	@Override
+	public void deleteById(Serializable pk) {
+		
+		Session session = getSession();
+		try {
+			session.delete(session.get(entityClass, pk));
+			commit(session);
+		} catch (HibernateException e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+		closeSession(session);
 	}
 
 	@Override
@@ -93,7 +112,7 @@ public class HibernateDao<T> extends HibernateDaoBase<T> {
 			if(!qm.isTransformResult()){
 				out = te.list();
 			}else{
-				out = te.setResultTransformer(Transformers.aliasToBean(entityClass)).list();
+				out = te.setResultTransformer(Transformers.aliasToBean(qm.getTransformClass())).list();
 			}
 			commit(session);
 		} catch (Exception e) {

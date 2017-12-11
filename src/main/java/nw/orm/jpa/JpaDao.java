@@ -125,4 +125,22 @@ public class JpaDao<T> implements Dao<T> {
 		return null;
 	}
 
+	@Override
+	public void deleteById(Serializable pk) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean softDelete(Serializable id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean bulkSoftDelete(List<Serializable> ids) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nw.orm.core.Entity;
+import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
 import nw.orm.core.query.QueryModifier;
@@ -47,23 +48,30 @@ public abstract class HibernateDaoBase<T> implements Dao<T> {
 		this.sxnFactory = sxnFactory;
 		this.jtaEnabled = jtaEnabled;
 		this.useCurrentSession = useCurrentSession;
+		
+		isClassMapped();
 	}
 	
 	/**
 	 * Checks if is class mapped.
 	 *
-	 * @return true, if is class mapped
 	 */
-	protected boolean isClassMapped() {
+	protected void isClassMapped() {
+		isClassMapped(entityClass);
+	}
+	
+	/**
+	 * Checks if is class mapped.
+	 *
+	 * @param clazz the clazz
+	 */
+	public void isClassMapped(Class<?> clazz) {
 		try {
-			return sxnFactory.getClassMetadata(
-					HibernateProxyHelper.getClassWithoutInitializingProxy(entityClass.newInstance())) != null;
-		} catch (InstantiationException e) {
-			this.logger.error("Exception: ", e);
-		} catch (IllegalAccessException e) {
-			this.logger.error("Exception: ", e);
+			sxnFactory.getClassMetadata(
+					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance()));
+		} catch (Exception e) {
+			throw new NwormQueryException("Nw.orm Exception", e);
 		}
-		return false;
 	}
 	
 	/**
