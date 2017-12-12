@@ -17,7 +17,6 @@ import org.hibernate.transform.Transformers;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
-import nw.orm.core.query.QueryParameter;
 import nw.orm.dao.Dao;
 
 public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
@@ -26,47 +25,56 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 	
 	public HibernateDao(SessionFactory sxnFactory, Class<T> clazz, boolean jtaEnabled, boolean useCurrentSession) {
 		super(sxnFactory, jtaEnabled, useCurrentSession);
+		
+		isClassMapped(clazz);
 		this.entityClass = clazz;
 	}
-
+	
 	@Override
-	public T getById(Serializable id) {
-		T out = null;
-		Session session = getSession();
-		try {
-			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
-			commit(session);
-			closeSession(session);
-			return out;
-		} catch (HibernateException e) {
-			rollback(session);
-			closeSession(session);
-			throw new NwormQueryException("", e);
-		}
+	public T save(T entity) {
 		
-	}
-
-	@Override
-	public T save(T item) {
+		// get session
 		Session session = getSession();
 		try {
-			session.save(item);
+			session.save(entity);
 			commit(session);
 			closeSession(session);
-			return item;
+			return entity;
 		} catch (HibernateException e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
-
+	
 	@Override
-	public void delete(T item) {
+	public void bulkSave(List<T> entities) {
+		
+		// use stateless session
+		StatelessSession session = getStatelessSession();
+		try {
+			for (T entity: entities) {
+				session.insert(entity);
+			}
+			if(!jtaEnabled){
+				session.getTransaction().commit();
+			}
+			session.close();
+		} catch (HibernateException e) {
+			if(!jtaEnabled){
+				session.getTransaction().rollback();
+			}
+			session.close();
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+	}
+	
+	@Override
+	public void delete(T entity) {
 		
 		Session session = getSession();
 		try {
-			session.delete(item);
+			session.delete(entity);
 			commit(session);
 			closeSession(session);
 		} catch (HibernateException e) {
@@ -92,7 +100,8 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 	}
 	
 	@Override
-	public boolean bulkDelete(List<Serializable> pks) {
+	public void bulkIdDelete(List<Serializable> pks) {
+		
 		StatelessSession session = getStatelessSession();
 		try {
 			for (Serializable pk : pks) {
@@ -102,7 +111,27 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 				session.getTransaction().commit();
 			}
 			session.close();
-			return true;
+		} catch (HibernateException e) {
+			if(!jtaEnabled){
+				session.getTransaction().rollback();
+			}
+			session.close();
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+	}
+	
+	@Override
+	public void bulkDelete(List<T> entities) {
+		
+		StatelessSession session = getStatelessSession();
+		try {
+			for (T entity: entities) {
+				session.delete(entity);
+			}
+			if(!jtaEnabled){
+				session.getTransaction().commit();
+			}
+			session.close();
 		} catch (HibernateException e) {
 			if(!jtaEnabled){
 				session.getTransaction().rollback();
@@ -113,25 +142,80 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 	}
 
 	@Override
-	public T update(T item) {
+	public T update(T entity) {
 		
 		Session session = getSession();
 		try {
-			session.update(item);
+			session.update(entity);
 			commit(session);
 			closeSession(session);
-			return item;
+			return entity;
 		} catch (HibernateException e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
-
+	
 	@Override
-	public T getByQuery(String query, QueryParameter... parameters) {
-		// TODO Auto-generated method stub
-		return null;
+	public void softDelete(Serializable id) {
+		
+		if (!Entity.class.isAssignableFrom(entityClass)) {
+			throw new NwormQueryException();
+		}
+		T bc = getByCriteria(Restrictions.idEq(id));
+		if ((bc instanceof Entity)) {
+			Entity e = (Entity) bc;
+			e.setDeleted(true);
+			update(bc);
+		}
+		
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public void bulkSoftDelete(List<Serializable> ids) {
+		
+		StatelessSession session = getStatelessSession();
+		if (!Entity.class.isAssignableFrom(entityClass)) {
+			throw new NwormQueryException();
+		}
+
+		try {
+			for (Serializable s : ids) {
+				T entity = (T) session.get(entityClass, s);
+				Entity e = (Entity) entity;
+				e.setDeleted(true);
+				session.update(entity);
+			}
+			if(!jtaEnabled){
+				session.getTransaction().commit();
+			}
+			session.close();
+		} catch (HibernateException e) {
+			if(!jtaEnabled){
+				session.getTransaction().rollback();
+			}
+			session.close();
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+	}
+	
+	@Override
+	public T getById(Serializable id) {
+		T out = null;
+		Session session = getSession();
+		try {
+			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
+			commit(session);
+			closeSession(session);
+			return out;
+		} catch (HibernateException e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("", e);
+		}
+		
 	}
 
 	@Override
@@ -198,49 +282,6 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 		}
 		closeSession(session);
 		return out;
-	}
-	
-	@Override
-	public boolean softDelete(Serializable id) {
-		if (!Entity.class.isAssignableFrom(entityClass)) {
-			logger.debug("Unsupported class specified.");
-			return false;
-		}
-		T bc = getByCriteria(Restrictions.idEq(id));
-		if ((bc instanceof Entity)) {
-			Entity e = (Entity) bc;
-			e.setDeleted(true);
-		}
-		return update(bc) != null;
-	}
-	
-	@Override
-	public boolean bulkSoftDelete(List<Serializable> ids) {
-		StatelessSession session = getStatelessSession();
-		if (!Entity.class.isAssignableFrom(entityClass)) {
-			logger.debug("Unsupported class specified.");
-			return false;
-		}
-
-		try {
-			for (Serializable s : ids) {
-				Object entity = session.get(entityClass, s);
-				Entity e = (Entity) entity;
-				e.setDeleted(true);
-				session.update(entity);
-			}
-			if(!jtaEnabled){
-				session.getTransaction().commit();
-			}
-			session.close();
-			return true;
-		} catch (HibernateException e) {
-			if(!jtaEnabled){
-				session.getTransaction().rollback();
-			}
-			session.close();
-			throw new NwormQueryException("Nw.orm Exception", e);
-		}
 	}
 	
 

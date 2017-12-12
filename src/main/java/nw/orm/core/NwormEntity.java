@@ -1,6 +1,6 @@
 package nw.orm.core;
 
-public abstract class NwormEntity<T> extends Entity implements Comparable<NwormEntity<T>>{
+public abstract class NwormEntity<T extends Comparable<T>> extends Entity implements Comparable<NwormEntity<T>>{
 	
 	/**
 	 * 
@@ -27,12 +27,16 @@ public abstract class NwormEntity<T> extends Entity implements Comparable<NwormE
 		if (!(object instanceof Entity)) {
 			return false;
 		}
-		final NwormEntity<T> that = (NwormEntity<T>) object;
-		if (this.getPk() == null || that.getPk() == null
-				|| !this.getPk().equals(that.getPk())) {
+		
+		if(this.getClass() != object.getClass()) {
 			return false;
 		}
-		return true;
+		final NwormEntity<T> that = (NwormEntity<T>) object;
+		if (this.getPk() != null && that.getPk() != null
+				&& this.getPk().equals(that.getPk())) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -41,24 +45,19 @@ public abstract class NwormEntity<T> extends Entity implements Comparable<NwormE
 	 */
 	@Override
 	public int hashCode() {
-		int hashCode = 0;
+		int hashCode = getTableName().hashCode();
 		hashCode = 29 * hashCode + (getPk() == null ? 0 : getPk().hashCode());
 		return hashCode;
 	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
+	
 	@Override
 	public int compareTo(NwormEntity<T> o) {
-		int cmp = 0;
-		if (this.getPk() != null && (this.getPk() == o.getPk() || this.getPk().equals(o.getPk()))) {
-			cmp = 0;
-		}else
-			cmp = -1;
-		return cmp;
+		
+		if(this.getPk() == null) {
+			return -1;
+		}
+		return this.getPk().compareTo(o.getPk());
 	}
-	
 	
 
 }
