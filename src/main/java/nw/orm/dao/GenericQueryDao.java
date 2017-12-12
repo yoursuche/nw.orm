@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import nw.orm.core.exception.NwormQueryException;
+import nw.orm.core.query.QueryParameter;
 
 public interface GenericQueryDao {
 	
@@ -27,5 +28,7 @@ public interface GenericQueryDao {
 	boolean bulkUpdate(List<?> entities);
 
 	boolean saveOrUpdate(Object entity);
+	
+	T getByQuery(String query, QueryParameter... parameters);
 
 }
