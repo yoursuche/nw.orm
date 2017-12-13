@@ -21,11 +21,8 @@ import nw.orm.dao.GenericQueryDao;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
-import org.hibernate.LockOptions;
-import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.StatelessSession;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
@@ -162,8 +159,9 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> T getByCriteria(Class<T> entityClass, Criterion ... criteria) {
+		
 		Dao<T> dao = factory.getGenericDao(entityClass);
-		T out = dao.getByCriteria(criteria);
+		T out = dao.get(criteria);
 		return out;
 	}
 
@@ -174,7 +172,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
 		
 		Dao<T> dao = factory.getGenericDao(clz);
-		List<T> out = dao.getListByCriteria(criteria);
+		List<T> out = dao.list(criteria);
 		return out;
 	}
 
@@ -183,6 +181,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> T getByHQL(String hql, Map<String, Object> parameters, Class<T> resultClass) {
+		
 		T out = getByHQL(resultClass, hql, QueryParameter.fromMap(parameters));
 		return out;
 	}
@@ -191,39 +190,11 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
-		T out = null;
-		boolean isMapped = isClassMapped(resultClass);
-		Session session = sxnManager.getManagedSession();
-		try {
-
-//	TODO		if (Entity.class.isAssignableFrom(resultClass)) {
-//				hql = modifyHQL(hql, resultClass);
-//			}
-
-			Query query = session.createQuery(hql);
-			for (QueryParameter rp : parameters) {
-				query.setParameter(rp.getName(), rp.getValue());
-			}
-
-			if (isMapped){
-				out = (T) query.uniqueResult();
-				Entity entity = (Entity)out;
-				if(entity.isDeleted()){
-					out = null;
-				}
-			}else {
-				out = (T) query.setResultTransformer(Transformers.aliasToBean(resultClass)).uniqueResult();
-			}
-			sxnManager.commit(session);
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
-		return out;
+		
+		GenericQueryDao qdao = factory.getGenericQueryDao();
+		return qdao.query(resultClass, hql, parameters);
+		
 	}
 
 	/* (non-Javadoc)
@@ -241,34 +212,10 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
-		List<T> out = new ArrayList<T>();
-		boolean isMapped = isClassMapped(resultClass);
-		Session session = sxnManager.getManagedSession();
-		try {
-//			if (Entity.class.isAssignableFrom(resultClass)) {
-//	TODO			hql = modifyHQL(hql, resultClass);
-//			}
-			Query query = session.createQuery(hql);
-			for (QueryParameter rp : parameters) {
-				query.setParameter(rp.getName(), rp.getValue());
-			}
-//			if (Entity.class.isAssignableFrom(resultClass)) {
-//				query.setBoolean("deleted", false);
-//			}
-			if (isMapped){
-				out = query.list();
-			}else{
-				out = query.setResultTransformer(Transformers.aliasToBean(resultClass)).list();
-			}
-
-			sxnManager.commit(session);
-		} catch (HibernateException e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(session);
-		return out;
+		
+		GenericQueryDao qdao = factory.getGenericQueryDao();
+		return qdao.queryList(resultClass, hql, parameters);
+		
 	}
 
 	/* (non-Javadoc)
@@ -321,8 +268,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		Dao<T> dao = factory.getGenericDao(returnClazz);
-		T out = dao.getByCriteria(qm, criteria);
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		T out = dao.get(returnClazz, qm, criteria);
 		return out;
 	}
 
@@ -331,9 +278,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		Dao<T> dao = factory.getGenericDao(returnClazz);
-		List<T> out = dao.getListByCriteria(qm, criteria);
-		return out;
+		GenericQueryDao dao = factory.getGenericQueryDao();
+		return dao.list(returnClazz, qm, criteria);
 	}
 
 	/* (non-Javadoc)
@@ -437,7 +383,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	public boolean softDelete(Class<? extends Entity> clazz, Serializable id) {
 		
 		Dao<? extends Entity> dao = factory.getGenericDao(clazz);
-		return dao.softDelete(id);
+		dao.softDelete(id);
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -446,7 +393,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public boolean bulkSoftDelete(Class<? extends Entity> clazz, List<Serializable> ids) {
 		Dao<? extends Entity> dao = factory.getGenericDao(clazz);
-		return dao.bulkSoftDelete(ids);
+		dao.bulkSoftDelete(ids);
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -474,7 +422,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
 		Dao<?> dao = factory.getGenericDao(clazz);
-		return dao.bulkDelete(pks);
+		dao.bulkIdDelete(pks);
+		return true;
 	}
 
 	/* (non-Javadoc)

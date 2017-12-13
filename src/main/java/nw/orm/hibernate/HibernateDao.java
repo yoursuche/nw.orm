@@ -12,12 +12,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.transform.Transformers;
-
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
-import nw.orm.core.query.QueryModifier;
 import nw.orm.dao.Dao;
+import nw.orm.dao.Paging;
 
 public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 	
@@ -163,7 +161,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 		if (!Entity.class.isAssignableFrom(entityClass)) {
 			throw new NwormQueryException();
 		}
-		T bc = getByCriteria(Restrictions.idEq(id));
+		T bc = get(Restrictions.idEq(id));
 		if ((bc instanceof Entity)) {
 			Entity e = (Entity) bc;
 			e.setDeleted(true);
@@ -219,69 +217,61 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 	}
 
 	@Override
-	public List<T> getAll() {
-		return getListByCriteria();
-	}
-	
-	public List<T> getListByCriteria(Criterion ... criteria) {
-		return getListByCriteria(null, criteria);
+	public List<T> list(Criterion ... criteria) {
+		return list(null, criteria);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<T> getListByCriteria(QueryModifier qm, Criterion ... criteria){
+	public List<T> list(Paging paging, Criterion ... criteria) {
+		
 		List<T> out = new ArrayList<T>();
 		Session session = getSession();
 		try {
-			Criteria te = session.createCriteria(qm.getQueryClazz());
+			Criteria te = session.createCriteria(entityClass);
 			for (Criterion c : criteria) {
 				te.add(c);
 			}
-			modifyCriteria(te, qm);
-			if(!qm.isTransformResult()){
-				out = te.list();
-			}else{
-				out = te.setResultTransformer(Transformers.aliasToBean(qm.getTransformClass())).list();
+			
+			if(paging != null) {
+				te.setFirstResult(paging.getPageOffset());
+				te.setMaxResults(paging.getPageSize());
 			}
+			addSoftRestrictions(te, entityClass);
+			out = te.list();
 			commit(session);
+			closeSession(session);
+			
+			return out;
 		} catch (Exception e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
-		closeSession(session);
-		return out;
-	}
-	
-	@Override
-	public T getByCriteria(Criterion ... criteria) {
-		return getByCriteria(null, criteria);
+		
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public T getByCriteria(QueryModifier qm, Criterion ... criteria){
+	public T get(Criterion ... criteria) {
 		T out = null;
 		Session session = getSession();
 		try {
-			Criteria te = session.createCriteria(qm.getQueryClazz());
+			Criteria te = session.createCriteria(entityClass);
 			for (Criterion c : criteria) {
 				te.add(c);
 			}
-			modifyCriteria(te, qm);
-			if(!qm.isTransformResult()){
-				out = (T) te.uniqueResult();
-			}else{
-				out = (T) te.setResultTransformer(Transformers.aliasToBean(entityClass)).uniqueResult();
-			}
+			addSoftRestrictions(te, entityClass);
+			out = (T) te.uniqueResult();
 			commit(session);
+			closeSession(session);
+			return out;
 		} catch (Exception e) {
 			rollback(session);
 			closeSession(session);
 			throw new NwormQueryException("", e);
 		}
-		closeSession(session);
-		return out;
+		
 	}
 	
 

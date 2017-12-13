@@ -6,8 +6,6 @@ import java.util.List;
 import org.hibernate.criterion.Criterion;
 
 import nw.orm.core.exception.NwormQueryException;
-import nw.orm.core.query.QueryModifier;
-import nw.orm.core.query.QueryParameter;
 
 /**
  * 
@@ -95,20 +93,30 @@ public interface Dao<T> {
 	T getById(Serializable id);
 	
 	/**
-	 * Use of this method cautiously as it loads everything in the database for this
-	 * entity. There are not where clauses, it just loads the entire table
-	 * @return list of entity instances
+	 * No pagination support, just lists all entries that meets
+	 * criteria
+	 * @param criteria criteria Zero or more Restrictions
+	 * @return lists of entities matching criteria
+	 * @throws NwormQueryException
 	 */
-	List<T> getAll();
+	List<T> list(Criterion ... criteria);
 	
-	List<T> getListByCriteria(Criterion ... criteria);
+	/**
+	 * Supports paging
+	 * @param paging {@link Paging} 
+	 * @param criteria Zero or more Restrictions
+	 * @return lists of entities matching criteria
+	 * @throws NwormQueryException
+	 */
+	List<T> list(Paging paging, Criterion ... criteria);
+	
+	/**
+	 * 
+	 * @param criteria
+	 * @return
+	 * @throws NwormQueryException
+	 */
+	T get(Criterion ... criteria);
 
-	List<T> getListByCriteria(QueryModifier qm, Criterion ... criteria);
-	
-	T getByCriteria(Criterion ... criteria);
-
-	T getByCriteria(QueryModifier qm, Criterion ... criteria);
-	
-//	T getByQuery(String query, QueryParameter ... parameters);
 
 }

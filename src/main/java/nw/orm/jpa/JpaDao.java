@@ -9,9 +9,9 @@ import javax.persistence.Query;
 
 import org.hibernate.criterion.Criterion;
 
-import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.dao.Dao;
+import nw.orm.dao.Paging;
 
 public class JpaDao<T> implements Dao<T> {
 	
@@ -74,7 +74,7 @@ public class JpaDao<T> implements Dao<T> {
 		return t;
 	}
 
-	@Override
+//	@Override
 	@SuppressWarnings("unchecked")
 	public T getByQuery(String query, QueryParameter... parameters) {
 		EntityManager mgr = getEntityManager();
@@ -96,31 +96,7 @@ public class JpaDao<T> implements Dao<T> {
 	}
 
 	@Override
-	public List<T> getAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<T> getListByCriteria(Criterion... criteria) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<T> getListByCriteria(QueryModifier qm, Criterion... criteria) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public T getByCriteria(Criterion... criteria) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public T getByCriteria(QueryModifier qm, Criterion... criteria) {
+	public T get(Criterion... criteria) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -132,21 +108,45 @@ public class JpaDao<T> implements Dao<T> {
 	}
 
 	@Override
-	public boolean softDelete(Serializable id) {
+	public void bulkSave(List<T> entities) {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
-	public boolean bulkSoftDelete(List<Serializable> ids) {
+	public void bulkDelete(List<T> entities) {
 		// TODO Auto-generated method stub
-		return false;
+		
 	}
 
 	@Override
-	public boolean bulkDelete(List<Serializable> pks) {
+	public void bulkIdDelete(List<Serializable> pks) {
 		// TODO Auto-generated method stub
-		return false;
+		
+	}
+
+	@Override
+	public void softDelete(Serializable id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void bulkSoftDelete(List<Serializable> ids) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<T> list(Criterion... criteria) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<T> list(Paging paging, Criterion... criteria) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
