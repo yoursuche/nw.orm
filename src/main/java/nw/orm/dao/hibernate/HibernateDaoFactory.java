@@ -1,4 +1,4 @@
-package nw.orm.hibernate;
+package nw.orm.dao.hibernate;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;

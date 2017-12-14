@@ -1,4 +1,4 @@
-package nw.orm.hibernate;
+package nw.orm.dao.hibernate;
 
 import java.util.List;
 

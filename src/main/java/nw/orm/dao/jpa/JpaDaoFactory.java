@@ -1,8 +1,7 @@
-package nw.orm.jpa;
+package nw.orm.dao.jpa;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-
 import nw.orm.dao.Dao;
 import nw.orm.dao.DaoFactory;
 import nw.orm.dao.GenericQueryDao;
@@ -13,13 +12,20 @@ public class JpaDaoFactory implements DaoFactory {
 	private EntityManagerFactory em;
 	
 	public JpaDaoFactory(String unitName) {
+		assert unitName != null;
 		this.unitName = unitName;
+	}
+	
+	public JpaDaoFactory(EntityManagerFactory em) {
+		this.em = em;
 	}
 
 	@Override
 	public void init() {
-		em = Persistence.createEntityManagerFactory(this.unitName);
-		
+		if(em == null) {
+			em = Persistence.createEntityManagerFactory(this.unitName);
+		}
+		System.out.println(em);
 	}
 
 	@Override
@@ -29,7 +35,7 @@ public class JpaDaoFactory implements DaoFactory {
 	
 	@Override
 	public void clean() {
-		em.close();
+//		em.close();
 	}
 
 	@Override

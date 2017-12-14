@@ -1,4 +1,4 @@
-package nw.orm.jpa;
+package nw.orm.dao.jpa;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,13 +13,12 @@ import nw.orm.core.query.QueryParameter;
 import nw.orm.dao.Dao;
 import nw.orm.dao.Paging;
 
-public class JpaDao<T> implements Dao<T> {
+public class JpaDao<T> extends JpaDaoBase implements Dao<T> {
 	
 	private Class<T> entityClass;
-	private EntityManagerFactory em;
 
 	protected JpaDao(EntityManagerFactory em, Class<T> clazz) {
-		this.em = em;
+		super(em);
 		this.entityClass = clazz;
 	}
 	
@@ -30,25 +29,6 @@ public class JpaDao<T> implements Dao<T> {
 		return item;
 	}
 	
-	/**
-	 * Creates an EntityManager instance and begins a transaction
-	 * @return EntityManager instance with an active transaction
-	 */
-	private EntityManager getEntityManager() {
-		EntityManager mgr = em.createEntityManager();
-		mgr.getTransaction().begin();
-		return mgr;
-	}
-	
-	/***
-	 * Commits and closes a transaction
-	 * @param mgr
-	 */
-	private void close(EntityManager mgr) {
-		mgr.getTransaction().commit();
-		mgr.clear();
-	}
-
 	@Override
 	public T save(T item) {
 		EntityManager mgr = getEntityManager();

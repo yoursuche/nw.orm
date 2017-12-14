@@ -2,19 +2,13 @@ package nw.orm.dao;
 
 import static org.junit.Assert.*;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import nw.orm.dao.hibernate.HibernateDaoFactory;
 import nw.orm.entity.Person;
 import nw.orm.entity.Sex;
-import nw.orm.hibernate.HibernateDaoFactory;
 
 public class HibernateDaoTest {
 	
@@ -64,18 +58,6 @@ public class HibernateDaoTest {
 		factory.clean();
 		sFactory.clean();
 		
-		try {
-			
-			Files.delete(Paths.get(new URI("~/test")));
-			Files.delete(Paths.get(new URI("~/test_mn")));
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }
