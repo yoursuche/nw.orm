@@ -1,4 +1,4 @@
-package nw.orm.examples.model;
+package nw.orm.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package nw.orm.examples.pojo;
+package nw.orm.pojo;
 
 public class TestPox {
 	

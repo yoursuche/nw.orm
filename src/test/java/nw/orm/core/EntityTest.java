@@ -2,8 +2,8 @@ package nw.orm.core;
 
 import org.junit.Test;
 
-import nw.orm.examples.model.Item;
-import nw.orm.examples.model.Person;
+import nw.orm.entity.Item;
+import nw.orm.entity.Person;
 
 import static org.junit.Assert.*;
 
@@ -36,15 +36,6 @@ public class EntityTest {
 		it2.setPk(2L);
 		
 		assertTrue(it2.compareTo(it) == 1);
-		
-//		Person pe = new Person();
-//		pe.setPk(1L);
-//		
-//		assertNotEquals(it,  pe);
-//		
-//		Item it2 = new Item();
-//		it2.setPk(1L);
-//		assertEquals(it2, it);
 		
 	}
 

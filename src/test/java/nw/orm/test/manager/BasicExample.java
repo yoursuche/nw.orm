@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.service.Nworm;
-import nw.orm.examples.model.BasicSequencedIdModel;
-import nw.orm.examples.model.BasicUUIDModel;
+import nw.orm.entity.UuidModel;
+import nw.orm.entity.BasicUUIDModel;
 
 public class BasicExample {
 
@@ -24,7 +24,7 @@ public class BasicExample {
 	@Test
 	public void createSequenced(){
 		dbService = Nworm.getInstance();
-		BasicSequencedIdModel bs = new BasicSequencedIdModel();
+		UuidModel bs = new UuidModel();
 		bs.setBasicDate(new Date());
 		bs.setBasicString("Sample String");
 

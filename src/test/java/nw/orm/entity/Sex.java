@@ -1,4 +1,4 @@
-package nw.orm.examples.model.enums;
+package nw.orm.entity;
 
 public enum Sex {
 	

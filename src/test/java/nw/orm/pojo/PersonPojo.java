@@ -1,6 +1,6 @@
-package nw.orm.examples.pojo;
+package nw.orm.pojo;
 
-import nw.orm.examples.model.enums.Sex;
+import nw.orm.entity.Sex;
 
 public class PersonPojo {
 	

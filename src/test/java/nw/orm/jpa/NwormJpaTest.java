@@ -1,4 +1,4 @@
-package nw.orm.test.core.jpa;
+package nw.orm.jpa;
 
 import static org.junit.Assert.*;
 

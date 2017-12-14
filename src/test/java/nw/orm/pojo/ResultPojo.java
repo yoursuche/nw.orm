@@ -1,4 +1,4 @@
-package nw.orm.examples.pojo;
+package nw.orm.pojo;
 
 import java.io.Serializable;
 

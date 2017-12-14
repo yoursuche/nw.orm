@@ -12,13 +12,13 @@ import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 import nw.orm.core.service.Nworm;
+import nw.orm.entity.Person;
+import nw.orm.entity.Sex;
 import nw.orm.entity.geo.City;
 import nw.orm.entity.geo.Country;
 import nw.orm.entity.geo.Region;
-import nw.orm.examples.model.Person;
-import nw.orm.examples.model.enums.Sex;
-import nw.orm.examples.pojo.PersonPojo;
-import nw.orm.examples.pojo.TestPox;
+import nw.orm.pojo.PersonPojo;
+import nw.orm.pojo.TestPox;
 
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Projections;

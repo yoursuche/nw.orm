@@ -1,11 +1,10 @@
-package nw.orm.examples.model;
+package nw.orm.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import nw.orm.core.IEntity;
-import nw.orm.examples.model.enums.Sex;
 
 @Entity
 @Table(name = "PERSON")
