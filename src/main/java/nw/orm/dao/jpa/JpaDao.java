@@ -40,10 +40,17 @@ public class JpaDao<T> extends JpaDaoBase implements Dao<T> {
 	@Override
 	public void delete(T item) {
 		EntityManager mgr = getEntityManager();
-		item = mgr.merge(item);
 		mgr.remove(item);
 		close(mgr);
 		
+	}
+	
+	@Override
+	public void deleteById(Serializable pk) {
+		EntityManager mgr = getEntityManager();
+		T item = mgr.find(entityClass, pk);
+		mgr.remove(item);
+		close(mgr);
 	}
 
 	@Override
@@ -52,6 +59,18 @@ public class JpaDao<T> extends JpaDaoBase implements Dao<T> {
 		T t = mgr.merge(item);
 		close(mgr);
 		return t;
+	}
+	
+	@Override
+	public List<T> list(Criterion... criteria) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<T> list(Paging paging, Criterion... criteria) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 //	@Override
@@ -81,11 +100,6 @@ public class JpaDao<T> extends JpaDaoBase implements Dao<T> {
 		return null;
 	}
 
-	@Override
-	public void deleteById(Serializable pk) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void bulkSave(List<T> entities) {
@@ -115,18 +129,6 @@ public class JpaDao<T> extends JpaDaoBase implements Dao<T> {
 	public void bulkSoftDelete(List<Serializable> ids) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public List<T> list(Criterion... criteria) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<T> list(Paging paging, Criterion... criteria) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

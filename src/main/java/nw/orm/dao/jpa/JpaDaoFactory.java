@@ -25,7 +25,6 @@ public class JpaDaoFactory implements DaoFactory {
 		if(em == null) {
 			em = Persistence.createEntityManagerFactory(this.unitName);
 		}
-		System.out.println(em);
 	}
 
 	@Override
@@ -35,7 +34,9 @@ public class JpaDaoFactory implements DaoFactory {
 	
 	@Override
 	public void clean() {
-//		em.close();
+		if(em != null && em.isOpen()){
+			em.close();
+		}
 	}
 
 	@Override

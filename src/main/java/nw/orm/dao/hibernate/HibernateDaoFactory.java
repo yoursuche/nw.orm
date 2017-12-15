@@ -58,7 +58,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	@Override
 	public void clean() {
 		logger.debug("Closing Hibernate DAO Factory");
-		if(factory != null) {
+		if(factory != null && !factory.isClosed()) {
 			factory.close();
 		}
 		

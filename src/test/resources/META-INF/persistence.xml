@@ -6,6 +6,7 @@
 
 	<persistence-unit name="nworm">
 	    
+	    <!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
 	    <class>nw.orm.entity.Person</class>
 		<class>nw.orm.entity.Item</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
