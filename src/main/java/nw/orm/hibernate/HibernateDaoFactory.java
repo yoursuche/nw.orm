@@ -1,4 +1,7 @@
-package nw.orm.dao.hibernate;
+package nw.orm.hibernate;
+
+import java.util.Map;
+import java.util.Properties;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.MetadataSources;
@@ -7,7 +10,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nw.orm.dao.Dao;
 import nw.orm.dao.DaoFactory;
 import nw.orm.dao.GenericQueryDao;
 
@@ -18,6 +20,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private boolean enableJta;
 	private boolean useCurrentSession;
+	private Properties extraProps;
 	
 	/**
 	 * Uses hibernate.cfg.xml as resource
@@ -44,6 +47,11 @@ public class HibernateDaoFactory implements DaoFactory {
 		this.useCurrentSession = useCurrentSession;
 	}
 
+	public HibernateDaoFactory(String configFile, Properties props) {
+		this.extraProps = props;
+		this.resourceName = configFile;
+	}
+
 	@Override
 	public void init() {
 		logger.debug("Initializing Hibernate DAO Factory");
@@ -65,7 +73,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	}
 
 	@Override
-	public <T> Dao<T> getGenericDao(Class<T> clazz) {
+	public <T> HDao<T> getDao(Class<T> clazz) {
 		return new HibernateDao<T>(factory, clazz, this.enableJta, this.useCurrentSession);
 	}
 	
@@ -76,13 +84,31 @@ public class HibernateDaoFactory implements DaoFactory {
 	 * </a>
 	 * @throws Exception
 	 */
+	@SuppressWarnings("deprecation")
 	protected void setUp(String resourceName) throws Exception {
+		
+		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
+				.configure(resourceName)
+				.applySettings(extraProps); // configures settings from hibernate.cfg.xml
+				
+		Map<String, String> props = builder.getSettings();
+		
+		String s = props.get("hibernate.current_session_context_class");
+		String t = props.get("hibernate.connection.datasource");
+		if(s != null) {
+			this.useCurrentSession = true;
+		}
+		
+		if(t != null) {
+			this.enableJta = true;
+		}
+		
 		// A SessionFactory is set up once for an application!
-		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
-				.configure(resourceName) // configures settings from hibernate.cfg.xml
-				.build();
+		final StandardServiceRegistry registry = builder.build();
+		
 		try {
-			factory = new MetadataSources( registry ).buildMetadata().buildSessionFactory();
+			factory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+			
 		}
 		catch (Exception e) {
 			// The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory

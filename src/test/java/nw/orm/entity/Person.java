@@ -16,8 +16,17 @@ public class Person extends IEntity {
 	private String fullName;
 	
 	private int age;
-	
 	private Sex sex = Sex.MALE;
+	
+	public Person() {
+		
+	}
+	
+	public Person(String fullName, int age, Sex sex) {
+		this.fullName = fullName;
+		this.sex = sex;
+		this.age = age;
+	}
 
 	public String getFullName() {
 		return fullName;

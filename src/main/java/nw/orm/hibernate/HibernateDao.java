@@ -1,4 +1,4 @@
-package nw.orm.dao.hibernate;
+package nw.orm.hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,10 +14,9 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
-import nw.orm.dao.Dao;
 import nw.orm.dao.Paging;
 
-public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
+public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	
 	protected Class<T> entityClass;
 	
@@ -26,6 +25,58 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 		
 		isClassMapped(clazz);
 		this.entityClass = clazz;
+	}
+	
+	@Override
+	public T getById(Serializable id) {
+		T out = null;
+		Session session = getSession();
+		try {
+			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
+			commit(session);
+			closeSession(session);
+			return out;
+		} catch (HibernateException e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("", e);
+		}
+		
+	}
+	
+	@Override
+	public List<T> list(Criterion ... criteria) {
+		return list(null, criteria);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<T> list(Paging paging, Criterion ... criteria) {
+		
+		List<T> out = new ArrayList<T>();
+		Session session = getSession();
+		try {
+			Criteria te = session.createCriteria(entityClass);
+			for (Criterion c : criteria) {
+				te.add(c);
+			}
+			
+			if(paging != null) {
+				te.setFirstResult(paging.getPageOffset());
+				te.setMaxResults(paging.getPageSize());
+			}
+			addSoftRestrictions(te, entityClass);
+			out = te.list();
+			commit(session);
+			closeSession(session);
+			
+			return out;
+		} catch (Exception e) {
+			rollback(session);
+			closeSession(session);
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+		
 	}
 	
 	@Override
@@ -198,59 +249,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements Dao<T> {
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
-	
-	@Override
-	public T getById(Serializable id) {
-		T out = null;
-		Session session = getSession();
-		try {
-			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
-			commit(session);
-			closeSession(session);
-			return out;
-		} catch (HibernateException e) {
-			rollback(session);
-			closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		
-	}
 
-	@Override
-	public List<T> list(Criterion ... criteria) {
-		return list(null, criteria);
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<T> list(Paging paging, Criterion ... criteria) {
-		
-		List<T> out = new ArrayList<T>();
-		Session session = getSession();
-		try {
-			Criteria te = session.createCriteria(entityClass);
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			
-			if(paging != null) {
-				te.setFirstResult(paging.getPageOffset());
-				te.setMaxResults(paging.getPageSize());
-			}
-			addSoftRestrictions(te, entityClass);
-			out = te.list();
-			commit(session);
-			closeSession(session);
-			
-			return out;
-		} catch (Exception e) {
-			rollback(session);
-			closeSession(session);
-			throw new NwormQueryException("Nw.orm Exception", e);
-		}
-		
-	}
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public T get(Criterion ... criteria) {

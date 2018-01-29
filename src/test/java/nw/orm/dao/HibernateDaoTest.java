@@ -6,9 +6,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import nw.orm.dao.hibernate.HibernateDaoFactory;
 import nw.orm.entity.Person;
 import nw.orm.entity.Sex;
+import nw.orm.hibernate.HibernateDaoFactory;
 
 public class HibernateDaoTest {
 	
@@ -32,7 +32,7 @@ public class HibernateDaoTest {
 		person.setAge(23);
 		person.setFullName("Google Eyes");
 		person.setSex(Sex.FEMALE);
-		Dao<Person> dao = factory.getGenericDao(Person.class);
+		Dao<Person> dao = factory.getDao(Person.class);
 		dao.save(person);
 		
 		assertNotNull(person.getPk());
@@ -46,7 +46,7 @@ public class HibernateDaoTest {
 		person.setAge(23);
 		person.setFullName("Google Eyes");
 		person.setSex(Sex.FEMALE);
-		Dao<Person> dao = factory.getGenericDao(Person.class);
+		Dao<Person> dao = factory.getDao(Person.class);
 		dao.save(person);
 		
 		assertNotNull(person.getPk());

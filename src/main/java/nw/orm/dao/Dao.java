@@ -3,8 +3,6 @@ package nw.orm.dao;
 import java.io.Serializable;
 import java.util.List;
 
-import org.hibernate.criterion.Criterion;
-
 import nw.orm.core.exception.NwormQueryException;
 
 /**
@@ -92,31 +90,5 @@ public interface Dao<T> {
 	 */
 	T getById(Serializable id);
 	
-	/**
-	 * No pagination support, just lists all entries that meets
-	 * criteria
-	 * @param criteria criteria Zero or more Restrictions
-	 * @return lists of entities matching criteria
-	 * @throws NwormQueryException
-	 */
-	List<T> list(Criterion ... criteria);
-	
-	/**
-	 * Supports paging
-	 * @param paging {@link Paging} 
-	 * @param criteria Zero or more Restrictions
-	 * @return lists of entities matching criteria
-	 * @throws NwormQueryException
-	 */
-	List<T> list(Paging paging, Criterion ... criteria);
-	
-	/**
-	 * 
-	 * @param criteria
-	 * @return
-	 * @throws NwormQueryException
-	 */
-	T get(Criterion ... criteria);
-
 
 }

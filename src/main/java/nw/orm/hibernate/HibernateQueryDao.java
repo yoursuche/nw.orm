@@ -1,4 +1,4 @@
-package nw.orm.dao.hibernate;
+package nw.orm.hibernate;
 
 import java.io.Serializable;
 import java.util.ArrayList;

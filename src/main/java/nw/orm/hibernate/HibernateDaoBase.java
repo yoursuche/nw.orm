@@ -1,4 +1,4 @@
-package nw.orm.dao.hibernate;
+package nw.orm.hibernate;
 
 import java.util.List;
 
@@ -131,21 +131,14 @@ public abstract class HibernateDaoBase {
 	}
 	
 	protected Session getSession() {
+		
+		Session sxn = null;
 		if(useCurrentSession){
-			return getCurrentSession();
+			sxn = sxnFactory.getCurrentSession();
+		}else {
+			sxn = sxnFactory.openSession();
 		}
-		return getRawSession();
-	}
-	
-	protected Session getCurrentSession() {
-		Session sxn = sxnFactory.getCurrentSession();
-		sxn.setFlushMode(FlushMode.AUTO);
-		beginTransaction(sxn);
-		return sxn;
-	}
-	
-	protected Session getRawSession() {
-		Session sxn = sxnFactory.openSession();
+		
 		sxn.setFlushMode(FlushMode.AUTO);
 		beginTransaction(sxn);
 		return sxn;

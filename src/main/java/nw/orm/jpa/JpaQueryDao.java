@@ -1,4 +1,4 @@
-package nw.orm.dao.jpa;
+package nw.orm.jpa;
 
 public class JpaQueryDao {
 

@@ -54,7 +54,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 
 	private String classId = UUID.randomUUID().toString();
 	
-	private DaoFactory factory;
+	protected DaoFactory factory;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -129,7 +129,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
 		
-		Dao<T> dao = factory.getGenericDao(clazz);
+		Dao<T> dao = factory.getDao(clazz);
 		T out = dao.getById(clazz);
 		return out;
 	}
@@ -142,6 +142,17 @@ public abstract class NwormImpl implements NwormHibernateService {
 		return getListByCriteria(clazz);
 	}
 
+	/* (non-Javadoc)
+	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
+	 */
+	@Override
+	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
+		
+		Dao<T> dao = factory.getDao(clz);
+		List<T> out = dao.list(criteria);
+		return out;
+	}
+	
 	/**
 	 * Filters out deleted entries from queries.
 	 *
@@ -160,21 +171,11 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> T getByCriteria(Class<T> entityClass, Criterion ... criteria) {
 		
-		Dao<T> dao = factory.getGenericDao(entityClass);
+		Dao<T> dao = factory.getDao(entityClass);
 		T out = dao.get(criteria);
 		return out;
 	}
 
-	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getListByCriteria(java.lang.Class, org.hibernate.criterion.Criterion[])
-	 */
-	@Override
-	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
-		
-		Dao<T> dao = factory.getGenericDao(clz);
-		List<T> out = dao.list(criteria);
-		return out;
-	}
 
 	/* (non-Javadoc)
 	 * @see nw.orm.core.service.NwormService#getByHQL(java.lang.String, java.util.Map, java.lang.Class)
@@ -382,7 +383,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public boolean softDelete(Class<? extends Entity> clazz, Serializable id) {
 		
-		Dao<? extends Entity> dao = factory.getGenericDao(clazz);
+		Dao<? extends Entity> dao = factory.getDao(clazz);
 		dao.softDelete(id);
 		return true;
 	}
@@ -392,7 +393,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean bulkSoftDelete(Class<? extends Entity> clazz, List<Serializable> ids) {
-		Dao<? extends Entity> dao = factory.getGenericDao(clazz);
+		Dao<? extends Entity> dao = factory.getDao(clazz);
 		dao.bulkSoftDelete(ids);
 		return true;
 	}
@@ -411,7 +412,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean remove(Class<?> clazz, Serializable pk) {
-		Dao<?> dao = factory.getGenericDao(clazz);
+		Dao<?> dao = factory.getDao(clazz);
 		dao.deleteById(pk);
 		return true;
 	}
@@ -421,7 +422,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
-		Dao<?> dao = factory.getGenericDao(clazz);
+		Dao<?> dao = factory.getDao(clazz);
 		dao.bulkIdDelete(pks);
 		return true;
 	}
