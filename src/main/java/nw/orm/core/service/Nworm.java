@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
-import nw.orm.dao.DaoFactory;
 import nw.orm.hibernate.HibernateDaoFactory;
 
 /**
@@ -117,7 +116,7 @@ public class Nworm extends NwormImpl {
 	 */
 	private void init(String configFile, Properties props) throws OperationNotSupportedException {
 
-		DaoFactory daoFactory = new HibernateDaoFactory(configFile, props);
+		HibernateDaoFactory daoFactory = new HibernateDaoFactory(configFile, props);
 		daoFactory.init();
 
 		this.factory = daoFactory;

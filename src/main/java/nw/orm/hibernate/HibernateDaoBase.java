@@ -73,8 +73,8 @@ public abstract class HibernateDaoBase {
 	/**
 	 * Filters out deleted entries from queries.
 	 *
-	 * @param te the te
-	 * @param clazz the clazz
+	 * @param te the active Criteria object
+	 * @param clazz object class type
 	 */
 	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
 		if (Entity.class.isAssignableFrom(clazz)){
@@ -157,6 +157,7 @@ public abstract class HibernateDaoBase {
 		if(!jtaEnabled){
 			sxn.getTransaction().commit();
 		}
+		closeSession(sxn);
 	}
 	
 	protected void rollback(Session sxn) throws HibernateException{
@@ -164,6 +165,7 @@ public abstract class HibernateDaoBase {
 		if(!jtaEnabled){
 			sxn.getTransaction().rollback();
 		}
+		closeSession(sxn);
 	}
 	
 	protected void beginTransaction(Session sxn){

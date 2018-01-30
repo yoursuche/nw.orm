@@ -16,8 +16,9 @@ import nw.orm.core.query.SQLModifier;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 import nw.orm.dao.Dao;
-import nw.orm.dao.DaoFactory;
 import nw.orm.dao.GenericQueryDao;
+import nw.orm.hibernate.HDao;
+import nw.orm.hibernate.HibernateDaoFactory;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -54,7 +55,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 
 	private String classId = UUID.randomUUID().toString();
 	
-	protected DaoFactory factory;
+	protected HibernateDaoFactory factory;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -129,7 +130,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
 		
-		Dao<T> dao = factory.getDao(clazz);
+		HDao<T> dao = factory.getDao(clazz);
 		T out = dao.getById(clazz);
 		return out;
 	}
@@ -148,21 +149,9 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> List<T> getListByCriteria(Class<T> clz, Criterion ... criteria) {
 		
-		Dao<T> dao = factory.getDao(clz);
+		HDao<T> dao = factory.getDao(clz);
 		List<T> out = dao.list(criteria);
 		return out;
-	}
-	
-	/**
-	 * Filters out deleted entries from queries.
-	 *
-	 * @param te the te
-	 * @param clazz the clazz
-	 */
-	public void addSoftRestrictions(Criteria te, Class<?> clazz) {
-		if (Entity.class.isAssignableFrom(clazz)){
-			te.add(Restrictions.eq("deleted", Boolean.valueOf(false)));
-		}
 	}
 
 	/* (non-Javadoc)
@@ -171,7 +160,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> T getByCriteria(Class<T> entityClass, Criterion ... criteria) {
 		
-		Dao<T> dao = factory.getDao(entityClass);
+		HDao<T> dao = factory.getDao(entityClass);
 		T out = dao.get(criteria);
 		return out;
 	}
@@ -211,7 +200,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getListByHQL(java.lang.Class, java.lang.String, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		
 		GenericQueryDao qdao = factory.getGenericQueryDao();

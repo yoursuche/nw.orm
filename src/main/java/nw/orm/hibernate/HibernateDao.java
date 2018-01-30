@@ -34,14 +34,12 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		try {
 			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
 			commit(session);
-			closeSession(session);
-			return out;
-		} catch (HibernateException e) {
+		} catch (Exception e) {
 			rollback(session);
-			closeSession(session);
-			throw new NwormQueryException("", e);
+			throw new NwormQueryException("Query Exception", e);
 		}
 		
+		return out;
 	}
 	
 	@Override
@@ -68,16 +66,36 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 			addSoftRestrictions(te, entityClass);
 			out = te.list();
 			commit(session);
-			closeSession(session);
 			
-			return out;
 		} catch (Exception e) {
 			rollback(session);
-			closeSession(session);
-			throw new NwormQueryException("Nw.orm Exception", e);
+			throw new NwormQueryException("Query Exception", e);
 		}
 		
+		return out;
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public T get(Criterion ... criteria) {
+		T out = null;
+		Session session = getSession();
+		try {
+			Criteria te = session.createCriteria(entityClass);
+			for (Criterion c : criteria) {
+				te.add(c);
+			}
+			addSoftRestrictions(te, entityClass);
+			out = (T) te.uniqueResult();
+			commit(session);
+		} catch (Exception e) {
+			rollback(session);
+			throw new NwormQueryException("Query Exception", e);
+		}
+		
+		return out;
+	}
+
 	
 	@Override
 	public T save(T entity) {
@@ -87,13 +105,11 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		try {
 			session.save(entity);
 			commit(session);
-			closeSession(session);
-			return entity;
 		} catch (HibernateException e) {
 			rollback(session);
-			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
+		return entity;
 	}
 	
 	@Override
@@ -125,10 +141,8 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		try {
 			session.delete(entity);
 			commit(session);
-			closeSession(session);
 		} catch (HibernateException e) {
 			rollback(session);
-			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
@@ -140,10 +154,8 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		try {
 			session.delete(session.get(entityClass, pk));
 			commit(session);
-			closeSession(session);
 		} catch (HibernateException e) {
 			rollback(session);
-			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
@@ -197,13 +209,11 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		try {
 			session.update(entity);
 			commit(session);
-			closeSession(session);
-			return entity;
 		} catch (HibernateException e) {
 			rollback(session);
-			closeSession(session);
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
+		return entity;
 	}
 	
 	@Override
@@ -250,28 +260,6 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		}
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public T get(Criterion ... criteria) {
-		T out = null;
-		Session session = getSession();
-		try {
-			Criteria te = session.createCriteria(entityClass);
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			addSoftRestrictions(te, entityClass);
-			out = (T) te.uniqueResult();
-			commit(session);
-			closeSession(session);
-			return out;
-		} catch (Exception e) {
-			rollback(session);
-			closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		
-	}
 	
 
 }
