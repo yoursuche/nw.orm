@@ -313,4 +313,10 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		return mgr.getCriteriaBuilder();
 	}
 
+	@Override
+	public boolean saveOrUpdate(T entity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

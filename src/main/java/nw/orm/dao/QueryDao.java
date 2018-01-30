@@ -1,12 +1,9 @@
 package nw.orm.dao;
 
-import java.io.Serializable;
-
 import java.util.List;
 
 import org.hibernate.criterion.Criterion;
 
-import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 
@@ -15,28 +12,7 @@ import nw.orm.core.query.QueryParameter;
  * @author Rowland
  *
  */
-public interface GenericQueryDao {
-	
-	/**
-	 * Generic save
-	 * @param entity entity to save
-	 * @return primary key of the freshly saved entity
-	 * 
-	 * @throws NwormQueryException
-	 */
-	Serializable save(Object entity);
-
-	List<Serializable> bulkSave(List<?> items);
-
-	boolean delete(Object entity);
-
-	boolean bulkDelete(List<?> entities);
-
-	boolean update(Object entity);
-
-	boolean bulkUpdate(List<?> entities);
-
-	boolean saveOrUpdate(Object entity);
+public interface QueryDao {
 
 	<T> T query(Class<T> resultClass, String queryString, QueryParameter ... parameters);
 

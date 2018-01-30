@@ -27,8 +27,8 @@ public interface DaoFactory {
 	/**
 	 * Retrieves a Data Access Object not associated to 
 	 * a specific class
-	 * @return An appropriate {@link GenericQueryDao} implementation
+	 * @return An appropriate {@link QueryDao} implementation
 	 */
-	GenericQueryDao getGenericQueryDao();
+	QueryDao getQueryDao();
 
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import nw.orm.core.Entity;
+import nw.orm.core.NwormEntity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryAlias;
 import nw.orm.core.query.QueryFetchMode;
@@ -16,7 +17,7 @@ import nw.orm.core.query.SQLModifier;
 import nw.orm.core.session.HibernateSessionFactory;
 import nw.orm.core.session.HibernateSessionService;
 import nw.orm.dao.Dao;
-import nw.orm.dao.GenericQueryDao;
+import nw.orm.dao.QueryDao;
 import nw.orm.hibernate.HDao;
 import nw.orm.hibernate.HibernateDaoFactory;
 
@@ -182,7 +183,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> T getByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		
-		GenericQueryDao qdao = factory.getGenericQueryDao();
+		QueryDao qdao = factory.getQueryDao();
 		return qdao.query(resultClass, hql, parameters);
 		
 	}
@@ -202,7 +203,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		
-		GenericQueryDao qdao = factory.getGenericQueryDao();
+		QueryDao qdao = factory.getQueryDao();
 		return qdao.queryList(resultClass, hql, parameters);
 		
 	}
@@ -257,7 +258,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		GenericQueryDao dao = factory.getGenericQueryDao();
+		QueryDao dao = factory.getQueryDao();
 		T out = dao.get(returnClazz, qm, criteria);
 		return out;
 	}
@@ -267,7 +268,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		GenericQueryDao dao = factory.getGenericQueryDao();
+		QueryDao dao = factory.getQueryDao();
 		return dao.list(returnClazz, qm, criteria);
 	}
 
@@ -303,7 +304,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 		Session sxn = sxnManager.getManagedSession();
 		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
 		try {
-			modifyCriteria(te, qm);
 			items = te.list();
 			sxnManager.commit(sxn);
 		} catch (HibernateException e) {
@@ -390,9 +390,12 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#remove(java.lang.Object)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean remove(Object obj) {
-		GenericQueryDao dao = factory.getGenericQueryDao();
-		return dao.delete(obj);
+		HDao<? extends Object> dao = factory.getDao(obj.getClass());
+		NwormEntity<? extends Serializable> e = (NwormEntity<? extends Serializable>) obj;
+		dao.deleteById(e.getPk());
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -418,19 +421,31 @@ public abstract class NwormImpl implements NwormHibernateService {
 	/* (non-Javadoc)
 	 * @see nw.orm.core.service.NwormService#create(java.lang.Object)
 	 */
-	@Override
+	@Override @Deprecated
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Serializable create(Object obj) {
-		GenericQueryDao dao = factory.getGenericQueryDao();
-		return dao.save(obj);
+		HDao dao = factory.getDao(obj.getClass());
+		NwormEntity saved = (NwormEntity) dao.save(obj);
+		return (Serializable) saved.getPk();
 	}
 
 	/* (non-Javadoc)
 	 * @see nw.orm.core.service.NwormService#createBulk(java.util.List)
 	 */
-	@Override
+	@Override @Deprecated
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Serializable> createBulk(List<?> items) {
-		GenericQueryDao dao = factory.getGenericQueryDao();
-		return dao.bulkSave(items);
+		Object obj = items.get(0);
+		HDao dao = factory.getDao(obj.getClass());
+		dao.bulkSave(items);
+		
+		ArrayList<Serializable> ls = new ArrayList<Serializable>();
+		for (Object item : items) {
+			NwormEntity saved = (NwormEntity) item;
+			ls.add((Serializable) saved.getPk());
+		}
+		
+		return ls;
 	}
 
 	/**
@@ -439,10 +454,12 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @param obj the obj
 	 * @return true, if successful
 	 */
-	@Override
+	@Override @Deprecated
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean update(Object obj) {
-		GenericQueryDao dao = factory.getGenericQueryDao();
-		return dao.update(obj);
+		HDao dao = factory.getDao(obj.getClass());
+		Object entity = dao.update(obj);
+		return entity != null;
 	}
 
 	/**
@@ -453,9 +470,12 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * returns false with rollback if an error occurs
 	 */
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean updateBulk(List<?> items) {
-		GenericQueryDao dao = factory.getGenericQueryDao();
-		return dao.bulkUpdate(items);
+		Object obj = items.get(0);
+		HDao dao = factory.getDao(obj.getClass());
+		dao.bulkSave(items);
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -475,9 +495,10 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#createOrUpdate(java.lang.Object)
 	 */
 	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean createOrUpdate(Object obj) {
 		
-		GenericQueryDao dao = factory.getGenericQueryDao();
+		HDao dao = factory.getDao(obj.getClass());
 		return dao.saveOrUpdate(obj);
 	}
 
@@ -543,49 +564,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 			return hql + " where deleted = :deleted";
 		}
 		return hql;
-	}
-
-	/**
-	 * Modify a given criteria.
-	 *
-	 * @param te the criteria to be modified
-	 * @param qm {@link QueryModifier} reference
-	 */
-	protected void modifyCriteria(Criteria te, QueryModifier qm) {
-		List<QueryAlias> aliases = qm.getAliases();
-		for (QueryAlias qa : aliases) {
-			if ((qa.getJoinType() == null) && (qa.getWithClause() == null))
-				te.createAlias(qa.getAssociationPath(), qa.getAlias());
-			else if ((qa.getWithClause() == null) && (qa.getJoinType() != null))
-				te.createAlias(qa.getAssociationPath(), qa.getAlias(), qa.getJoinType());
-			else {
-				te.createAlias(qa.getAssociationPath(), qa.getAlias(), qa.getJoinType(), qa.getWithClause());
-			}
-		}
-		List<QueryFetchMode> fms = qm.getFetchModes();
-		for(QueryFetchMode fm: fms){
-			te.setFetchMode(fm.getAlias(), fm.getFetchMode());
-		}
-
-		if (qm.isPaginated()) {
-			te.setFirstResult(qm.getPageIndex());
-			te.setMaxResults(qm.getMaxResult());
-		}
-
-		List<Order> orderBys = qm.getOrderBys();
-		for (Order order : orderBys) {
-			te.addOrder(order);
-		}
-
-		List<Projection> projections = qm.getProjections();
-		if (projections.size() > 0) {
-			ProjectionList pl = Projections.projectionList();
-			for (Projection p : projections)
-				pl.add(p);
-			te.setProjection(pl);
-		}
-
-		addSoftRestrictions(te, qm.getQueryClazz());
 	}
 
 	/**

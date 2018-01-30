@@ -3,7 +3,7 @@ package nw.orm.jpa;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import nw.orm.dao.DaoFactory;
-import nw.orm.dao.GenericQueryDao;
+import nw.orm.dao.QueryDao;
 
 /**
  * Concrete {@link DaoFactory} implementation based
@@ -63,7 +63,7 @@ public class JpaDaoFactory implements DaoFactory {
 	}
 
 	@Override
-	public GenericQueryDao getGenericQueryDao() {
+	public QueryDao getQueryDao() {
 		// TODO Auto-generated method stub
 		return null;
 	}

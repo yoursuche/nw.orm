@@ -21,6 +21,8 @@ public interface Dao<T> {
 	 */
 	T save(T entity);
 	
+	boolean saveOrUpdate(T entity);
+	
 	/**
 	 * Saves the list of items in using a stateless session
 	 * @param entities

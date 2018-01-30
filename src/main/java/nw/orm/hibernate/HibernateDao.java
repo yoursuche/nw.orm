@@ -11,9 +11,11 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Restrictions;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
+import nw.orm.core.query.QueryModifier;
 import nw.orm.dao.Paging;
 
 public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
@@ -110,6 +112,19 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 		return entity;
+	}
+	
+	@Override
+	public boolean saveOrUpdate(T entity) {
+		Session session = getSession();
+		try {
+			session.saveOrUpdate(entity);
+			commit(session);
+		} catch (Exception e) {
+			rollback(session);
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+		return true;
 	}
 	
 	@Override
@@ -259,7 +274,40 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
-
 	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<T> getListByExample(QueryModifier qm, Example example){
+		List<T> items = new ArrayList<T>();
+		Session sxn = getSession();
+		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
+		try {
+			modifyCriteria(te, qm);
+			items = te.list();
+			commit(sxn);
+		} catch (HibernateException e) {
+			rollback(sxn);
+			throw new NwormQueryException("", e);
+		}
+		return items;
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public T getByExample(Class<T> clazz, Example example){
+		T out = null;
+		Session sxn = getSession();
+		Criteria te = sxn.createCriteria(clazz).add(example);
+		try {
+			logger.debug(te.list() + "");
+			out = (T) te.list().get(0);
+			commit(sxn);
+		} catch (HibernateException e) {
+			rollback(sxn);
+			throw new NwormQueryException("", e);
+		}
+		return out;
+	}
+
 
 }

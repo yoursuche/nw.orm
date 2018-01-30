@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nw.orm.dao.DaoFactory;
-import nw.orm.dao.GenericQueryDao;
+import nw.orm.dao.QueryDao;
 
 public class HibernateDaoFactory implements DaoFactory {
 	
@@ -118,7 +118,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	}
 
 	@Override
-	public GenericQueryDao getGenericQueryDao() {
+	public QueryDao getQueryDao() {
 		return new HibernateQueryDao(factory, enableJta, useCurrentSession);
 	}
 

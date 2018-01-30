@@ -3,8 +3,10 @@ package nw.orm.hibernate;
 import java.util.List;
 
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Example;
 
 import nw.orm.core.exception.NwormQueryException;
+import nw.orm.core.query.QueryModifier;
 import nw.orm.dao.Dao;
 import nw.orm.dao.Paging;
 
@@ -35,5 +37,9 @@ public interface HDao<T> extends Dao<T> {
 	 * @throws NwormQueryException
 	 */
 	T get(Criterion ... criteria);
+	
+	T getByExample(Class<T> clazz, Example example);
+	
+	List<T> getListByExample(QueryModifier qm, Example example);
 
 }
