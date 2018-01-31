@@ -28,7 +28,6 @@ import nw.orm.core.query.QueryModifier;
  * the hibernate dao class
  * @author Ogwara O. Rowland
  *
- * @param <T> Entity class
  */
 public abstract class HibernateDaoBase {
 	

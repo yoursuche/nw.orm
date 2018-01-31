@@ -6,8 +6,6 @@ import java.util.Map;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
-import nw.orm.core.session.HibernateSessionService;
-
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 

@@ -149,9 +149,7 @@ public class Nworm extends NwormImpl {
 	 * Close factory.
 	 */
 	public void closeFactory() {
-		if (sxnManager.getFactory() != null) {
-			sxnManager.getFactory().close();
-		}
+		this.factory.clean();
 	}
 
 	/**

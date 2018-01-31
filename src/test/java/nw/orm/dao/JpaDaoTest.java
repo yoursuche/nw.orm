@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import nw.orm.entity.Person;
@@ -16,7 +14,6 @@ import nw.orm.entity.Sex;
 import nw.orm.jpa.JDao;
 import nw.orm.jpa.JpaDaoFactory;
 
-import org.hibernate.jpa.criteria.expression.ExpressionImpl;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

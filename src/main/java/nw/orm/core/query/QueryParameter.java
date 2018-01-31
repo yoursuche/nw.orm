@@ -19,16 +19,28 @@ public class QueryParameter {
 	/** The value. */
 	private Object value;
 
+	private String title;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	/**
 	 * Instantiates a new query parameter.
 	 *
-	 * @param name the name
-	 * @param value the value
+	 * @param name the name of the field
+	 * @param value the field value
+	 * @param title custom title for the field
 	 */
-	public QueryParameter(String name, Object value) {
+	public QueryParameter(String name, Object value, String title) {
 		super();
 		this.name = name;
 		this.value = value;
+		this.title = title;
 	}
 
 	/**
@@ -82,7 +94,11 @@ public class QueryParameter {
 	 * @return the query parameter
 	 */
 	public static QueryParameter create(String name, Object value){
-		return new QueryParameter(name, value);
+		return new QueryParameter(name, value, name);
+	}
+	
+	public static QueryParameter create(String name, String title, Object value){
+		return new QueryParameter(name, value, title);
 	}
 	
 	/**
@@ -96,7 +112,7 @@ public class QueryParameter {
 		QueryParameter[] arr = new QueryParameter[keySet.size()];
 		int r = 0;
 		for(String key: keySet){
-			arr[r] = new QueryParameter(key, params.get(key));
+			arr[r] = new QueryParameter(key, params.get(key), key);
 			r +=1;
 		}
 		return arr;

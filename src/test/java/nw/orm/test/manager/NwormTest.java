@@ -1,31 +1,7 @@
 
 package nw.orm.test.manager;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-import java.util.Properties;
-
-import javax.naming.OperationNotSupportedException;
-
-import nw.orm.core.query.QueryModifier;
-import nw.orm.core.query.QueryParameter;
-import nw.orm.core.query.SQLModifier;
-import nw.orm.core.service.Nworm;
-import nw.orm.entity.Person;
-import nw.orm.entity.Sex;
-import nw.orm.entity.geo.City;
-import nw.orm.entity.geo.Country;
-import nw.orm.entity.geo.Region;
-import nw.orm.pojo.PersonPojo;
-import nw.orm.pojo.TestPox;
-
-import org.hibernate.criterion.Example;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
-import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

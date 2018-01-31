@@ -16,7 +16,7 @@ public interface HDao<T> extends Dao<T> {
 	 * criteria
 	 * @param criteria criteria Zero or more Restrictions
 	 * @return lists of entities matching criteria
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException Query Exception
 	 */
 	List<T> list(Criterion ... criteria);
 	
@@ -25,15 +25,15 @@ public interface HDao<T> extends Dao<T> {
 	 * @param paging {@link Paging} 
 	 * @param criteria Zero or more Restrictions
 	 * @return lists of entities matching criteria
-	 * @throws NwormQueryException
+	 * @throws NwormQueryException Query Exception
 	 */
 	List<T> list(Paging paging, Criterion ... criteria);
 	
 	/**
 	 * 
-	 * @param criteria
-	 * @return
-	 * @throws NwormQueryException
+	 * @param criteria hibernate restrictions
+	 * @return Entity instance matching the criteria or null
+	 * @throws NwormQueryException Query Exception
 	 */
 	T get(Criterion ... criteria);
 	

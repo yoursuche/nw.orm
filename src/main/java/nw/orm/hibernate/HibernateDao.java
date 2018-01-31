@@ -15,7 +15,6 @@ import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Restrictions;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
-import nw.orm.core.query.QueryModifier;
 import nw.orm.dao.Paging;
 
 public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {

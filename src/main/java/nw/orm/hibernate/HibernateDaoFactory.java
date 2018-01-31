@@ -31,6 +31,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	
 	/**
 	 * Uses hibernate.cfg.xml as resource
+	 * @param useCurrentSession use hibernate current session flag
 	 */
 	public HibernateDaoFactory(boolean useCurrentSession) {
 		this("hibernate.cfg.xml", false, useCurrentSession);
@@ -39,6 +40,8 @@ public class HibernateDaoFactory implements DaoFactory {
 	/**
 	 * 
 	 * @param resourceName Hibernate configuration file
+	 * @param enableJta true for jta use
+	 * @param useCurrentSession use hibernate current session flag
 	 */
 	public HibernateDaoFactory(String resourceName, boolean enableJta, boolean useCurrentSession) {
 		
@@ -82,14 +85,17 @@ public class HibernateDaoFactory implements DaoFactory {
 	 * <a href='http://docs.jboss.org/hibernate/orm/5.1/quickstart/html_single/#obtaining'>
 	 * 		http://docs.jboss.org/hibernate/orm/5.1/quickstart/html_single/#obtaining
 	 * </a>
-	 * @throws Exception
+	 * @param resourceName hibernate config file
+	 * @throws Exception throw exception 
 	 */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	protected void setUp(String resourceName) throws Exception {
 		
 		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
-				.configure(resourceName)
-				.applySettings(extraProps); // configures settings from hibernate.cfg.xml
+				.configure(resourceName);
+		
+		if(extraProps != null)
+			builder.applySettings(extraProps); // configures settings from hibernate.cfg.xml
 				
 		Map<String, String> props = builder.getSettings();
 		

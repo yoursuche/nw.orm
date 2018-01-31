@@ -14,21 +14,21 @@ public interface JDao<T> extends Dao<T> {
 	/**
 	 * No pagination support, just lists all entries that meets
 	 * criteria
-	 * @param criteria criteria Zero or more Restrictions
-	 * @return lists of entities matching criteria
-	 * @throws NwormQueryException
+	 * @param parameters Zero or more query parameters
+	 * @throws NwormQueryException Query Exception
 	 */
 	List<T> list(QueryParameter ... parameters);
 	
 	/**
 	 * Supports paging
 	 * @param paging {@link Paging} 
-	 * @param criteria Zero or more Restrictions
-	 * @return lists of entities matching criteria
-	 * @throws NwormQueryException
+	 * @param parameters Zero or more parameters
+	 * @throws NwormQueryException Query Exception
 	 */
 	List<T> list(Paging paging, QueryParameter ... parameters);
 
 	CriteriaBuilder getCriteriaBuilder();
+
+	T get(QueryParameter ... parameters);
 
 }

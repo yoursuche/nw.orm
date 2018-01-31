@@ -3,6 +3,8 @@ package nw.orm.jpa;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import nw.orm.core.query.QueryParameter;
+
 public abstract class JpaDaoBase {
 	
 	protected EntityManagerFactory em;
@@ -53,6 +55,28 @@ public abstract class JpaDaoBase {
 		mgr.getTransaction().commit();
 		mgr.clear();
 		mgr.getTransaction().begin();
+	}
+	
+	protected String addParameter(QueryParameter ...criterias) {
+		String query = "";
+		int start = 0;
+		for (QueryParameter param : criterias) {
+			
+			if(start == 0) {
+				query += " WHERE ";
+				start += 1;
+			}else {
+				query += " AND ";
+			}
+			
+			if(param.getTitle() != null)
+				query += param.getName() + " = :" + param.getTitle();
+			else {
+				query += param.getName() + " = :" + param.getName();
+			}
+			
+		}
+		return query;
 	}
 
 }

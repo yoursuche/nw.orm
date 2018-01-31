@@ -1,6 +1,7 @@
 package nw.orm.jpa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
@@ -12,8 +13,6 @@ import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
@@ -21,11 +20,13 @@ import nw.orm.dao.Paging;
 
 public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	
+	private String entityName;
 	private Class<T> entityClass;
 
 	protected JpaDao(EntityManagerFactory em, Class<T> clazz, boolean managedTransaction) {
 		super(em, managedTransaction);
 		this.entityClass = clazz;
+		this.entityName = clazz.getSimpleName();
 	}
 	
 	public T getById(Serializable id) {
@@ -41,17 +42,22 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		try {
 			mgr.persist(item);
 			commit(mgr);
-			return item;
-		} catch (EntityExistsException e) {
+		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception - Entity already exists", e);
-		} catch (TransactionRequiredException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
-		}catch (IllegalArgumentException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Object not an entity", e);
 		}
+		return item;
+	}
+	
+	@Override
+	public boolean saveOrUpdate(T entity) {
+		
+		try {
+			save(entity);
+		} catch (EntityExistsException e) {
+			update(entity);
+		}
+		return true;
 	}
 
 	@Override
@@ -61,12 +67,9 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			T merged = mgr.merge(item);
 			mgr.remove(merged);
 			commit(mgr);
-		} catch (TransactionRequiredException e) {
+		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
-		}catch (IllegalArgumentException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Object not an entity or already detached", e);
 		}
 		
 	}
@@ -78,12 +81,9 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			T item = mgr.find(entityClass, pk);
 			mgr.remove(item);
 			commit(mgr);
-		} catch (TransactionRequiredException e) {
+		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
-		}catch (IllegalArgumentException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Not an entity or already detached", e);
 		}
 	}
 
@@ -94,38 +94,40 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		try {
 			t = mgr.merge(item);
 			commit(mgr);
-			return t;
-		} catch (TransactionRequiredException e) {
+		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
-		}catch (IllegalArgumentException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Not an entity or already removed", e);
 		}
+		return t;
 	}
 	
-
-//	@Override
+	@Override
 	@SuppressWarnings("unchecked")
-	public T getByQuery(String query, QueryParameter... parameters) {
+	public T get(QueryParameter... parameters) {
+		
+		T result = null;
+		
+		String query = "FROM " + this.entityName + this.addParameter(parameters);
 		EntityManager mgr = getEntityManager();
 		Query cQuery = mgr.createQuery(query);
 		
 		for (QueryParameter param : parameters) {
-			cQuery.setParameter(param.getName(), param.getValue());
+			String title = param.getTitle();
+			
+			if(param.getTitle() != null) {
+				title = param.getTitle();
+			}
+			cQuery.setParameter(title, param.getValue());
 		}
 		
 		try {
-			T singleResult = (T)cQuery.getSingleResult();
-			return singleResult;
+			result = (T)cQuery.getSingleResult();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			rollback(mgr);
+			throw new NwormQueryException("Nw.orm Exception", e);
 		}
-		
-		return null;
+		return result;
 	}
-
 
 	@Override
 	public void bulkSave(List<T> entities) {
@@ -143,15 +145,9 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 				counter += 1;
 			}
 			commit(mgr);
-		} catch (EntityExistsException e) {
+		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception - Entity already exists", e);
-		} catch (TransactionRequiredException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
-		}catch (IllegalArgumentException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Object not an entity", e);
 		}
 	}
 
@@ -173,12 +169,9 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 				counter += 1l;
 			}
 			commit(mgr);
-		} catch (TransactionRequiredException e) {
+		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
-		}catch (IllegalArgumentException e) {
-			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Object not an entity", e);
 		}
 	}
 
@@ -273,12 +266,6 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			throw new NwormQueryException("Nw.orm Exception", e);
 		}
 	}
-	
-	public List<T> list(CriteriaQuery<T> query) {
-		EntityManager mgr = getEntityManager();
-		TypedQuery<T> q = mgr.createQuery(query);
-		return null;
-	}
 
 	@Override
 	public List<T> list(QueryParameter ... parameters) {
@@ -287,36 +274,38 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<T> list(Paging paging, QueryParameter... parameters) {
 		
+		List<T> list = new ArrayList<T>();
 		EntityManager mgr = getEntityManager();
-		CriteriaBuilder builder = mgr.getCriteriaBuilder();
-		CriteriaQuery<T> query = builder.createQuery(entityClass);
-		Root<T> root = query.from(entityClass);
 		
-		TypedQuery<T> q = mgr.createQuery(query);
+		String query = "FROM " + this.entityName + this.addParameter(parameters);
+		Query cQuery = mgr.createQuery(query);
+		
 		for (QueryParameter param : parameters) {
-			q.setParameter(param.getName(), param.getValue());
+			cQuery.setParameter(param.getTitle(), param.getValue());
 		}
 		
 		if(paging != null) {
-			q.setFirstResult(paging.getPageOffset());
-			q.setMaxResults(paging.getPageSize());
+			cQuery.setFirstResult(paging.getPageOffset());
+			cQuery.setMaxResults(paging.getPageSize());
 		}
-		List<T> result = q.getResultList();
-		return q.getResultList();
+		
+		try {
+			list = cQuery.getResultList();
+		} catch (Exception e) {
+			throw new NwormQueryException("Nw.orm Exception", e);
+		}
+		
+		return list;
+		
 	}
 	
 	@Override
 	public CriteriaBuilder getCriteriaBuilder() {
 		EntityManager mgr = getEntityManager();
 		return mgr.getCriteriaBuilder();
-	}
-
-	@Override
-	public boolean saveOrUpdate(T entity) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }

@@ -20,6 +20,7 @@ public interface DaoFactory {
 	/**
 	 * Generic DAO based on clazz
 	 * @param clazz target class for DAO
+	 * @param <T> gen class
 	 * @return a generic DAO associated with provided class
 	 */
 	<T> Dao<T> getDao(Class<T> clazz);
