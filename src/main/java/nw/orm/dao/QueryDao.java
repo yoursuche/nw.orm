@@ -6,6 +6,7 @@ import org.hibernate.criterion.Criterion;
 
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
+import nw.orm.core.query.SQLModifier;
 
 /**
  * Generic DAO API
@@ -22,5 +23,6 @@ public interface QueryDao {
 
 	<T> List<T> list(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria);
 	
+	<T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params);
 
 }

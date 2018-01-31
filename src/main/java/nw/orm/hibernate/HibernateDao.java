@@ -277,12 +277,11 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<T> getListByExample(QueryModifier qm, Example example){
+	public List<T> getByExample(Example example){
 		List<T> items = new ArrayList<T>();
 		Session sxn = getSession();
-		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
+		Criteria te = sxn.createCriteria(entityClass).add(example);
 		try {
-			modifyCriteria(te, qm);
 			items = te.list();
 			commit(sxn);
 		} catch (HibernateException e) {
@@ -290,23 +289,6 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 			throw new NwormQueryException("", e);
 		}
 		return items;
-	}
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getByExample(Class<T> clazz, Example example){
-		T out = null;
-		Session sxn = getSession();
-		Criteria te = sxn.createCriteria(clazz).add(example);
-		try {
-			logger.debug(te.list() + "");
-			out = (T) te.list().get(0);
-			commit(sxn);
-		} catch (HibernateException e) {
-			rollback(sxn);
-			throw new NwormQueryException("", e);
-		}
-		return out;
 	}
 
 

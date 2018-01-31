@@ -131,11 +131,4 @@ public interface NwormHibernateService extends NwormService {
 	public abstract <T> List<T> getListByExample(QueryModifier qm,
 			Example example);
 
-	/**
-	 * Gets the session service.
-	 *
-	 * @return the session service
-	 */
-	public abstract HibernateSessionService getSessionService();
-
 }

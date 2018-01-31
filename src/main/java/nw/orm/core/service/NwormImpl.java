@@ -4,13 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import nw.orm.core.Entity;
 import nw.orm.core.NwormEntity;
 import nw.orm.core.exception.NwormQueryException;
-import nw.orm.core.query.QueryAlias;
-import nw.orm.core.query.QueryFetchMode;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
@@ -27,13 +24,8 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projection;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.proxy.HibernateProxyHelper;
-import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +43,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 	/** The sxn manager. */
 	protected HibernateSessionService sxnManager;
 
-	/** The initialized successfully. */
-	private boolean initializedSuccessfully;
-
-	private String classId = UUID.randomUUID().toString();
-	
 	protected HibernateDaoFactory factory;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -78,25 +65,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	protected static void putManager(String file, NwormImpl manager) {
 		NwormFactory.putManager(file, manager);
-	}
-
-	/**
-	 * Configures how nworm uses transactions and sessions.
-	 *
-	 * @param useTxns configures how nworm uses transactions (to use JTA, use false)
-	 * @param useCurrent configures nworm to use current session instead of openning session each time
-	 */
-	public void configureSessionManager(boolean useTxns, boolean useCurrent){
-		if(useCurrent){
-			sxnManager.enableCurrentSession();
-		}else{
-			sxnManager.disableCurrentSession();
-		}
-		if(useTxns){
-			sxnManager.enableTransactions();
-		}else{
-			sxnManager.disableTransactions();
-		}
 	}
 
 	/**
@@ -212,45 +180,9 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getBySQL(java.lang.Class, java.lang.String, nw.orm.core.query.SQLModifier, nw.orm.core.query.QueryParameter[])
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params){
-		List<T> out = new ArrayList<T>();
-		Session session = sxnManager.getManagedSession();
-		SQLQuery te = session.createSQLQuery(sql);
-
-		if (params != null) {
-			for (QueryParameter param : params) {
-				te.setParameter(param.getName(), param.getValue());
-			}
-		}
-
-		if(sqlMod != null){
-			if(returnClazz != null && isClassMapped(returnClazz)){
-				te.addEntity(returnClazz);
-			}
-
-			if(returnClazz != null && !isClassMapped(returnClazz)){
-				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
-			}
-//			if(Entity.class.isAssignableFrom(returnClazz)){
-//				te.setParameter("deleted", false);
-//			}
-			if(sqlMod.isPaginated()){
-				te.setFirstResult(sqlMod.getPageIndex());
-				te.setMaxResults(sqlMod.getMaxResult());
-			}
-		}
-
-		try {
-			out = te.list();
-		} catch (Exception e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.commit(session);
-		sxnManager.closeSession(session);
-		return out;
+		QueryDao dao = factory.getQueryDao();
+		return dao.getBySQL(returnClazz, sql, sqlMod, params);
 	}
 
 	/* (non-Javadoc)
@@ -276,22 +208,10 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getByExample(java.lang.Class, org.hibernate.criterion.Example)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T getByExample(Class<T> clazz, Example example){
-		T out = null;
-		Session sxn = sxnManager.getManagedSession();
-		Criteria te = sxn.createCriteria(clazz).add(example);
-		try {
-			logger.debug(te.list() + "");
-			out = (T) te.list().get(0);
-			sxnManager.commit(sxn);
-		} catch (HibernateException e) {
-			sxnManager.rollback(sxn);
-			sxnManager.closeSession(sxn);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(sxn);
-		return out;
+		HDao<T> dao = factory.getDao(clazz);
+		List<T> samples = dao.getByExample(example);
+		return samples.get(0);
 	}
 
 	/* (non-Javadoc)
@@ -503,53 +423,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 	}
 
 	/**
-	 * Enables jta by disabling all references to transactions.
-	 * Its expected that starting and controlling the transaction will be controlleed by the user
-	 */
-	public void enableJTA() {
-		this.sxnManager.disableTransactions();
-	}
-
-	/**
-	 * Disables jta by enabling all references to transactions.
-	 * Its expected that starting and controlling the transaction will be controlleed by nworm
-	 */
-	public void disableJTA() {
-		this.sxnManager.enableTransactions();
-	}
-
-	/**
-	 * Enables the use of current session from session actory
-	 */
-	public void enableSessionByContext() {
-		this.sxnManager.enableCurrentSession();
-	}
-
-	/**
-	 * Disables the use of current session, all new session will call openSession
-	 */
-	public void disableSessionByContext() {
-		this.sxnManager.disableCurrentSession();
-	}
-
-
-	/**
-	 * Enable jta based session.
-	 */
-	@Deprecated
-	public void enableJTABasedSession() {
-		configureSessionManager(false, true);
-	}
-
-	/**
-	 * Disable jta based session.
-	 */
-	@Deprecated
-	public void disableJTABasedSession() {
-		configureSessionManager(true, false);
-	}
-
-	/**
 	 * Modify hql.
 	 *
 	 * @param hql the hql
@@ -566,40 +439,4 @@ public abstract class NwormImpl implements NwormHibernateService {
 		return hql;
 	}
 
-	/**
-	 * Checks if is initialized successfully.
-	 *
-	 * @return true, if is initialized successfully
-	 */
-	public boolean isInitializedSuccessfully() {
-		return initializedSuccessfully;
-	}
-
-	/**
-	 * Sets the initialized successfully.
-	 *
-	 * @param initializedSuccessfully the new initialized successfully
-	 */
-	public void setInitializedSuccessfully(boolean initializedSuccessfully) {
-		this.initializedSuccessfully = initializedSuccessfully;
-	}
-
-	/* (non-Javadoc)
-	 * @see nw.orm.core.service.NwormService#getSessionService()
-	 */
-	@Override
-	public HibernateSessionService getSessionService() {
-		if(isInitializedSuccessfully()){
-			return this.sxnManager;
-		}
-		return null;
-	}
-
-	public String getClassId() {
-		return classId;
-	}
-
-	public void setClassId(String classId) {
-		this.classId = classId;
-	}
 }
