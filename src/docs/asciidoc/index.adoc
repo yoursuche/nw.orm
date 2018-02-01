@@ -1,0 +1,68 @@
+= Introduction
+Doc Writer <rogwara@nimworks.com>
+v1
+:hardbreaks:
+
+nw.orm is a reusable library that encourages developers to focus on the actual project work, by removing repetitive tasks. It is basically a wrapper around JPA 
+that exposes classes and methods that are ideal for both Java SE and Java EE applications. The library is lightweight and does not enforce any design pattern.
+
+
+== Why nw.orm
+While implementing software that has to do with databases, the following actions usually occur for a typical Java developer (like me) working with hibernate .
+* Add JPA implementation
+* Create Required Entities
+* Add entity mappings to the configuration file
+* Implement a Session Factory Builder
+* Implement a Service Layer for Querying the system (Possibly DAOs for each entity)
+* Implement CRUD methods on the service layer
+* Start coding the application.....
+
+The problem was not in the number of things to do, but in the level of repetition required each time a new project comes up. Also, multiple developers projects usually tend towards varying implementations, with each developer handling database session as they see best. While working with multiple databases, will require developers to re-implement some aspect of the system.
+
+* Single interface for all database transactions. Multiple Data Access Objects are not required
+* Work with multiple databases in the same application at the same time
+* Query using Hibernate Criteria, HQL or SQL
+* Support for JPA based and HBM file based configurations
+* Returns appropriate class objects without casting
+* Provides mapped super classes for quick creation of JPA based entities
+
+== Quick Start
+
+=== Installation
+nw.orm binaries are hosted on maven central
+
+[source, xml]
+----
+<dependency>
+	<groupId>com.nimworks</groupId>
+	<artifactId>nw.orm</artifactId>
+	<version>${nworm.version}</version>
+</dependency>
+----
+
+=== Code
+
+nw.orm provides base classes for building entities. The base class provides extra columns that can be useful
+[source, java]
+----
+@Entity
+@Table(name = "ACCESS_TOKEN")
+public class AccessToken extends REntity {
+
+	private static final long serialVersionUID = -5221279551618337736L;
+}
+----
+
+Provide appropriate mappings
+
+=== Querying
+
+[source, java]
+----
+Nworm worm = Nworm.geInstance();
+worm.getById(AccessToken.class, 1L);
+----
+
+
+
+

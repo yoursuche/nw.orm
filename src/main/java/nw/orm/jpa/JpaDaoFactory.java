@@ -21,13 +21,11 @@ public class JpaDaoFactory implements DaoFactory {
 	
 	/**
 	 * Creates a factory using the provided unit name
-	 * @param isManagedTransaction True for externally managed transaction
 	 * @param unitName persistent unit name
 	 */
-	public JpaDaoFactory(boolean isManagedTransaction, String unitName) {
+	public JpaDaoFactory(String unitName) {
 		assert unitName != null;
 		this.unitName = unitName;
-		this.useManagedTransaction = isManagedTransaction;
 	}
 	
 	
@@ -35,12 +33,10 @@ public class JpaDaoFactory implements DaoFactory {
 	 * Creates a factory using the provided EntityManagerFactory,
 	 * best for cases where EntityManagerFactory is managed
 	 * externally
-	 * @param em externally provided factory
 	 * @param isManagedTransaction True for externally managed transaction
 	 */
-	public JpaDaoFactory(EntityManagerFactory em, boolean isManagedTransaction) {
+	public JpaDaoFactory(EntityManagerFactory em) {
 		this.em = em;
-		this.useManagedTransaction = isManagedTransaction;
 	}
 
 	@Override
