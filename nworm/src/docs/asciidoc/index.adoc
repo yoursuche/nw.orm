@@ -1,10 +1,10 @@
-= Introduction
+= The worm in ORM
 Doc Writer <rogwara@nimworks.com>
 v1
 :hardbreaks:
 
-nw.orm is a reusable library that encourages developers to focus on the actual project work, by removing repetitive tasks. It is basically a wrapper around JPA 
-that exposes classes and methods that are ideal for both Java SE and Java EE applications. The library is lightweight and does not enforce any design pattern.
+== Introduction
+nw.orm is a simple reusable library that takes away certain type of repetitive tasks while developing Java based software that interacts with databases. It encourages developers to focus on the actual project work, by removing these repetitive tasks. It is basically a wrapper around JPA that exposes classes and methods that are ideal for both Java SE and Java EE applications. The library is lightweight and does not enforce any design pattern
 
 
 == Why nw.orm

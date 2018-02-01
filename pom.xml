@@ -1,283 +1,41 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.nimworks</groupId>
-	<artifactId>nw.orm</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
-	<name>nw.orm</name>
-	
-	<properties>
-		<hibernate.version>5.1.10.Final</hibernate.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
-        <asciidoctorj.version>1.5.6</asciidoctorj.version>
-        <jruby.version>1.7.26</jruby.version>
-	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<compilerArgument>-proc:none</compilerArgument>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.5</version>
-				<extensions>true</extensions>
-				<executions>
-			      <execution>
-			         <id>default-deploy</id>
-			         <phase>deploy</phase>
-			         <goals>
-			            <goal>deploy</goal>
-			         </goals>
-			      </execution>
-			   </executions>
-			   	<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-				<!-- <configuration>
-					<serverId>nexus</serverId>
-					<nexusUrl>http://repo.nimworks.com:8081/nexus/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration> -->
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-			    <execution>
-			      <id>attach-javadocs</id>
-			      <goals>
-			        <goal>jar</goal>
-			      </goals>
-			    </execution>
-			  </executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.1</version>
-				<executions>
-			    <execution>
-			      <id>attach-sources</id>
-			      <goals>
-			        <goal>jar</goal>
-			      </goals>
-			    </execution>
-			  </executions>
-			</plugin>
-			<plugin>
-                <groupId>org.asciidoctor</groupId>
-                <artifactId>asciidoctor-maven-plugin</artifactId>
-                <version>${asciidoctor.maven.plugin.version}</version>              
-                <dependencies>
-                    <!-- Comment this section to use the default jruby artifact provided by the plugin -->
-                    <dependency>
-                        <groupId>org.jruby</groupId>
-                        <artifactId>jruby-complete</artifactId>
-                        <version>${jruby.version}</version>
-                    </dependency>
-                    <!-- Comment this section to use the default AsciidoctorJ artifact provided by the plugin -->
-                    <dependency>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctorj</artifactId>
-                        <version>${asciidoctorj.version}</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <sourceDirectory>src/docs/asciidoc</sourceDirectory>
-                    <!-- If you set baseDir to ${project.basedir}, top-level includes are resolved relative to the project root -->
-                    <!--
-                    <baseDir>${project.basedir}</baseDir>
-                    -->
-                    <!-- Attributes common to all output formats -->
-                    <attributes>
-                        <endpoint-url>http://example.org</endpoint-url>
-                        <sourcedir>${project.build.sourceDirectory}</sourcedir>
-                        <project-version>${project.version}</project-version>
-                    </attributes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>output-html</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>process-asciidoc</goal>
-                        </goals>
-                        <configuration>
-                            <backend>html5</backend>
-                            <doctype>docbook</doctype>
-                            <preserveDirectories>true</preserveDirectories>
-                            <sourceHighlighter>coderay</sourceHighlighter>
-                            <!--
-                            Scenarios for linking vs embedding assets:
-                            Link to both stylesheets and images::
-                              - don't set embedAssets option
-                              - set linkcss attribute to true
-                              - set imagesdir attribute to path relative to AsciiDoc source file
-                              <attributes>
-                                  <linkcss>true</linkcss>
-                                  <imagesdir>./images</imagesdir>
-                              </attributes>
-                            Embed stylesheets and images::
-                            
-                              - set embedAssets option to true
-                              - don't set linkcss attribute
-                              - set imagesdir attribute to path relative to project root
-                              <embedAssets>true</embedAssets>
-                              <attributes>
-                                  <imagesdir>src/docs/asciidoc/images</imagesdir>
-                              </attributes>
-                            Link to stylesheets but embed images::
-                            
-                              - set embedAssets option to true
-                              - set linkcss attribute to true
-                              - set imagesdir attribute to path relative to project root
-                              <embedAssets>true</embedAssets>
-                              <attributes>
-                                  <linkcss>true</linkcss>
-                                  <imagesdir>src/docs/asciidoc/images</imagesdir>
-                              </attributes>
-                            Embed stylesheets but link images (default)::
-                            
-                              - don't set embedAssets option
-                              - don't set linkcss attribute
-                              - set imagesdir attribute to path relative to AsciiDoc source file
-                              <attributes>
-                                  <imagesdir>./images</imagesdir>
-                              </attributes>
-                            IMPORTANT: When you enable image embedding, you must qualify the path the the imagesdir, as shown above.
-                            -->
-                            <attributes>
-                                <imagesdir>./images</imagesdir>
-                                <toc>left</toc>
-                                <icons>font</icons>
-                                <sectanchors>true</sectanchors>
-                                <!-- set the idprefix to blank -->
-                                <idprefix/>
-                                <idseparator>-</idseparator>
-                                <docinfo1>true</docinfo1>
-                            </attributes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-		</plugins>
-	</build>
-	<dependencies>
-		<!-- Hibernate -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- JUnit -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<!-- SLF4J -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.25</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
-		</dependency>
-		
-		<!-- H2 -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.196</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<repositories>
-		<repository>
-			<id>OSGEO GeoTools repo</id>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
-		<repository>
-			<id>Hibernate Spatial repo</id>
-			<url>http://www.hibernatespatial.org/repository</url>
-		</repository>
-	</repositories>
-	<!-- <distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement> -->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://repo.nimworks.com:8081/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		<repository>
-			<id>nexus</id>
-			<url>http://repo.nimworks.com:8081/nexus/content/repositories/releases/</url>
-		</repository>
-	</distributionManagement>
-	<developers>
-		<developer>
-			<name>Ogwara O. Rowland</name>
-			<organization>Neemworks Nigeria</organization>
-			<organizationUrl>http://www.nimworks.com</organizationUrl>
-		</developer>
-	</developers>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<scm>
-		<url>https://nimworks.svn.cloudforge.com/nworm</url>
-		<developerConnection>Ogwara O. Rowland</developerConnection>
-		<tag>orm</tag>
-		<connection>https://nimworks.svn.cloudforge.com/nworm</connection>
-	</scm>
-	<organization>
-		<name>Neemworks Nigeria</name>
-		<url>http://www.nimworks.com</url>
-	</organization>
-	<description>Orm wrapper for hibernate</description>
-	<url>http://nworm.nimworks.com</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.nimworks</groupId>
+  <artifactId>nw.orm</artifactId>
+  <version>4.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+  	<module>nworm</module>
+  	<module>nworm.hibernate</module>
+  </modules>
+  
+  <dependencies>
+    <!-- JUnit -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
+    
+    <!-- SLF4J -->
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.25</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.25</version>
+    </dependency>
+    
+    <!-- H2 -->
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>1.4.196</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
