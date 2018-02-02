@@ -33,7 +33,7 @@ public class JpaDaoFactory implements DaoFactory {
 	 * Creates a factory using the provided EntityManagerFactory,
 	 * best for cases where EntityManagerFactory is managed
 	 * externally
-	 * @param isManagedTransaction True for externally managed transaction
+	 * @param em EntityManagerFactory
 	 */
 	public JpaDaoFactory(EntityManagerFactory em) {
 		this.em = em;

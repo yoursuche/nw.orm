@@ -1,4 +1,4 @@
-package nw.orm.test.manager;
+package nw.orm.dao;
 
 import java.util.Date;
 

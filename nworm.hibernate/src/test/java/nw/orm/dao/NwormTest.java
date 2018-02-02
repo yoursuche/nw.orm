@@ -1,5 +1,5 @@
 
-package nw.orm.test.manager;
+package nw.orm.dao;
 
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;

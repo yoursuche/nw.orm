@@ -29,7 +29,7 @@ public abstract class JpaDaoBase {
 	
 	/***
 	 * Commits and closes a transaction
-	 * @param mgr
+	 * @param mgr EntityManager
 	 */
 	public void commit(EntityManager mgr) {
 		
@@ -41,7 +41,7 @@ public abstract class JpaDaoBase {
 	
 	/***
 	 * Commits and closes a transaction
-	 * @param mgr
+	 * @param mgr EntityManager
 	 */
 	public void rollback(EntityManager mgr) {
 		

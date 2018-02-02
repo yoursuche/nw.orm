@@ -11,8 +11,6 @@ import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
-import nw.orm.core.session.HibernateSessionFactory;
-import nw.orm.core.session.HibernateSessionService;
 import nw.orm.dao.Dao;
 import nw.orm.dao.QueryDao;
 import nw.orm.hibernate.HDao;
@@ -37,13 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NwormImpl implements NwormHibernateService {
 
-	/** Hibernate Session Factory instance. */
-	protected HibernateSessionFactory conf;
 
-	/** The sxn manager. */
-	protected HibernateSessionService sxnManager;
-
-	protected HibernateDaoFactory factory;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -65,24 +57,6 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	protected static void putManager(String file, NwormImpl manager) {
 		NwormFactory.putManager(file, manager);
-	}
-
-	/**
-	 * Checks if is class mapped.
-	 *
-	 * @param clazz the clazz
-	 * @return true, if is class mapped
-	 */
-	public boolean isClassMapped(Class<?> clazz) {
-		try {
-			return sxnManager.getFactory().getClassMetadata(
-					HibernateProxyHelper.getClassWithoutInitializingProxy(clazz.newInstance())) != null;
-		} catch (InstantiationException e) {
-			this.logger.error("Exception: ", e);
-		} catch (IllegalAccessException e) {
-			this.logger.error("Exception: ", e);
-		}
-		return false;
 	}
 
 	/* (non-Javadoc)
