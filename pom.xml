@@ -9,6 +9,11 @@
   	<module>nworm.hibernate</module>
   </modules>
   
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <hibernate.version>5.1.10.Final</hibernate.version>
+  </properties>
+  
   <dependencies>
     <!-- JUnit -->
     <dependency>
