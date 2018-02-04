@@ -16,5 +16,6 @@
 
 		<mapping class="nw.orm.entity.Item" />
 		<mapping class="nw.orm.entity.Person" />
+		<mapping class="nw.orm.entity.UuidModel" />
 	</session-factory>
 </hibernate-configuration>

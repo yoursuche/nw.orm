@@ -33,6 +33,14 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		EntityManager mgr = getEntityManager();
 		T item = mgr.find(entityClass, id);
 		commit(mgr);
+		
+		if(item != null && isWormEntity(entityClass)) {
+			Entity e = (Entity) item;
+			if(e.isDeleted()) {
+				return null;
+			}
+		}
+		
 		return item;
 	}
 	
@@ -102,26 +110,25 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
-	public T get(QueryParameter... parameters) {
+	public T find(QueryParameter... parameters) {
 		
 		T result = null;
 		
-		String query = "FROM " + this.entityName + this.addParameter(parameters);
+		String query = "FROM " + this.entityName + this.addParameters(parameters);
 		EntityManager mgr = getEntityManager();
-		Query cQuery = mgr.createQuery(query);
-		
-		for (QueryParameter param : parameters) {
-			String title = param.getTitle();
-			
-			if(param.getTitle() != null) {
-				title = param.getTitle();
-			}
-			cQuery.setParameter(title, param.getValue());
-		}
 		
 		try {
-			result = (T)cQuery.getSingleResult();
+			
+			TypedQuery<T> cQuery = mgr.createQuery(query, entityClass);
+			
+			setParameters(cQuery, parameters);
+			
+			if(isWormEntity(entityClass)) {
+				cQuery.setParameter("deleted", false);
+			}
+			
+			result = cQuery.getSingleResult();
+			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
 			throw new NwormQueryException("Nw.orm Exception", e);
@@ -252,13 +259,16 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	}
 	
 	public T get(CriteriaQuery<T> query, QueryParameter ...parameters) {
+		
 		EntityManager mgr = getEntityManager();
 		try {
 			TypedQuery<T> q = mgr.createQuery(query);
 			for (QueryParameter param : parameters) {
 				q.setParameter(param.getName(), param.getValue());
 			}
-			
+			if(isWormEntity(entityClass)) {
+				q.setParameter("deleted", false);
+			}
 			return q.getSingleResult();
 		} catch (NoResultException e) {
 			return null;
@@ -269,22 +279,41 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 
 	@Override
 	public List<T> list(QueryParameter ... parameters) {
-		
 		return list(null, parameters);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<T> list(Paging paging, QueryParameter... parameters) {
+		return list(Boolean.TRUE, paging, parameters);
+		
+	}
+	
+	@Override
+	public CriteriaBuilder getCriteriaBuilder() {
+		EntityManager mgr = getEntityManager();
+		return mgr.getCriteriaBuilder();
+	}
+
+	@Override
+	public List<T> deleted(Paging paging) {
+		return list(Boolean.TRUE, paging);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<T> list(boolean hard, Paging paging, QueryParameter... parameters) {
 		
 		List<T> list = new ArrayList<T>();
 		EntityManager mgr = getEntityManager();
 		
-		String query = "FROM " + this.entityName + this.addParameter(parameters);
+		String query = "FROM " + this.entityName + this.addParameters(parameters);
 		Query cQuery = mgr.createQuery(query);
 		
 		for (QueryParameter param : parameters) {
 			cQuery.setParameter(param.getTitle(), param.getValue());
+		}
+		
+		if(!hard && isWormEntity(entityClass)) {
+			cQuery.setParameter("deleted", false);
 		}
 		
 		if(paging != null) {
@@ -300,12 +329,6 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		
 		return list;
 		
-	}
-	
-	@Override
-	public CriteriaBuilder getCriteriaBuilder() {
-		EntityManager mgr = getEntityManager();
-		return mgr.getCriteriaBuilder();
 	}
 
 }

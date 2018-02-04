@@ -35,6 +35,14 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		try {
 			out = (T) session.get(entityClass, id, LockOptions.UPGRADE);
 			commit(session);
+			
+			if(out != null && Entity.class.isAssignableFrom(entityClass)) {
+				Entity e = (Entity) out;
+				if(e.isDeleted()) {
+					return null;
+				}
+			}
+			
 		} catch (Exception e) {
 			rollback(session);
 			throw new NwormQueryException("Query Exception", e);
@@ -49,36 +57,13 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	}
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<T> list(Paging paging, Criterion ... criteria) {
-		
-		List<T> out = new ArrayList<T>();
-		Session session = getSession();
-		try {
-			Criteria te = session.createCriteria(entityClass);
-			for (Criterion c : criteria) {
-				te.add(c);
-			}
-			
-			if(paging != null) {
-				te.setFirstResult(paging.getPageOffset());
-				te.setMaxResults(paging.getPageSize());
-			}
-			addSoftRestrictions(te, entityClass);
-			out = te.list();
-			commit(session);
-			
-		} catch (Exception e) {
-			rollback(session);
-			throw new NwormQueryException("Query Exception", e);
-		}
-		
-		return out;
+		return this.list(Boolean.TRUE, paging, criteria);
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public T get(Criterion ... criteria) {
+	public T find(Criterion ... criteria) {
 		T out = null;
 		Session session = getSession();
 		try {
@@ -236,7 +221,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		if (!Entity.class.isAssignableFrom(entityClass)) {
 			throw new NwormQueryException();
 		}
-		T bc = get(Restrictions.idEq(id));
+		T bc = find(Restrictions.idEq(id));
 		if ((bc instanceof Entity)) {
 			Entity e = (Entity) bc;
 			e.setDeleted(true);
@@ -288,6 +273,41 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 			throw new NwormQueryException("", e);
 		}
 		return items;
+	}
+
+	@Override
+	public List<T> deleted(Paging paging) {
+		return this.list(Boolean.TRUE, paging);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private List<T> list(boolean hard, Paging paging, Criterion ... criteria) {
+		
+		List<T> out = new ArrayList<T>();
+		Session session = getSession();
+		try {
+			Criteria te = session.createCriteria(entityClass);
+			for (Criterion c : criteria) {
+				te.add(c);
+			}
+			
+			if(paging != null) {
+				te.setFirstResult(paging.getPageOffset());
+				te.setMaxResults(paging.getPageSize());
+			}
+			
+			if(!hard){
+				addSoftRestrictions(te, entityClass);
+			}
+			out = te.list();
+			commit(session);
+			
+		} catch (Exception e) {
+			rollback(session);
+			throw new NwormQueryException("Query Exception", e);
+		}
+		
+		return out;
 	}
 
 

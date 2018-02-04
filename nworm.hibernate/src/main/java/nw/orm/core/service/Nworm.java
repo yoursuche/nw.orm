@@ -5,6 +5,8 @@ import java.util.Properties;
 
 import javax.naming.OperationNotSupportedException;
 
+import org.hibernate.SessionFactory;
+
 import nw.orm.hibernate.HibernateDaoFactory;
 
 /**
@@ -76,6 +78,10 @@ public class Nworm extends NwormImpl {
 	 */
 
 	public static Nworm getInstance(String configFile, Properties props) throws OperationNotSupportedException {
+		return getInstance(configFile, props, false, false);
+	}
+	
+	public static Nworm getInstance(String configFile, Properties props, boolean useJta, boolean useCureentSession) throws OperationNotSupportedException {
 		Nworm service = null;
 		if (props != null) {
 			String cname = props.getProperty("config.name");
@@ -92,7 +98,7 @@ public class Nworm extends NwormImpl {
 			synchronized (Nworm.class) {
 				service = new Nworm();
 				service.setConfigFile(configFile);
-				service.init(configFile, props);
+				service.init(configFile, props, useJta, useCureentSession);
 			}
 		}
 		return service;
@@ -114,9 +120,9 @@ public class Nworm extends NwormImpl {
 	 *            the props
 	 * @throws OperationNotSupportedException
 	 */
-	private void init(String configFile, Properties props) throws OperationNotSupportedException {
+	private void init(String configFile, Properties props, boolean useJta, boolean useCureentSession) throws OperationNotSupportedException {
 
-		HibernateDaoFactory daoFactory = new HibernateDaoFactory(configFile, props);
+		HibernateDaoFactory daoFactory = new HibernateDaoFactory(configFile, props, useJta, useCureentSession);
 		daoFactory.init();
 
 		this.factory = daoFactory;
@@ -162,6 +168,46 @@ public class Nworm extends NwormImpl {
 	 */
 	public void reInitialize(Properties props) throws OperationNotSupportedException {
 		closeFactory();
-		init(getConfigFile(), props);
+		init(getConfigFile(), props, false, false);
 	}
+	
+	public void reInitialize(Properties props, boolean useJta, boolean useCureentSession) throws OperationNotSupportedException {
+		closeFactory();
+		init(getConfigFile(), props, useJta, useCureentSession);
+	}
+	
+	/**
+	 * Enables jta by disabling all references to transactions.
+	 * Its expected that starting and controlling the transaction will be controlleed by the user
+	 */
+	public void enableJTA() {
+		this.factory.setJtaEnabled(true);
+	}
+
+	/**
+	 * Disables jta by enabling all references to transactions.
+	 * Its expected that starting and controlling the transaction will be controlleed by nworm
+	 */
+	public void disableJTA() {
+		this.factory.setJtaEnabled(false);
+	}
+
+	/**
+	 * Enables the use of current session from session actory
+	 */
+	public void enableSessionByContext() {
+		this.factory.setCurrentSessionEnabled(true);
+	}
+
+	/**
+	 * Disables the use of current session, all new session will call openSession
+	 */
+	public void disableSessionByContext() {
+		this.factory.setCurrentSessionEnabled(false);
+	}
+	
+	public SessionFactory getHibernateSessionFactory() {
+		return this.factory.getSessionFactory();
+	}
+
 }

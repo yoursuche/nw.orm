@@ -10,15 +10,15 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Example;
 import org.hibernate.transform.Transformers;
 
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
-import nw.orm.dao.QueryDao;
 
-public class HibernateQueryDao extends HibernateDaoBase implements QueryDao {
+public class HibernateQueryDao extends HibernateDaoBase implements HQueryDao {
 
 	public HibernateQueryDao(SessionFactory sxnFactory, boolean jtaEnabled, boolean useCurrentSession) {
 		super(sxnFactory, jtaEnabled, useCurrentSession);
@@ -83,7 +83,7 @@ public class HibernateQueryDao extends HibernateDaoBase implements QueryDao {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
+	public <T> T find(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
 		
 		T out = null;
 		Session session = getSession();
@@ -153,9 +153,6 @@ public class HibernateQueryDao extends HibernateDaoBase implements QueryDao {
 			} catch (Exception e) {
 				te.setResultTransformer(Transformers.aliasToBean(returnClazz));
 			}
-//			if(Entity.class.isAssignableFrom(returnClazz)){
-//				te.setParameter("deleted", false);
-//			}
 			if(sqlMod.isPaginated()){
 				te.setFirstResult(sqlMod.getPageIndex());
 				te.setMaxResults(sqlMod.getMaxResult());
@@ -170,6 +167,43 @@ public class HibernateQueryDao extends HibernateDaoBase implements QueryDao {
 		}
 		commit(session);
 		return out;
+	}
+
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getListByExample(QueryModifier qm, Example example) {
+		List<T> items = new ArrayList<T>();
+		Session sxn = getSession();
+		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
+		try {
+			items = te.list();
+			commit(sxn);
+		} catch (HibernateException e) {
+			rollback(sxn);
+			throw new NwormQueryException("nworm Exception", e);
+		}
+		return items;
+	}
+
+	@Override
+	public int execQuery(String shql, QueryParameter... params) {
+		Session session = getSession();
+		SQLQuery query = session.createSQLQuery(shql);
+		if (params != null) {
+			for (QueryParameter param : params) {
+				query.setParameter(param.getName(), param.getValue());
+			}
+		}
+		int o = -1;
+		try {
+			o = query.executeUpdate();
+			commit(session);
+		} catch (Exception e) {
+			rollback(session);
+			throw new NwormQueryException("nworm Exception", e);
+		}
+		return o;
 	}
 
 	

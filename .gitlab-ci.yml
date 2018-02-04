@@ -12,8 +12,8 @@ test:
 deploy:
     stage: deploy
     script:
-        - mvn deploy -Dmaven.test.skip=true
+        - mvn clean deploy
     environment: prod
     only:
         - master
-        - development
+        - develop

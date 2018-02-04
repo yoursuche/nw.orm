@@ -1,6 +1,5 @@
 package nw.orm.hibernate;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.hibernate.SessionFactory;
@@ -11,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import nw.orm.dao.DaoFactory;
-import nw.orm.dao.QueryDao;
 
 public class HibernateDaoFactory implements DaoFactory {
 	
@@ -26,7 +24,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	 * Uses hibernate.cfg.xml as resource
 	 */
 	public HibernateDaoFactory() {
-		this("hibernate.cfg.xml", false, false);
+		this("hibernate.cfg.xml", new Properties(), false, false);
 	}
 	
 	/**
@@ -34,7 +32,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	 * @param useCurrentSession use hibernate current session flag
 	 */
 	public HibernateDaoFactory(boolean useCurrentSession) {
-		this("hibernate.cfg.xml", false, useCurrentSession);
+		this("hibernate.cfg.xml", new Properties(), false, useCurrentSession);
 	}
 	
 	/**
@@ -44,15 +42,14 @@ public class HibernateDaoFactory implements DaoFactory {
 	 * @param useCurrentSession use hibernate current session flag
 	 */
 	public HibernateDaoFactory(String resourceName, boolean enableJta, boolean useCurrentSession) {
-		
+		this(resourceName, new Properties(), enableJta, useCurrentSession);
+	}
+
+	public HibernateDaoFactory(String resourceName, Properties props, boolean enableJta, boolean useCurrentSession) {
+		this.extraProps = props;
 		this.enableJta = enableJta;
 		this.resourceName = resourceName;
 		this.useCurrentSession = useCurrentSession;
-	}
-
-	public HibernateDaoFactory(String configFile, Properties props) {
-		this.extraProps = props;
-		this.resourceName = configFile;
 	}
 
 	@Override
@@ -88,7 +85,6 @@ public class HibernateDaoFactory implements DaoFactory {
 	 * @param resourceName hibernate config file
 	 * @throws Exception throw exception 
 	 */
-	@SuppressWarnings({ "deprecation", "unchecked" })
 	protected void setUp(String resourceName) throws Exception {
 		
 		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
@@ -96,18 +92,6 @@ public class HibernateDaoFactory implements DaoFactory {
 		
 		if(extraProps != null)
 			builder.applySettings(extraProps); // configures settings from hibernate.cfg.xml
-				
-		Map<String, String> props = builder.getSettings();
-		
-		String s = props.get("hibernate.current_session_context_class");
-		String t = props.get("hibernate.connection.datasource");
-		if(s != null) {
-			this.useCurrentSession = true;
-		}
-		
-		if(t != null) {
-			this.enableJta = true;
-		}
 		
 		// A SessionFactory is set up once for an application!
 		final StandardServiceRegistry registry = builder.build();
@@ -124,8 +108,20 @@ public class HibernateDaoFactory implements DaoFactory {
 	}
 
 	@Override
-	public QueryDao getQueryDao() {
+	public HQueryDao getQueryDao() {
 		return new HibernateQueryDao(factory, enableJta, useCurrentSession);
+	}
+	
+	public SessionFactory getSessionFactory() {
+		return this.factory;
+	}
+	
+	public void setJtaEnabled(boolean enable) {
+		this.enableJta = enable;
+	}
+	
+	public void setCurrentSessionEnabled(boolean enable) {
+		this.useCurrentSession = enable;
 	}
 
 }

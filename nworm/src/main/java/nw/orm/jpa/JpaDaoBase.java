@@ -2,10 +2,12 @@ package nw.orm.jpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 
+import nw.orm.core.Entity;
 import nw.orm.core.query.QueryParameter;
 
-public abstract class JpaDaoBase {
+abstract class JpaDaoBase {
 	
 	protected EntityManagerFactory em;
 	private boolean managedTransaction;
@@ -57,7 +59,14 @@ public abstract class JpaDaoBase {
 		mgr.getTransaction().begin();
 	}
 	
-	protected String addParameter(QueryParameter ...criterias) {
+	protected boolean isWormEntity(Class<?> clazz) {
+		if(Entity.class.isAssignableFrom(clazz)) {
+			return true;
+		}
+		return false;
+	}
+	
+	protected String addParameters(QueryParameter ...criterias) {
 		String query = "";
 		int start = 0;
 		for (QueryParameter param : criterias) {
@@ -76,7 +85,19 @@ public abstract class JpaDaoBase {
 			}
 			
 		}
+		
 		return query;
+	}
+	
+	protected void setParameters(Query query, QueryParameter ...parameters) {
+		for (QueryParameter param : parameters) {
+			String title = param.getTitle();
+			
+			if(param.getTitle() != null) {
+				title = param.getTitle();
+			}
+			query.setParameter(title, param.getValue());
+		}
 	}
 
 }

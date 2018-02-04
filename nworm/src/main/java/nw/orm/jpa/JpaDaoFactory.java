@@ -23,9 +23,10 @@ public class JpaDaoFactory implements DaoFactory {
 	 * Creates a factory using the provided unit name
 	 * @param unitName persistent unit name
 	 */
-	public JpaDaoFactory(String unitName) {
+	public JpaDaoFactory(String unitName, boolean useManagedTransaction) {
 		assert unitName != null;
 		this.unitName = unitName;
+		this.useManagedTransaction = useManagedTransaction;
 	}
 	
 	
@@ -35,8 +36,9 @@ public class JpaDaoFactory implements DaoFactory {
 	 * externally
 	 * @param em EntityManagerFactory
 	 */
-	public JpaDaoFactory(EntityManagerFactory em) {
+	public JpaDaoFactory(EntityManagerFactory em, boolean useManagedTransaction) {
 		this.em = em;
+		this.useManagedTransaction = useManagedTransaction;
 	}
 
 	@Override
@@ -60,8 +62,7 @@ public class JpaDaoFactory implements DaoFactory {
 
 	@Override
 	public QueryDao getQueryDao() {
-		// TODO Auto-generated method stub
-		return null;
+		return new JpaQueryDao(em, useManagedTransaction);
 	}
 
 }

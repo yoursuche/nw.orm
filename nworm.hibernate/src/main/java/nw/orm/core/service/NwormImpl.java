@@ -14,6 +14,7 @@ import nw.orm.core.query.SQLModifier;
 import nw.orm.dao.Dao;
 import nw.orm.dao.QueryDao;
 import nw.orm.hibernate.HDao;
+import nw.orm.hibernate.HQueryDao;
 import nw.orm.hibernate.HibernateDaoFactory;
 
 import org.hibernate.Criteria;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 public abstract class NwormImpl implements NwormHibernateService {
 
 
+	protected HibernateDaoFactory factory;
 	
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -104,7 +106,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	public <T> T getByCriteria(Class<T> entityClass, Criterion ... criteria) {
 		
 		HDao<T> dao = factory.getDao(entityClass);
-		T out = dao.get(criteria);
+		T out = dao.find(criteria);
 		return out;
 	}
 
@@ -164,8 +166,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		QueryDao dao = factory.getQueryDao();
-		T out = dao.get(returnClazz, qm, criteria);
+		HQueryDao dao = factory.getQueryDao();
+		T out = dao.find(returnClazz, qm, criteria);
 		return out;
 	}
 
@@ -174,7 +176,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		QueryDao dao = factory.getQueryDao();
+		HQueryDao dao = factory.getQueryDao();
 		return dao.list(returnClazz, qm, criteria);
 	}
 
@@ -192,21 +194,9 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getListByExample(nw.orm.core.query.QueryModifier, org.hibernate.criterion.Example)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> List<T> getListByExample(QueryModifier qm, Example example){
-		List<T> items = new ArrayList<T>();
-		Session sxn = sxnManager.getManagedSession();
-		Criteria te = sxn.createCriteria(qm.getQueryClazz()).add(example);
-		try {
-			items = te.list();
-			sxnManager.commit(sxn);
-		} catch (HibernateException e) {
-			sxnManager.rollback(sxn);
-			sxnManager.closeSession(sxn);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.closeSession(sxn);
-		return items;
+		HQueryDao dao = factory.getQueryDao();
+		return dao.getListByExample(qm, example);
 	}
 
 	/* (non-Javadoc)
@@ -214,24 +204,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public int executeSQLUpdate(String sql, QueryParameter ... params){
-		Session session = sxnManager.getManagedSession();
-		SQLQuery query = session.createSQLQuery(sql);
-		if (params != null) {
-			for (QueryParameter param : params) {
-				query.setParameter(param.getName(), param.getValue());
-			}
-		}
-		int o = -1;
-		try {
-			o = query.executeUpdate();
-		} catch (Exception e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.commit(session);
-		sxnManager.closeSession(session);
-		return o;
+		HQueryDao dao = factory.getQueryDao();
+		return dao.execQuery(sql, params);
 	}
 
 	/* (non-Javadoc)
@@ -239,24 +213,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public int executeHQLUpdate(String hql, QueryParameter ... params){
-		Session session = sxnManager.getManagedSession();
-		org.hibernate.Query query = session.createQuery(hql);
-		if (params != null) {
-			for (QueryParameter param : params) {
-				query.setParameter(param.getName(), param.getValue());
-			}
-		}
-		int o = -1;
-		try {
-			o = query.executeUpdate();
-		} catch (Exception e) {
-			sxnManager.rollback(session);
-			sxnManager.closeSession(session);
-			throw new NwormQueryException("", e);
-		}
-		sxnManager.commit(session);
-		sxnManager.closeSession(session);
-		return o;
+		HQueryDao dao = factory.getQueryDao();
+		return dao.execQuery(hql, params);
 	}
 
 	/* (non-Javadoc)

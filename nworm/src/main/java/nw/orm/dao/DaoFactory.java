@@ -18,7 +18,7 @@ public interface DaoFactory {
 	void clean();
 	
 	/**
-	 * Generic DAO based on clazz
+	 * Generic DAO for entity clazz
 	 * @param clazz target class for DAO
 	 * @param <T> gen class
 	 * @return a generic DAO associated with provided class

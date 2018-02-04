@@ -24,7 +24,7 @@ public class JpaDaoTest {
 
 	@BeforeClass
 	public static void init(){
-		jpaService = new JpaDaoFactory("nworm");
+		jpaService = new JpaDaoFactory("nworm", false);
 		jpaService.init();
 		
 		Dao<Person> dao = jpaService.getDao(Person.class);

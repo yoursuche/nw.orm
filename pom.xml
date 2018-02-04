@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nimworks</groupId>
 	<artifactId>nw.orm</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>nworm</module>
@@ -203,6 +203,6 @@
 		<name>Neemworks Nigeria</name>
 		<url>http://www.nimworks.com</url>
 	</organization>
-	<description>Orm wrapper for hibernate</description>
 	<url>http://nworm.nimworks.com</url>
+	<description>A generic ORM wrapper for Java</description>
 </project>

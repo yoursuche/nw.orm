@@ -29,13 +29,7 @@ public interface HDao<T> extends Dao<T> {
 	 */
 	List<T> list(Paging paging, Criterion ... criteria);
 	
-	/**
-	 * 
-	 * @param criteria hibernate restrictions
-	 * @return Entity instance matching the criteria or null
-	 * @throws NwormQueryException Query Exception
-	 */
-	T get(Criterion ... criteria);
+	T find(Criterion ... criteria);
 	
 	List<T> getByExample(Example example);
 	
