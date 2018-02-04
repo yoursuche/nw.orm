@@ -66,12 +66,17 @@ abstract class JpaDaoBase {
 		return false;
 	}
 	
-	protected String addParameters(QueryParameter ...criterias) {
+	protected String addParameters(boolean mapped, QueryParameter ...criterias) {
 		String query = "";
 		int start = 0;
+		
+		if(mapped) {
+			query += "WHERE deleted = :deleted";
+		}
+		
 		for (QueryParameter param : criterias) {
 			
-			if(start == 0) {
+			if(start == 0 && !mapped) {
 				query += " WHERE ";
 				start += 1;
 			}else {
@@ -83,13 +88,13 @@ abstract class JpaDaoBase {
 			else {
 				query += param.getName() + " = :" + param.getName();
 			}
-			
+			start += 1;
 		}
 		
 		return query;
 	}
 	
-	protected void setParameters(Query query, QueryParameter ...parameters) {
+	protected void setParameters(boolean mapped, Query query, QueryParameter ...parameters) {
 		for (QueryParameter param : parameters) {
 			String title = param.getTitle();
 			
@@ -97,6 +102,10 @@ abstract class JpaDaoBase {
 				title = param.getTitle();
 			}
 			query.setParameter(title, param.getValue());
+		}
+		
+		if(mapped){
+			query.setParameter("deleted", false);
 		}
 	}
 

@@ -114,15 +114,14 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		
 		T result = null;
 		
-		String query = "FROM " + this.entityName + this.addParameters(parameters);
+		String query = "FROM " + this.entityName + this.addParameters(isWormEntity(entityClass), parameters);
 		EntityManager mgr = getEntityManager();
 		
 		try {
 			
 			TypedQuery<T> cQuery = mgr.createQuery(query, entityClass);
 			
-			setParameters(cQuery, parameters);
-			
+			setParameters(isWormEntity(entityClass), cQuery, parameters);
 			if(isWormEntity(entityClass)) {
 				cQuery.setParameter("deleted", false);
 			}
@@ -305,16 +304,10 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		List<T> list = new ArrayList<T>();
 		EntityManager mgr = getEntityManager();
 		
-		String query = "FROM " + this.entityName + this.addParameters(parameters);
+		String query = "FROM " + this.entityName + this.addParameters(isWormEntity(entityClass), parameters);
 		Query cQuery = mgr.createQuery(query);
 		
-		for (QueryParameter param : parameters) {
-			cQuery.setParameter(param.getTitle(), param.getValue());
-		}
-		
-		if(!hard && isWormEntity(entityClass)) {
-			cQuery.setParameter("deleted", false);
-		}
+		setParameters(isWormEntity(entityClass), cQuery, parameters);
 		
 		if(paging != null) {
 			cQuery.setFirstResult(paging.getPageOffset());
