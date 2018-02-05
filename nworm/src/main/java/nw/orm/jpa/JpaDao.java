@@ -13,6 +13,10 @@ import javax.persistence.TransactionRequiredException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
@@ -22,6 +26,8 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	
 	private String entityName;
 	private Class<T> entityClass;
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected JpaDao(EntityManagerFactory em, Class<T> clazz, boolean managedTransaction) {
 		super(em, managedTransaction);
@@ -52,7 +58,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Entity already exists", e);
+			throw new NwormQueryException("Nw.orm Exception - ", e);
 		}
 		return item;
 	}
@@ -130,7 +136,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception", e);
+			logger.warn("Nworm Error - ", e);
 		}
 		return result;
 	}
@@ -138,9 +144,12 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	@Override
 	public void bulkSave(List<T> entities) {
 		EntityManager mgr = getEntityManager();
+		
+		T current = null;
 		try {
 			long counter = 0l;
 			for (T entity : entities) {
+				current = entity;
 				mgr.persist(entity);
 				
 				if (counter == 10000L) {
@@ -153,7 +162,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - Entity already exists", e);
+			throw new NwormQueryException("Nw.orm Exception - ", e);
 		}
 	}
 
@@ -177,7 +186,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
-			throw new NwormQueryException("Nw.orm Exception - No active transaction to use", e);
+			throw new NwormQueryException("Nw.orm Exception -", e);
 		}
 	}
 
@@ -317,7 +326,8 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		try {
 			list = cQuery.getResultList();
 		} catch (Exception e) {
-			throw new NwormQueryException("Nw.orm Exception", e);
+			rollback(mgr);
+			logger.warn("Nworm Error - ", e);
 		}
 		
 		return list;

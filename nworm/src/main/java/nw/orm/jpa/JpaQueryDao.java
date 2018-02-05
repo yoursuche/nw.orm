@@ -25,7 +25,7 @@ public class JpaQueryDao extends JpaDaoBase implements QueryDao {
 		T res = null;
 		try {
 			TypedQuery<T> query = mgr.createQuery(jpql, resultClass);
-			setParameters(query, parameters);
+			setParameters(false, query, parameters);
 			res = query.getSingleResult();
 			commit(mgr);
 		} catch (Exception e) {
@@ -41,7 +41,7 @@ public class JpaQueryDao extends JpaDaoBase implements QueryDao {
 		List<T> res = new ArrayList<T>();
 		try {
 			TypedQuery<T> query = mgr.createQuery(jpql, resultClass);
-			setParameters(query, parameters);
+			setParameters(false, query, parameters);
 			res = query.getResultList();
 			commit(mgr);
 		} catch (Exception e) {
@@ -58,7 +58,7 @@ public class JpaQueryDao extends JpaDaoBase implements QueryDao {
 		List<T> res = new ArrayList<T>();
 		try {
 			Query query = mgr.createNativeQuery(sql, returnClazz);
-			setParameters(query, params);
+			setParameters(false, query, params);
 			
 			if(sqlMod.isPaginated()) {
 				query.setFirstResult(sqlMod.getPageIndex());
@@ -79,7 +79,7 @@ public class JpaQueryDao extends JpaDaoBase implements QueryDao {
 		int res = -1;
 		try {
 			Query query = mgr.createNativeQuery(shql);
-			setParameters(query, params);
+			setParameters(false, query, params);
 			
 			res = query.executeUpdate();
 			commit(mgr);

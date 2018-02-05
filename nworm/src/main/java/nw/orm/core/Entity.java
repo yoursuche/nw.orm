@@ -2,6 +2,7 @@ package nw.orm.core;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
@@ -137,8 +138,11 @@ public abstract class Entity implements Serializable {
 					prefix = "is";
 				}
 				name = name.substring(0, 1).toUpperCase() + name.substring(1);
-
-				result.append(this.getClass().getMethod(prefix + name).invoke(this));
+				Method mtd = this.getClass().getMethod(prefix + name);
+				if(Entity.class.isAssignableFrom(mtd.getReturnType())) {
+					result.append("<" + mtd.getReturnType().getSimpleName() + ">");
+				}else
+					result.append(mtd.invoke(this));
 			} catch (Exception ex) {
 				System.out.println(ex);
 			}

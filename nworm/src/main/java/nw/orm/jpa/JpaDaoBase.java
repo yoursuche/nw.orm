@@ -71,7 +71,7 @@ abstract class JpaDaoBase {
 		int start = 0;
 		
 		if(mapped) {
-			query += "WHERE deleted = :deleted";
+			query += " WHERE deleted = :deleted";
 		}
 		
 		for (QueryParameter param : criterias) {
