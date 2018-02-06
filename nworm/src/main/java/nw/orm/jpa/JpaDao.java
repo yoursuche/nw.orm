@@ -145,11 +145,9 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	public void bulkSave(List<T> entities) {
 		EntityManager mgr = getEntityManager();
 		
-		T current = null;
 		try {
 			long counter = 0l;
 			for (T entity : entities) {
-				current = entity;
 				mgr.persist(entity);
 				
 				if (counter == 10000L) {
