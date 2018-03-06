@@ -119,19 +119,15 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	public T find(QueryParameter... parameters) {
 		
 		T result = null;
-		
-		String query = "FROM " + this.entityName + this.addParameters(isWormEntity(entityClass), parameters);
+		boolean isMapped = isWormEntity(entityClass);
+		String query = "FROM " + this.entityName + this.addParameters(isMapped, parameters);
 		EntityManager mgr = getEntityManager();
 		
 		try {
-			
+			logger.debug(query);
 			TypedQuery<T> cQuery = mgr.createQuery(query, entityClass);
 			
-			setParameters(isWormEntity(entityClass), cQuery, parameters);
-			if(isWormEntity(entityClass)) {
-				cQuery.setParameter("deleted", false);
-			}
-			
+			setParameters(isMapped, cQuery, parameters);
 			result = cQuery.getSingleResult();
 			commit(mgr);
 		} catch (Exception e) {
