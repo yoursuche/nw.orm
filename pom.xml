@@ -178,19 +178,19 @@
 	</build>
 	<distributionManagement>
 		<snapshotRepository>
-			<id>nexus</id>
-			<url>http://repo.nimworks.com:8081/nexus/content/repositories/snapshots/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>
-			<id>nexus</id>
-			<url>http://repo.nimworks.com:8081/nexus/content/repositories/releases/</url>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 	<developers>
 		<developer>
 			<name>Ogwara O. Rowland</name>
 			<organization>Neemworks Nigeria</organization>
-			<organizationUrl>http://www.nimworks.com</organizationUrl>
+			<organizationUrl>http://nworm.nimworks.com</organizationUrl>
 		</developer>
 	</developers>
 	<licenses>
