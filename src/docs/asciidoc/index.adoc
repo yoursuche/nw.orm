@@ -4,45 +4,52 @@ v1
 :hardbreaks:
 
 == Introduction
-nw.orm is a simple reusable library that takes away certain type of repetitive tasks while developing Java based software that interacts with databases. It encourages developers to focus on the actual project work, by removing these repetitive tasks. It is basically a wrapper around JPA that exposes classes and methods that are ideal for both Java SE and Java EE applications. The library is lightweight and does not enforce any design pattern
-
-
-== Why nw.orm
-While implementing software that has to do with databases, the following actions usually occur for a typical Java developer (like me) working with hibernate .
-* Add JPA implementation
-* Create Required Entities
-* Add entity mappings to the configuration file
-* Implement a Session Factory Builder
-* Implement a Service Layer for Querying the system (Possibly DAOs for each entity)
-* Implement CRUD methods on the service layer
-* Start coding the application.....
-
-The problem was not in the number of things to do, but in the level of repetition required each time a new project comes up. Also, multiple developers projects usually tend towards varying implementations, with each developer handling database session as they see best. While working with multiple databases, will require developers to re-implement some aspect of the system.
-
-* Single interface for all database transactions. Multiple Data Access Objects are not required
-* Work with multiple databases in the same application at the same time
-* Query using Hibernate Criteria, HQL or SQL
-* Support for JPA based and HBM file based configurations
-* Returns appropriate class objects without casting
-* Provides mapped super classes for quick creation of JPA based entities
+nw.orm is a simple reusable library that takes away certain type of repetitive tasks while developing Java based software that interacts with databases. It encourages developers to focus on the actual project work, by removing these repetitive tasks. It is basically a wrapper around JPA that exposes classes and methods that are ideal for both Java SE and Java EE applications. The library is lightweight and does not enforce any design pattern.
 
 == Quick Start
+The project is split into modules that can be used independently, the idea here is to have a common interface across multiple datasource possibly including non relational databases
 
 === Installation
-nw.orm binaries are hosted on maven central
+nw.orm binaries are hosted on maven central.
+
+==== JPA
+Ideal for projects that uses JPA from different providers like OpenJPA, Hibernate, and EclipseLink
 
 [source, xml]
 ----
 <dependency>
 	<groupId>com.nimworks</groupId>
-	<artifactId>nw.orm</artifactId>
+	<artifactId>nworm.core</artifactId>
 	<version>${nworm.version}</version>
 </dependency>
 ----
 
+==== Hibernate Specific
+Ideal for projects using hibernate core modules
+----
+<dependency>
+	<groupId>com.nimworks</groupId>
+	<artifactId>nworm.hibernate</artifactId>
+	<version>${nworm.version}</version>
+</dependency>
+----
+
+==== TODO
+
+* MongoDB
+* Elastic Search
+* Cassandra
+
 === Code
 
-nw.orm provides base classes for building entities. The base class provides extra columns that can be useful
+nw.orm provides base classes for building entities. The base class provides and manages extra fields that can be useful. These fields include
+
+* create_date: The entity create date
+* last_updated: The last time the entity was updated
+* deleted: soft deletion marker
+* active: can be used to toggle rows as on or off
+
+
 [source, java]
 ----
 @Entity

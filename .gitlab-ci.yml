@@ -17,3 +17,10 @@ deploy:
     only:
         - master
         - develop
+
+pages:
+    script:
+        - mv target/generated-docs public
+    artifacts:
+        paths:
+            - public

@@ -101,6 +101,14 @@ public class QueryParameter {
 		return new QueryParameter(name, value, title);
 	}
 	
+	public static QueryParameter param(String name, Object value){
+		return new QueryParameter(name, value, name);
+	}
+	
+	public static QueryParameter param(String name, String title, Object value){
+		return new QueryParameter(name, value, title);
+	}
+	
 	/**
 	 * From map.
 	 *
