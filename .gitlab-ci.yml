@@ -20,6 +20,7 @@ deploy:
 
 pages:
     script:
+        - mvn package
         - mv target/generated-docs public
     artifacts:
         paths:

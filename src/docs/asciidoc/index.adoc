@@ -49,6 +49,15 @@ nw.orm provides base classes for building entities. The base class provides and 
 * deleted: soft deletion marker
 * active: can be used to toggle rows as on or off
 
+===== Base Classes
+
+* IEntity
+* REntity
+* SEntity
+
+The main differences is in how the primary keys are denoted
+
+
 
 [source, java]
 ----
