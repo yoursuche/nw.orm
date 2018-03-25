@@ -12,6 +12,8 @@ test:
 deploy:
     stage: deploy
     script:
+        - gpg2 --list-keys
+        - gpg --list-keys
         - mvn clean deploy
     environment: prod
     only:
