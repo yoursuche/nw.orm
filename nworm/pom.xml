@@ -57,4 +57,8 @@
 		<name>Neemworks Nigeria</name>
 		<url>http://www.nimworks.com</url>
 	</organization>
+	<scm>
+		<url>https://github.com/Neemworks/nw.orm</url>
+		<developerConnection>Rowland Ogwara</developerConnection>
+	</scm>
 </project>
