@@ -10,7 +10,7 @@ nw.orm is a simple reusable library that takes away certain type of repetitive t
 The project is split into modules that can be used independently, the idea here is to have a common interface across multiple datasource possibly including non relational databases
 
 === Installation
-nw.orm binaries are hosted on maven central.
+nw.orm binaries are hosted on maven central. Always use one and not both
 
 ==== JPA
 Ideal for projects that uses JPA from different providers like OpenJPA, Hibernate, and EclipseLink
@@ -49,34 +49,83 @@ nw.orm provides base classes for building entities. The base class provides and 
 * deleted: soft deletion marker
 * active: can be used to toggle rows as on or off
 
-===== Base Classes
+===== Mapped Super Classes
 
 * IEntity
 * REntity
 * SEntity
 
-The main differences is in how the primary keys are denoted
+The main difference is in how the primary keys are denoted
 
+|===
+| Base Class | Primary Key | Primary Key Type
+| IEntity	 | Long		   | pk
+| REntity	 | String (UUID)		   | pk
+| SEntity	 | Long		   | id
+|=== 
 
+Using provided mapped super class is not mandatory, and valid JPA Entity is supported 
+
+=== What Else is provided
+Adding the dependency provides you with a ready to use `JpaDaoFactory` plus `HibernateDaoFactory` if you are using the hibernate module
+
+[source, java]
+----
+@Singleton
+public class DaoProvider {
+
+	private JpaDaoFactory daoFactory;
+	
+	@PersistenceUnit(unitName="unitng")
+	private EntityManagerFactory em;
+	
+	@PostConstruct
+	public void init() {
+		boolean isJta = true;
+		daoFactory = new JpaDaoFactory(em, isJta);
+	}
+	
+	@Produces
+	public JpaDaoFactory provideJpaDaoFactory() {
+		return this.daoFactory;
+	}
+
+}
+----
+
+==== Adding Entities
 
 [source, java]
 ----
 @Entity
-@Table(name = "ACCESS_TOKEN")
-public class AccessToken extends REntity {
+@Table(name = "token")
+public class Token extends IEntity {
 
 	private static final long serialVersionUID = -5221279551618337736L;
+	
+	private String token;
 }
 ----
-
-Provide appropriate mappings
 
 === Querying
 
 [source, java]
 ----
-Nworm worm = Nworm.geInstance();
-worm.getById(AccessToken.class, 1L);
+public class QueryClass {
+	
+	@inject
+	private JpaDaoFactory daoFactory;
+	
+	public Token findTokenById(Long id) {
+	
+		JDoa<Token> dao = daoFactory.getDao(Token.class);
+		Token token = dao.getById(id);
+		
+		return token;
+	}
+
+}
+
 ----
 
 
