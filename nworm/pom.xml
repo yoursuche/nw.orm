@@ -38,4 +38,23 @@
 		</dependency>
 		
 	</dependencies>
+	<developers>
+		<developer>
+			<name>Ogwara O. Rowland</name>
+			<organization>Neemworks Nigeria</organization>
+			<organizationUrl>http://nworm.nimworks.com</organizationUrl>
+		</developer>
+	</developers>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<url>http://nworm.nimworks.com</url>
+	<organization>
+		<name>Neemworks Nigeria</name>
+		<url>http://www.nimworks.com</url>
+	</organization>
 </project>

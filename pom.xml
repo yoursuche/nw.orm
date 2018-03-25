@@ -206,4 +206,5 @@
 	</organization>
 	<url>http://nworm.nimworks.com</url>
 	<description>A generic ORM wrapper for Java</description>
+	<name>nworm</name>
 </project>
