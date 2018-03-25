@@ -1,0 +1,27 @@
+variables:
+    DEV: "Rowland Ogwara"
+stages:
+    - test
+    - deploy
+
+test:
+    stage: test
+    script:
+        - mvn clean test
+
+deploy:
+    stage: deploy
+    script:
+        - mvn clean deploy
+    environment: prod
+    only:
+        - master
+        - develop
+
+pages:
+    script:
+        - mvn package
+        - mv target/generated-docs public
+    artifacts:
+        paths:
+            - public

@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<name>nworm.core</name>
+	
+	<parent>
+		<groupId>com.nimworks</groupId>
+		<artifactId>nw.orm</artifactId>
+		<version>4.0.2-SNAPSHOT</version>
+	</parent>
+	<artifactId>nworm.core</artifactId>
+	
+	<properties>
+		<asciidoctor.maven.plugin.version>1.5.6</asciidoctor.maven.plugin.version>
+        <asciidoctorj.version>1.5.6</asciidoctorj.version>
+        <jruby.version>1.7.26</jruby.version>
+	</properties>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<compilerArgument>-proc:none</compilerArgument>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+	</dependencies>
+</project>
