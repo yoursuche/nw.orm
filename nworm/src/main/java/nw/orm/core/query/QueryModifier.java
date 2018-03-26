@@ -1,7 +1,3 @@
-/*
- * Property of Neemworks Nigeria
- * Copyright 2013 - 2015, all rights reserved
- */
 package nw.orm.core.query;
 
 import java.util.ArrayList;

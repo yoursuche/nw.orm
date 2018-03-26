@@ -18,6 +18,7 @@ public abstract class SEntity extends Entity implements Comparable<SEntity>{
 	 * 
 	 */
 	private static final long serialVersionUID = -5196753574296304433L;
+	
 	@Id
 	@GeneratedValue
 	@Column(name = "ID", nullable = false, insertable = true, updatable = false)
@@ -32,12 +33,12 @@ public abstract class SEntity extends Entity implements Comparable<SEntity>{
 	 */
 	@Override
 	public int compareTo(SEntity o) {
-		int cmp = 0;
-		if (this.getId() != null && (this.getId() == o.getId() || this.getId().equals(o.getId()))) {
-			cmp = 0;
-		}else
-			cmp = -1;
-		return cmp;
+		
+		if(this.getId() == null) {
+			return -1;
+		}
+		
+		return this.getId().compareTo(o.getId());
 	}
 	
 	/*
@@ -52,12 +53,16 @@ public abstract class SEntity extends Entity implements Comparable<SEntity>{
 		if (!(object instanceof Entity)) {
 			return false;
 		}
-		final SEntity that = (SEntity) object;
-		if (this.getId() == null || that.getId() == null
-				|| !this.getId().equals(that.getId())) {
+		
+		if(this.getClass() != object.getClass()) {
 			return false;
 		}
-		return true;
+		final SEntity that = (SEntity) object;
+		if (this.getId() == null && that.getId() == null
+				&& this.getId().equals(that.getId())) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -66,7 +71,7 @@ public abstract class SEntity extends Entity implements Comparable<SEntity>{
 	 */
 	@Override
 	public int hashCode() {
-		int hashCode = 0;
+		int hashCode = getTableName().hashCode();
 		hashCode = 29 * hashCode + (getId() == null ? 0 : getId().hashCode());
 		return hashCode;
 	}
