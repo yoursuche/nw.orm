@@ -8,6 +8,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import nw.orm.core.annotations.Developer;
 
@@ -19,7 +21,7 @@ import nw.orm.core.annotations.Developer;
  * @author Ogwara O. Rowland
  */
 @Developer(name = "Ogwara O. Rowland", date = "")
-@MappedSuperclass
+@MappedSuperclass 
 public abstract class Entity implements Serializable {
 
 	/** The Constant serialVersionUID. */
@@ -165,6 +167,11 @@ public abstract class Entity implements Serializable {
 		}
 
 		return tableName;
+	}
+	
+	@PrePersist @PreUpdate
+	public void setLastUpdated() {
+		this.lastModified = new Date();
 	}
 
 }

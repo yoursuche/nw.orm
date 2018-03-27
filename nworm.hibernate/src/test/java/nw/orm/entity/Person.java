@@ -2,12 +2,15 @@ package nw.orm.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Table;
 
+import nw.orm.core.EntityUpdateListener;
 import nw.orm.core.IEntity;
 
 @Entity
 @Table(name = "PERSON")
+@EntityListeners(EntityUpdateListener.class)
 public class Person extends IEntity {
 	
 	private static final long serialVersionUID = -9207662556028009982L;

@@ -87,6 +87,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	 */
 	protected void setUp(String resourceName) throws Exception {
 		
+		
 		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
 				.configure(resourceName);
 		
@@ -95,7 +96,6 @@ public class HibernateDaoFactory implements DaoFactory {
 		
 		// A SessionFactory is set up once for an application!
 		final StandardServiceRegistry registry = builder.build();
-		
 		try {
 			factory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
 			
@@ -103,7 +103,8 @@ public class HibernateDaoFactory implements DaoFactory {
 		catch (Exception e) {
 			// The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
 			// so destroy it manually.
-			StandardServiceRegistryBuilder.destroy( registry );
+			StandardServiceRegistryBuilder.destroy(registry);
+			logger.error("Hibernate Init Exception: ", e);
 		}
 	}
 

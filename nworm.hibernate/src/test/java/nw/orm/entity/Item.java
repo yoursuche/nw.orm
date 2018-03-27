@@ -2,14 +2,17 @@ package nw.orm.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import nw.orm.core.EntityUpdateListener;
 import nw.orm.core.IEntity;
 
 @Entity
 @Table(name = "ITEM")
+@EntityListeners(EntityUpdateListener.class)
 public class Item extends IEntity {
 
 	private static final long serialVersionUID = 660956787631064317L;
