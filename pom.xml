@@ -13,7 +13,7 @@
 	<properties>
         <jruby.version>1.7.26</jruby.version>
         <asciidoctorj.version>1.5.6</asciidoctorj.version>
-		<hibernate.version>5.2.15.Final</hibernate.version>
+		<hibernate.version>5.1.13.Final</hibernate.version>
 		<maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,19 +30,22 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- SLF4J -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.25</version>
-			<scope>test</scope>
-		</dependency>
+		<!-- sl4j logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.25</version>
 		</dependency>
-
+        
+        <!-- Unit Test Dependencies -->
+        <!-- simple logger -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+            <scope>test</scope>
+        </dependency>
+		
 		<!-- H2 -->
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -64,14 +67,14 @@
             <version>2.3.0</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-core</artifactId>
             <version>2.3.0</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+        
+        <!-- Javax.Activation -->
 		<dependency>
 		    <groupId>javax.activation</groupId>
 		    <artifactId>activation</artifactId>
@@ -101,11 +104,6 @@
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
-				<!-- <configuration>
-					<serverId>nexus</serverId>
-					<nexusUrl>http://repo.nimworks.com:8081/nexus/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration> -->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
