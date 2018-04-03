@@ -89,7 +89,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		// get session
 		Session session = getSession();
 		try {
-			session.save(entity);
+			session.persist(entity);
 			commit(session);
 		} catch (HibernateException e) {
 			rollback(session);

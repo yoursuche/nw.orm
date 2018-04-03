@@ -7,7 +7,6 @@ import java.util.Map;
 
 import nw.orm.core.Entity;
 import nw.orm.core.NwormEntity;
-import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
@@ -17,14 +16,9 @@ import nw.orm.hibernate.HDao;
 import nw.orm.hibernate.HQueryDao;
 import nw.orm.hibernate.HibernateDaoFactory;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.proxy.HibernateProxyHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
