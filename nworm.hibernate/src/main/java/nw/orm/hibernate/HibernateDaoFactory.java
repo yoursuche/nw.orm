@@ -3,7 +3,9 @@ package nw.orm.hibernate;
 import java.util.Properties;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.slf4j.Logger;
@@ -87,8 +89,11 @@ public class HibernateDaoFactory implements DaoFactory {
 	 */
 	protected void setUp(String resourceName) throws Exception {
 		
+		BootstrapServiceRegistryBuilder bootstrapRegistryBuilder =
+			    new BootstrapServiceRegistryBuilder();
+		bootstrapRegistryBuilder.applyIntegrator(new WormHibernateIntegrator());
 		
-		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
+		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder(bootstrapRegistryBuilder.build())
 				.configure(resourceName);
 		
 		if(extraProps != null)
@@ -97,7 +102,8 @@ public class HibernateDaoFactory implements DaoFactory {
 		// A SessionFactory is set up once for an application!
 		final StandardServiceRegistry registry = builder.build();
 		try {
-			factory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+			Metadata mdBuilder = new MetadataSources(registry).buildMetadata();
+			factory = mdBuilder.buildSessionFactory();
 			
 		}
 		catch (Exception e) {

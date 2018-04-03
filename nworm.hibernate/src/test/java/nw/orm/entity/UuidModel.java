@@ -4,15 +4,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.Table;
 
-import nw.orm.core.EntityUpdateListener;
 import nw.orm.core.IEntity;
 
 @Entity
 @Table(name = "BASIC_SEQ_MODEL")
-@EntityListeners(EntityUpdateListener.class)
 public class UuidModel extends IEntity {
 
 	private static final long serialVersionUID = 9144498485472808203L;
