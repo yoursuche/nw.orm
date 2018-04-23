@@ -1,0 +1,96 @@
+<?xml version='1.0' ?><!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+	<title>index</title>
+	<chapter id="header">
+		<title>The worm in ORM</title>
+		<phrase id="author" role="author">Doc Writer</phrase>
+		<phrase id="email" role="email">
+			<ulink url="mailto:rogwara@nimworks.com">rogwara@nimworks.com</ulink>
+		</phrase>v1
+		<section id="_introduction">
+			<title>Introduction</title>
+			<para>nw.orm is a simple reusable library that takes away certain type of repetitive tasks while developing Java based software that interacts with databases. It encourages developers to focus on the actual project work, by removing these repetitive tasks. It is basically a wrapper around JPA that exposes classes and methods that are ideal for both Java SE and Java EE applications. The library is lightweight and does not enforce any design pattern.</para>
+
+		</section>
+		<section id="_quick_start">
+			<title>Quick Start</title>
+			<para>The project is split into modules that can be used independently, the idea here is to have a common interface across multiple datasource possibly including non relational databases</para>
+
+			<section id="_installation">
+				<title>Installation</title>
+				<para>nw.orm binaries are hosted on maven central.</para>
+
+				<section id="_jpa">
+					<title>JPA</title>
+					<para>Ideal for projects that uses JPA from different providers like OpenJPA, Hibernate, and EclipseLink</para>
+
+					<literallayout role="nowrap source-xml"><code>&lt;dependency&gt;
+	&lt;groupId&gt;com.nimworks&lt;/groupId&gt;
+	&lt;artifactId&gt;nworm.core&lt;/artifactId&gt;
+	&lt;version&gt;${nworm.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></literallayout>
+				</section>
+				<section id="_hibernate_specific">
+					<title>Hibernate Specific</title>
+					<para>Ideal for projects using hibernate core modules</para>
+
+					<literallayout role="nowrap source-xml"><code>&lt;dependency&gt;
+	&lt;groupId&gt;com.nimworks&lt;/groupId&gt;
+	&lt;artifactId&gt;nworm.hibernate&lt;/artifactId&gt;
+	&lt;version&gt;${nworm.version}&lt;/version&gt;
+&lt;/dependency&gt;
+</code></literallayout>
+				</section>
+				<section id="_todo">
+					<title>TODO</title>
+					<itemizedlist>
+						<listitem>
+							<para>MongoDB</para>
+						</listitem>
+						<listitem>
+							<para>Elastic Search</para>
+						</listitem>
+						<listitem>
+							<para>Cassandra</para>
+						</listitem>
+					</itemizedlist>
+				</section>
+			</section>
+			<section id="_code">
+				<title>Code</title>
+				<para>nw.orm provides base classes for building entities. The base class provides and manages extra fields that can be useful. These fields include</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>create_date: The entity create date</para>
+					</listitem>
+					<listitem>
+						<para>last_updated: The last time the entity was updated</para>
+					</listitem>
+					<listitem>
+						<para>deleted: soft deletion marker</para>
+					</listitem>
+					<listitem>
+						<para>active: can be used to toggle rows as on or off</para>
+					</listitem>
+				</itemizedlist>
+				<literallayout role="nowrap source-java"><code>@Entity
+@Table(name = "ACCESS_TOKEN")
+public class AccessToken extends REntity {
+
+	private static final long serialVersionUID = -5221279551618337736L;
+}
+</code></literallayout>
+				<para>Provide appropriate mappings</para>
+
+			</section>
+			<section id="_querying">
+				<title>Querying</title>
+				<literallayout role="nowrap source-java"><code>Nworm worm = Nworm.geInstance();
+worm.getById(AccessToken.class, 1L);
+</code></literallayout>
+			</section>
+		</section>
+	</chapter>
+</book>

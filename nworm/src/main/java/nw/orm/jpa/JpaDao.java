@@ -2,7 +2,9 @@ package nw.orm.jpa;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -21,6 +23,7 @@ import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.dao.Paging;
+import nw.orm.filters.Filter;
 
 public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	
@@ -124,7 +127,6 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		EntityManager mgr = getEntityManager();
 		
 		try {
-			logger.debug(query);
 			TypedQuery<T> cQuery = mgr.createQuery(query, entityClass);
 			
 			setParameters(isMapped, cQuery, parameters);
@@ -326,6 +328,50 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		
 		return list;
 		
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<T> filter(Paging paging, Filter... filters) {
+		
+		List<T> list = new ArrayList<T>();
+		EntityManager mgr = getEntityManager();
+		
+		String query = "FROM " + this.entityName;
+		
+		boolean isWorm = isWormEntity(entityClass);
+		if(isWorm) {
+			query += " WHERE deleted = :deleted";
+		}
+		
+		int start = 0;
+		Map<String, Object> params = new HashMap<String, Object>();
+		for (Filter filter : filters) {
+			if(start == 0 && !isWorm) {
+				query += " WHERE ";
+				start += 1;
+			}else {
+				query += " AND ";
+			}
+			query += filter.query();
+			params.putAll(filter.params());
+		}
+		Query cQuery = mgr.createQuery(query);
+		setParameters(isWorm, cQuery, params);
+		
+		if(paging != null) {
+			cQuery.setFirstResult(paging.getPageOffset());
+			cQuery.setMaxResults(paging.getPageSize());
+		}
+		
+		try {
+			list = cQuery.getResultList();
+		} catch (Exception e) {
+			rollback(mgr);
+			logger.warn("Nworm Error - ", e);
+		}
+		
+		return list;
 	}
 
 }

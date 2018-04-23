@@ -32,6 +32,7 @@ public class LastUpdateListener implements PreUpdateEventListener, PersistEventL
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void onPersist(PersistEvent event, Map createdAlready) throws HibernateException {
 		Entity entity = (Entity) event.getObject();
 		entity.setLastUpdated();

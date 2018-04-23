@@ -1,5 +1,7 @@
 package nw.orm.jpa;
 
+import java.util.Map;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -83,11 +85,8 @@ abstract class JpaDaoBase {
 				query += " AND ";
 			}
 			
-			if(param.getTitle() != null)
-				query += param.getName() + " = :" + param.getTitle();
-			else {
-				query += param.getName() + " = :" + param.getName();
-			}
+			query += param.toSqlExpression();
+			
 			start += 1;
 		}
 		
@@ -96,12 +95,22 @@ abstract class JpaDaoBase {
 	
 	protected void setParameters(boolean mapped, Query query, QueryParameter ...parameters) {
 		for (QueryParameter param : parameters) {
-			String title = param.getTitle();
+			String title = param.getName();
 			
 			if(param.getTitle() != null) {
 				title = param.getTitle();
 			}
 			query.setParameter(title, param.getValue());
+		}
+		
+		if(mapped){
+			query.setParameter("deleted", false);
+		}
+	}
+	
+	protected void setParameters(boolean mapped, Query query, Map<String, Object> parameters) {
+		for (String name : parameters.keySet()) {
+			query.setParameter(name, parameters.get(name));
 		}
 		
 		if(mapped){

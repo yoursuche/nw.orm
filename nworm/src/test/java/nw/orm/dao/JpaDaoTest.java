@@ -1,30 +1,28 @@
 package nw.orm.dao;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 import static nw.orm.core.query.QueryParameter.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-
 import nw.orm.entity.Person;
 import nw.orm.entity.Sex;
+import nw.orm.filters.JpqlFilters;
 import nw.orm.jpa.JDao;
 import nw.orm.jpa.JpaDaoFactory;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class JpaDaoTest {
 
-	private static JpaDaoFactory jpaService;
+	private JpaDaoFactory jpaService;
 
-	@BeforeClass
-	public static void init(){
+	@Before
+	public void init(){
 		jpaService = new JpaDaoFactory("nworm", false);
 		jpaService.init();
 		
@@ -49,19 +47,33 @@ public class JpaDaoTest {
 	}
 	
 	@Test
-	public void testGet() {
+	public void testOrFilter() {
 		
 		JDao<Person> dao = jpaService.getDao(Person.class);
 		
-		CriteriaBuilder cb = dao.getCriteriaBuilder();
-		CriteriaQuery<Person> query = cb.createQuery(Person.class);
-		Root<Person> person = query.from(Person.class);
+		List<Person> persons = dao.filter(null, JpqlFilters.or(JpqlFilters.eq("sex", Sex.MALE), JpqlFilters.eq("age", 20)));
+		System.out.println(persons);
+		assertThat("must be 1", 1, equalTo(persons.size()));
+	}
+	
+	@Test
+	public void testAndFilter() {
 		
-//		Predicate.BooleanOperator.
-////		query.where(cb.equal(Restr, y)
-//		
-//		dao.bulkSave(persons);
+		JDao<Person> dao = jpaService.getDao(Person.class);
 		
+		List<Person> persons = dao.filter(null, JpqlFilters.and(JpqlFilters.eq("sex", Sex.MALE), JpqlFilters.eq("age", 20)));
+		System.out.println(persons);
+		assertThat("must be greater than zero", 0, equalTo(persons.size()));
+	}
+	
+	@Test
+	public void testAndOrFilter() {
+		
+		JDao<Person> dao = jpaService.getDao(Person.class);
+		List<Person> persons = dao.filter(null, JpqlFilters.and(JpqlFilters.eq("sex", Sex.MALE), JpqlFilters.eq("age", 20)), 
+				JpqlFilters.eq("sex", Sex.MALE), JpqlFilters.eq("age", 20));
+		System.out.println(persons);
+		assertThat("must be greater than zero", 0, equalTo(persons.size()));
 	}
 	
 	@Test
@@ -179,8 +191,8 @@ public class JpaDaoTest {
 		fail("Not Implemented");
 	}
 	
-	@AfterClass
-	public static void close(){
+	@After
+	public void close(){
 		jpaService.clean();;
 	}
 

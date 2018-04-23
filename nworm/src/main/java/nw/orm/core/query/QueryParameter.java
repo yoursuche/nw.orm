@@ -105,6 +105,17 @@ public class QueryParameter {
 		return new QueryParameter(name, value, title);
 	}
 	
+	public String toSqlExpression() {
+		String exp = "";
+		if(this.getTitle() != null)
+			exp += this.getName() + " = :" + this.getTitle();
+		else {
+			exp += this.getName() + " = :" + this.getName();
+		}
+		
+		return exp;
+	}
+	
 	/**
 	 * From map.
 	 *
