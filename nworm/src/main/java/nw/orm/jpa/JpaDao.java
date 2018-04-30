@@ -374,4 +374,45 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		return list;
 	}
 
+	@Override
+	public T select(Filter... filters) {
+		
+		T selected = null;
+		EntityManager mgr = getEntityManager();
+		
+		String query = "FROM " + this.entityName;
+		
+		boolean isWorm = isWormEntity(entityClass);
+		if(isWorm) {
+			query += " WHERE deleted = :deleted";
+		}
+		
+		int start = 0;
+		Map<String, Object> params = new HashMap<String, Object>();
+		for (Filter filter : filters) {
+			if(start == 0 && !isWorm) {
+				query += " WHERE ";
+				start += 1;
+			}else {
+				query += " AND ";
+			}
+			query += filter.query();
+			params.putAll(filter.params());
+		}
+		TypedQuery<T> cQuery = mgr.createQuery(query, entityClass);
+		setParameters(isWorm, cQuery, params);
+		
+		
+		
+		try {
+			selected = cQuery.getSingleResult();
+		} catch (Exception e) {
+			rollback(mgr);
+			logger.warn("Nworm Error - ", e);
+		}
+		
+		return selected;
+		
+	}
+
 }

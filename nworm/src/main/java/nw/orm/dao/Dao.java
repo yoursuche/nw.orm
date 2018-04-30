@@ -44,6 +44,8 @@ public interface Dao<T> {
 	 */
 	List<T> deleted(Paging paging);
 	
+	T select(Filter ... filters);
+	
 	List<T> filter(Paging paging, Filter ... filters);
 
 }

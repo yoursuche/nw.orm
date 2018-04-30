@@ -316,5 +316,11 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		throw new IllegalAccessError("Not Implemented");
 	}
 
+	@Override
+	public T select(Filter... filters) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

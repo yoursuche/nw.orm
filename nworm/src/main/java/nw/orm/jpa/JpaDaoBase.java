@@ -1,13 +1,14 @@
 package nw.orm.jpa;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
-
 import nw.orm.core.Entity;
 import nw.orm.core.query.QueryParameter;
+import nw.orm.filters.Filter;
 
 abstract class JpaDaoBase {
 	
@@ -116,6 +117,28 @@ abstract class JpaDaoBase {
 		if(mapped){
 			query.setParameter("deleted", false);
 		}
+	}
+	
+	protected <T> String buildQuery(Class<T> daoEntity, boolean isWorm, Filter ...filters) {
+		
+		String query = "FROM " + daoEntity.getSimpleName();
+		if(isWorm) {
+			query += " WHERE deleted = :deleted";
+		}
+		
+		int start = 0;
+		Map<String, Object> params = new HashMap<String, Object>();
+		for (Filter filter : filters) {
+			if(start == 0 && !isWorm) {
+				query += " WHERE ";
+				start += 1;
+			}else {
+				query += " AND ";
+			}
+			query += filter.query();
+			params.putAll(filter.params());
+		}
+		return query;
 	}
 
 }
