@@ -169,7 +169,13 @@ public abstract class Entity implements Serializable {
 		return tableName;
 	}
 	
-	@PrePersist @PreUpdate
+	@PrePersist
+	public void setCreateDate() {
+		this.createDate = new Date();
+		this.lastModified = new Date();
+	}
+	
+	@PreUpdate
 	public void setLastUpdated() {
 		this.lastModified = new Date();
 	}

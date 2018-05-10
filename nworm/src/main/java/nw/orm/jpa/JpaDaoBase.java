@@ -12,8 +12,8 @@ import nw.orm.filters.Filter;
 
 abstract class JpaDaoBase {
 	
-	protected EntityManagerFactory em;
-	private boolean managedTransaction;
+	EntityManagerFactory em;
+	boolean managedTransaction;
 	
 	public JpaDaoBase(EntityManagerFactory em, boolean managedTransaction) {
 		this.em = em;

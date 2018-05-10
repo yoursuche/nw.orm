@@ -11,9 +11,9 @@ import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
 import nw.orm.dao.Dao;
-import nw.orm.dao.QueryDao;
+import nw.orm.dao.QueryExecutor;
 import nw.orm.hibernate.HDao;
-import nw.orm.hibernate.HQueryDao;
+import nw.orm.hibernate.HibernateExecutor;
 import nw.orm.hibernate.HibernateDaoFactory;
 
 import org.hibernate.criterion.Criterion;
@@ -121,7 +121,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> T getByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		
-		QueryDao qdao = factory.getQueryDao();
+		QueryExecutor qdao = factory.getExecutor();
 		return qdao.query(resultClass, hql, parameters);
 		
 	}
@@ -141,7 +141,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	@Override
 	public <T> List<T> getListByHQL(Class<T> resultClass, String hql, QueryParameter ... parameters) {
 		
-		QueryDao qdao = factory.getQueryDao();
+		QueryExecutor qdao = factory.getExecutor();
 		return qdao.queryList(resultClass, hql, parameters);
 		
 	}
@@ -151,7 +151,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params){
-		QueryDao dao = factory.getQueryDao();
+		QueryExecutor dao = factory.getExecutor();
 		return dao.getBySQL(returnClazz, sql, sqlMod, params);
 	}
 
@@ -160,7 +160,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> T getByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		HQueryDao dao = factory.getQueryDao();
+		HibernateExecutor dao = factory.getExecutor();
 		T out = dao.find(returnClazz, qm, criteria);
 		return out;
 	}
@@ -170,7 +170,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> List<T> getListByCriteria(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria){
-		HQueryDao dao = factory.getQueryDao();
+		HibernateExecutor dao = factory.getExecutor();
 		return dao.list(returnClazz, qm, criteria);
 	}
 
@@ -189,7 +189,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public <T> List<T> getListByExample(QueryModifier qm, Example example){
-		HQueryDao dao = factory.getQueryDao();
+		HibernateExecutor dao = factory.getExecutor();
 		return dao.getListByExample(qm, example);
 	}
 
@@ -198,8 +198,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public int executeSQLUpdate(String sql, QueryParameter ... params){
-		HQueryDao dao = factory.getQueryDao();
-		return dao.execQuery(sql, params);
+		HibernateExecutor dao = factory.getExecutor();
+		return dao.execute(sql, params);
 	}
 
 	/* (non-Javadoc)
@@ -207,8 +207,8 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 */
 	@Override
 	public int executeHQLUpdate(String hql, QueryParameter ... params){
-		HQueryDao dao = factory.getQueryDao();
-		return dao.execQuery(hql, params);
+		HibernateExecutor dao = factory.getExecutor();
+		return dao.execute(hql, params);
 	}
 
 	/* (non-Javadoc)

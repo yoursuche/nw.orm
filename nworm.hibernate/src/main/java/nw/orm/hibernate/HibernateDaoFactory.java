@@ -115,7 +115,7 @@ public class HibernateDaoFactory implements DaoFactory {
 	}
 
 	@Override
-	public HQueryDao getQueryDao() {
+	public HibernateExecutor getExecutor() {
 		return new HibernateQueryDao(factory, enableJta, useCurrentSession);
 	}
 	
