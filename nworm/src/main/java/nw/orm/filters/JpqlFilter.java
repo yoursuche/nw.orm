@@ -103,6 +103,7 @@ public class JpqlFilter implements Filter {
 		IS_NOT_EMPTY(" IS NOT EMPTY", 1),
 		BETWEEN(" BETWEEN ", 3),
 		NOT_BETWEEN(" NOT BETWEEN ", 1),
+		JSONB_IN_ARRAY(" @> ", 2),
 		
 		OR(" OR ", 2),
 		AND(" AND ", 2),

@@ -78,7 +78,6 @@ public class JpqlFilters {
 		return new JpqlFilter(JpqlOperator.IS_EMPTY, name);
 	}
 	
-	
 	public static Filter notEmpty(final String name) {
 		return new JpqlFilter(JpqlOperator.IS_NOT_EMPTY, name);
 	}
@@ -93,6 +92,10 @@ public class JpqlFilters {
 	
 	public static Filter not(final Filter a) {
 		return new JpqlFilter(JpqlOperator.NOT, a, null);
+	}
+	
+	public static Filter jsonContains(final String name, Object val) {
+		return new JpqlFilter(JpqlOperator.JSONB_IN_ARRAY, name, val);
 	}
 
 }
