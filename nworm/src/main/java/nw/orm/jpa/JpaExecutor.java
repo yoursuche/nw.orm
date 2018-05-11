@@ -11,12 +11,17 @@ import javax.persistence.TypedQuery;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
-import nw.orm.dao.QueryDao;
+import nw.orm.dao.QueryExecutor;
+import nw.orm.query.WormQuery;
 
-public class JpaQueryDao extends JpaDaoBase implements QueryDao {
+public class JpaExecutor extends JpaDaoBase implements QueryExecutor {
 
-	public JpaQueryDao(EntityManagerFactory em, boolean managedTransaction) {
+	public JpaExecutor(EntityManagerFactory em, boolean managedTransaction) {
 		super(em, managedTransaction);
+	}
+	
+	public WormQuery query(String query) {
+		return new JpaWormQuery(em, managedTransaction, query);
 	}
 
 	@Override
@@ -74,7 +79,7 @@ public class JpaQueryDao extends JpaDaoBase implements QueryDao {
 	}
 
 	@Override
-	public int execQuery(String shql, QueryParameter... params) {
+	public int execute(String shql, QueryParameter... params) {
 		EntityManager mgr = getEntityManager();
 		int res = -1;
 		try {

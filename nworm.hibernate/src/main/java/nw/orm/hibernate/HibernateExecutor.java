@@ -6,9 +6,9 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
 
 import nw.orm.core.query.QueryModifier;
-import nw.orm.dao.QueryDao;
+import nw.orm.dao.QueryExecutor;
 
-public interface HQueryDao extends QueryDao {
+public interface HibernateExecutor extends QueryExecutor {
 
 	<T> T find(Class<T> returnClazz, QueryModifier qm, Criterion ... criteria);
 

@@ -13,6 +13,13 @@
 		<property name="hibernate.connection.url">jdbc:h2:~/test</property>
 		<property name="hibernate.connection.username">sa</property>
 		<property name="hibernate.connection.password">sa</property>
+		
+		<property name="hibernate.c3p0.min_size">5</property> <!-- Determines how many connections at a time c3p0 will try to acquire when 
+            the pool is exhausted. -->
+        <property name="hibernate.c3p0.max_size">5</property> <!-- seconds -->
+        <property name="hibernate.c3p0.timeout">1800</property> <!--The size of c3p0's PreparedStatement cache. Zero means statement caching 
+            is turned off. -->
+        <property name="hibernate.c3p0.max_statements">50</property>
 
 		<mapping class="nw.orm.entity.Item" />
 		<mapping class="nw.orm.entity.Person" />

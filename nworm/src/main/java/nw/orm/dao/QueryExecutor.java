@@ -4,13 +4,14 @@ import java.util.List;
 
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
+import nw.orm.query.WormQuery;
 
 /**
  * Generic DAO API
  * @author Rowland
  *
  */
-public interface QueryDao {
+public interface QueryExecutor {
 
 	<T> T query(Class<T> resultClass, String jpql, QueryParameter ... parameters);
 
@@ -22,6 +23,8 @@ public interface QueryDao {
 	
 	<T> List<T> getBySQL(Class<T> returnClazz, String sql, SQLModifier sqlMod, QueryParameter ... params);
 	
-	int execQuery(String shql, QueryParameter ... params);
+	int execute(String shql, QueryParameter ... params);
+	
+	WormQuery query(String query);
 
 }

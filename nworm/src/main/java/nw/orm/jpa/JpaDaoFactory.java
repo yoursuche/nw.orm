@@ -3,7 +3,7 @@ package nw.orm.jpa;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import nw.orm.dao.DaoFactory;
-import nw.orm.dao.QueryDao;
+import nw.orm.dao.QueryExecutor;
 
 /**
  * Concrete {@link DaoFactory} implementation based
@@ -61,8 +61,8 @@ public class JpaDaoFactory implements DaoFactory {
 	}
 
 	@Override
-	public QueryDao getQueryDao() {
-		return new JpaQueryDao(em, useManagedTransaction);
+	public QueryExecutor getExecutor() {
+		return new JpaExecutor(em, useManagedTransaction);
 	}
 
 }

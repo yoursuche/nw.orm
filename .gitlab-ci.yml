@@ -12,16 +12,12 @@ test:
 deploy:
     stage: deploy
     script:
-        - mvn clean deploy
-    environment: prod
-    only:
-        - master
-        - develop
-
-pages:
-    script:
-        - mvn package
+        - mvn clean deploy -Dtest.skip=true
         - mv target/generated-docs public
+    environment: prod
     artifacts:
         paths:
             - public
+    only:
+        - master
+        - develop

@@ -1,7 +1,3 @@
-/*
- * Property of Neemworks Nigeria 
- * Copyright 2013 - 2015, all rights reserved
- */
 package nw.orm.core.query;
 
 import java.util.Map;
@@ -107,6 +103,17 @@ public class QueryParameter {
 	
 	public static QueryParameter param(String name, String title, Object value){
 		return new QueryParameter(name, value, title);
+	}
+	
+	public String toSqlExpression() {
+		String exp = "";
+		if(this.getTitle() != null)
+			exp += this.getName() + " = :" + this.getTitle();
+		else {
+			exp += this.getName() + " = :" + this.getName();
+		}
+		
+		return exp;
 	}
 	
 	/**

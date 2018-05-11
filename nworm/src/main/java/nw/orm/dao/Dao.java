@@ -3,6 +3,8 @@ package nw.orm.dao;
 import java.io.Serializable;
 import java.util.List;
 
+import nw.orm.filters.Filter;
+
 /**
  * Provides basic a generic set of operations applicable to 
  * any given entity
@@ -41,5 +43,9 @@ public interface Dao<T> {
 	 * @return list opf entities
 	 */
 	List<T> deleted(Paging paging);
+	
+	T select(Filter ... filters);
+	
+	List<T> filter(Paging paging, Filter ... filters);
 
 }

@@ -16,6 +16,7 @@ import org.hibernate.criterion.Restrictions;
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.dao.Paging;
+import nw.orm.filters.Filter;
 
 public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	
@@ -89,7 +90,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		// get session
 		Session session = getSession();
 		try {
-			session.save(entity);
+			session.persist(entity);
 			commit(session);
 		} catch (HibernateException e) {
 			rollback(session);
@@ -308,6 +309,17 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 		}
 		
 		return out;
+	}
+
+	@Override
+	public List<T> filter(Paging paging, Filter... filters) {
+		throw new IllegalAccessError("Not Implemented");
+	}
+
+	@Override
+	public T select(Filter... filters) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

@@ -17,8 +17,9 @@ import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryModifier;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.core.query.SQLModifier;
+import nw.orm.query.WormQuery;
 
-public class HibernateQueryDao extends HibernateDaoBase implements HQueryDao {
+public class HibernateQueryDao extends HibernateDaoBase implements HibernateExecutor {
 
 	public HibernateQueryDao(SessionFactory sxnFactory, boolean jtaEnabled, boolean useCurrentSession) {
 		super(sxnFactory, jtaEnabled, useCurrentSession);
@@ -187,7 +188,7 @@ public class HibernateQueryDao extends HibernateDaoBase implements HQueryDao {
 	}
 
 	@Override
-	public int execQuery(String shql, QueryParameter... params) {
+	public int execute(String shql, QueryParameter... params) {
 		Session session = getSession();
 		SQLQuery query = session.createSQLQuery(shql);
 		if (params != null) {
@@ -206,8 +207,10 @@ public class HibernateQueryDao extends HibernateDaoBase implements HQueryDao {
 		return o;
 	}
 
-	
-
-
+	@Override
+	public WormQuery query(String query) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

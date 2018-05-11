@@ -8,9 +8,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Version;
-
 import nw.orm.core.annotations.Developer;
 
 /**
@@ -21,7 +21,7 @@ import nw.orm.core.annotations.Developer;
  * @author Ogwara O. Rowland
  */
 @Developer(name = "Ogwara O. Rowland", date = "")
-@MappedSuperclass
+@MappedSuperclass 
 public abstract class Entity implements Serializable {
 
 	/** The Constant serialVersionUID. */
@@ -42,7 +42,6 @@ public abstract class Entity implements Serializable {
 	private Date createDate = new Date();
 
 	/** Denotes the last modified date. Updates automatically with successful entry update */
-	@Version
 	@Column(name = "LAST_MODIFIED", nullable = false, insertable = true, updatable = true)
 	private Date lastModified;
 
@@ -119,8 +118,7 @@ public abstract class Entity implements Serializable {
 		result.append(" {");
 		result.append(newLine);
 
-		// determine fields declared in this class only (no fields of
-		// superclass)
+		// determine fields declared in this class only (no fields of superclass)
 		Field[] fields = this.getClass().getDeclaredFields();
 		// print field names paired with their values
 		for (Field field : fields) {
@@ -130,7 +128,7 @@ public abstract class Entity implements Serializable {
 			try {
 				result.append(field.getName());
 				result.append(": ");
-				// requires access to private field:Strin
+				// requires access to private field:String
 
 				String name = field.getName();
 				String prefix = "get";
@@ -164,11 +162,22 @@ public abstract class Entity implements Serializable {
 			Table table = getClass().getAnnotation(Table.class);
 			tableName = table.name();
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			tableName = getClass().getSimpleName();
 		}
 
 		return tableName;
+	}
+	
+	@PrePersist
+	public void setCreateDate() {
+		this.createDate = new Date();
+		this.lastModified = new Date();
+	}
+	
+	@PreUpdate
+	public void setLastUpdated() {
+		this.lastModified = new Date();
 	}
 
 }
