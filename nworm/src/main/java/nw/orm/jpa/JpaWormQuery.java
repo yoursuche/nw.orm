@@ -9,18 +9,14 @@ import javax.persistence.TypedQuery;
 
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
-import nw.orm.dao.Paging;
 import nw.orm.query.WormQuery;
 
-public class JpaWormQuery extends JpaDaoBase implements WormQuery {
+public class JpaWormQuery extends NativeWormQuery {
 	
-	private Paging paging;
-	private String query;
-	private List<QueryParameter> parameters = new ArrayList<QueryParameter>();
+	List<QueryParameter> parameters = new ArrayList<QueryParameter>();
 	
 	public JpaWormQuery(EntityManagerFactory em, boolean managedTransaction, String sql) {
-		super(em, managedTransaction);
-		this.query = sql;
+		super(em, managedTransaction, sql);
 	}
 
 	@Override
@@ -59,18 +55,12 @@ public class JpaWormQuery extends JpaDaoBase implements WormQuery {
 		}
 		return res;
 	}
-
+	
 	@Override
 	public WormQuery bind(QueryParameter... parameters) {
 		for (QueryParameter queryParameter : parameters) {
 			this.parameters.add(queryParameter);
 		}
-		return this;
-	}
-
-	@Override
-	public WormQuery paginate(int offset, int pageSize) {
-		this.paging = Paging.paginate(offset, pageSize);
 		return this;
 	}
 

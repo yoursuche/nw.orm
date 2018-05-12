@@ -6,6 +6,10 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nw.orm.core.Entity;
 import nw.orm.core.query.QueryParameter;
 import nw.orm.filters.Filter;
@@ -14,6 +18,8 @@ abstract class JpaDaoBase {
 	
 	EntityManagerFactory em;
 	boolean managedTransaction;
+	
+	Logger logger = LoggerFactory.getLogger(getClass());
 	
 	public JpaDaoBase(EntityManagerFactory em, boolean managedTransaction) {
 		this.em = em;
@@ -62,7 +68,18 @@ abstract class JpaDaoBase {
 		mgr.getTransaction().begin();
 	}
 	
+	protected boolean isMappedEntity(Class<?> clazz) {
+		try {
+			em.getMetamodel().managedType(clazz);
+			return true;
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
+		}
+		return false;
+	}
+	
 	protected boolean isWormEntity(Class<?> clazz) {
+		
 		if(Entity.class.isAssignableFrom(clazz)) {
 			return true;
 		}

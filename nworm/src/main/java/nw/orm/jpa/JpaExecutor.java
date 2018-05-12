@@ -23,6 +23,10 @@ public class JpaExecutor extends JpaDaoBase implements QueryExecutor {
 	public WormQuery query(String query) {
 		return new JpaWormQuery(em, managedTransaction, query);
 	}
+	
+	public WormQuery nativeQuery(String query) {
+		return new NativeWormQuery(em, managedTransaction, query);
+	}
 
 	@Override
 	public <T> T query(Class<T> resultClass, String jpql, QueryParameter... parameters) {

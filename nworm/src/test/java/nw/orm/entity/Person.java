@@ -2,6 +2,8 @@ package nw.orm.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import nw.orm.core.IEntity;
@@ -16,6 +18,8 @@ public class Person extends IEntity {
 	private String fullName;
 	
 	private int age;
+	
+	@Enumerated(EnumType.STRING)
 	private Sex sex = Sex.MALE;
 	
 	public Person() {

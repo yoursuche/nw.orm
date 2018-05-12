@@ -52,5 +52,35 @@ public class JpaExecutorTest {
 		List<Person> persons = e.query("FROM Person p WHERE p.sex = :sex").bind(param("sex", Sex.FEMALE)).list(Person.class);
 		assertEquals(2, persons.size());
 	}
+	
+	@Test
+	public void testQueryListTransformScalar() {
+		
+		QueryExecutor e = jpaService.getExecutor();
+		List<Integer> persons = e.query("SELECT age FROM Person p WHERE p.sex = :sex").bind(param("sex", Sex.FEMALE)).list(Integer.class);
+		assertEquals(2, persons.size());
+	}
+	
+	@Test
+	public void testQueryNative() {
+		QueryExecutor e = jpaService.getExecutor();
+		Person person = e.nativeQuery("SELECT * From PERSON p WHERE p.sex = ?1").bind(param("1", Sex.MALE.toString())).get(Person.class);
+		assertEquals(10, person.getAge());
+	}
+	
+	@Test
+	public void testQueryNativeScalar() {
+		QueryExecutor e = jpaService.getExecutor();
+		Integer age = e.nativeQuery("SELECT age From Person p WHERE p.sex = ?").bind(param("1", Sex.MALE.toString())).get(Integer.class);
+		assertEquals(new Integer(10), age);
+	}
+	
+	@Test
+	public void testQueryListNativeScalar() {
+		QueryExecutor e = jpaService.getExecutor();
+		List<String> age = e.nativeQuery("SELECT full_name From Person").list(String.class);
+		System.out.println(age);
+		assertEquals(3, age.size());
+	}
 
 }

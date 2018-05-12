@@ -16,9 +16,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import nw.orm.core.Entity;
 import nw.orm.core.exception.NwormQueryException;
 import nw.orm.core.query.QueryParameter;
@@ -30,8 +27,6 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 	private String entityName;
 	private Class<T> entityClass;
 	
-	private Logger logger = LoggerFactory.getLogger(getClass());
-
 	protected JpaDao(EntityManagerFactory em, Class<T> clazz, boolean managedTransaction) {
 		super(em, managedTransaction);
 		this.entityClass = clazz;

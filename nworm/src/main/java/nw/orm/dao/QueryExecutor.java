@@ -26,5 +26,6 @@ public interface QueryExecutor {
 	int execute(String shql, QueryParameter ... params);
 	
 	WormQuery query(String query);
+	WormQuery nativeQuery(String query);
 
 }
