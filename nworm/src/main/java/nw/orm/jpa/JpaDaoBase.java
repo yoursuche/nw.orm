@@ -47,6 +47,7 @@ abstract class JpaDaoBase {
 		if(!managedTransaction && mgr.isOpen() && mgr.getTransaction().isActive()){
 			mgr.getTransaction().commit();
 			mgr.clear();
+			mgr.close();
 		}
 	}
 	
@@ -59,6 +60,7 @@ abstract class JpaDaoBase {
 		if(!managedTransaction && mgr.isOpen() && mgr.getTransaction().isActive()){
 			mgr.getTransaction().rollback();;
 			mgr.clear();
+			mgr.close();
 		}
 	}
 	

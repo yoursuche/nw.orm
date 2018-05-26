@@ -316,6 +316,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		
 		try {
 			list = cQuery.getResultList();
+			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
 			logger.warn("Nworm Error - ", e);
@@ -361,6 +362,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		
 		try {
 			list = cQuery.getResultList();
+			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
 			logger.warn("Nworm Error - ", e);
@@ -401,6 +403,7 @@ public class JpaDao<T> extends JpaDaoBase implements JDao<T> {
 		
 		try {
 			selected = cQuery.getSingleResult();
+			commit(mgr);
 		} catch (Exception e) {
 			rollback(mgr);
 			logger.warn("Nworm Error - ", e);

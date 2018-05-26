@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.nimworks</groupId>
 		<artifactId>nw.orm</artifactId>
-		<version>4.0.6-SNAPSHOT</version>
+		<version>4.0.7-SNAPSHOT</version>
 	</parent>
 	<artifactId>nworm.core</artifactId>
 	
