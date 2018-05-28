@@ -213,4 +213,10 @@ public class HibernateQueryDao extends HibernateDaoBase implements HibernateExec
 		return null;
 	}
 
+	@Override
+	public WormQuery nativeQuery(String query) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
