@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.nimworks</groupId>
     <artifactId>nw.orm</artifactId>
-    <version>4.0.7h.Final</version>
+    <version>4.0.7.1h.Final</version>
   </parent>
   <artifactId>nworm.hibernate</artifactId>
   <name>nworm.hibernate</name>

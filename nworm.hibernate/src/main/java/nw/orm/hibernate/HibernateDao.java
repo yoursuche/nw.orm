@@ -30,7 +30,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	}
 	
 	@Override
-	public T getById(Serializable id) {
+	public T getById(Long id) {
 		T out = null;
 		Session session = getSession();
 		try {
@@ -148,7 +148,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	}
 	
 	@Override
-	public void deleteById(Serializable pk) {
+	public void deleteById(Long pk) {
 		
 		Session session = getSession();
 		try {
@@ -161,7 +161,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	}
 	
 	@Override
-	public void bulkIdDelete(List<Serializable> pks) {
+	public void bulkIdDelete(List<Long> pks) {
 		
 		StatelessSession session = getStatelessSession();
 		try {
@@ -217,7 +217,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	}
 	
 	@Override
-	public void softDelete(Serializable id) {
+	public void softDelete(Long id) {
 		
 		if (!Entity.class.isAssignableFrom(entityClass)) {
 			throw new NwormQueryException();
@@ -233,7 +233,7 @@ public class HibernateDao<T> extends HibernateDaoBase implements HDao<T> {
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public void bulkSoftDelete(List<Serializable> ids) {
+	public void bulkSoftDelete(List<Long> ids) {
 		
 		StatelessSession session = getStatelessSession();
 		if (!Entity.class.isAssignableFrom(entityClass)) {

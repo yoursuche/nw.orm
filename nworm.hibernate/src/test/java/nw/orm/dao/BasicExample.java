@@ -39,7 +39,7 @@ public class BasicExample {
 		bs.setBasicDate(new Date());
 		bs.setBasicString("Sample String");
 		bs.setGenField(new Date());
-		String pk = (String) dbService.create(bs);
+		Long pk = dbService.create(bs);
 		assertNotNull(pk);
 	}
 

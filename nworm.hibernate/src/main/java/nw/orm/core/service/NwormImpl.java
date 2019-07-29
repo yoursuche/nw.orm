@@ -60,7 +60,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable)
      */
     @Override
-    public <T> T getById(Class<T> clazz, Serializable id) {
+    public <T> T getById(Class<T> clazz, Long id) {
         return getById(clazz, id, false);
     }
 
@@ -68,10 +68,10 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#getById(java.lang.Class, java.io.Serializable, boolean)
      */
     @Override
-    public <T> T getById(Class<T> clazz, Serializable id, boolean lock) {
+    public <T> T getById(Class<T> clazz, Long id, boolean lock) {
 
         HDao<T> dao = factory.getDao(clazz);
-        T out = dao.getById(clazz);
+        T out = dao.getById(id);
         return out;
     }
 
@@ -216,7 +216,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#softDelete(java.lang.Class, java.io.Serializable)
      */
     @Override
-    public boolean softDelete(Class<? extends Entity> clazz, Serializable id) {
+    public boolean softDelete(Class<? extends Entity> clazz, Long id) {
 
         Dao<? extends Entity> dao = factory.getDao(clazz);
         dao.softDelete(id);
@@ -227,7 +227,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#bulkSoftDelete(java.lang.Class, java.util.List)
      */
     @Override
-    public boolean bulkSoftDelete(Class<? extends Entity> clazz, List<Serializable> ids) {
+    public boolean bulkSoftDelete(Class<? extends Entity> clazz, List<Long> ids) {
         Dao<? extends Entity> dao = factory.getDao(clazz);
         dao.bulkSoftDelete(ids);
         return true;
@@ -240,7 +240,7 @@ public abstract class NwormImpl implements NwormHibernateService {
     @SuppressWarnings("unchecked")
     public boolean remove(Object obj) {
         HDao<? extends Object> dao = factory.getDao(obj.getClass());
-        NwormEntity<? extends Serializable> e = (NwormEntity<? extends Serializable>) obj;
+        NwormEntity<? extends Long> e = (NwormEntity<? extends Long>) obj;
         dao.deleteById(e.getPk());
         return true;
     }
@@ -249,7 +249,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#remove(java.lang.Class, java.io.Serializable)
      */
     @Override
-    public boolean remove(Class<?> clazz, Serializable pk) {
+    public boolean remove(Class<?> clazz, Long pk) {
         Dao<?> dao = factory.getDao(clazz);
         dao.deleteById(pk);
         return true;
@@ -259,7 +259,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#bulkRemove(java.lang.Class, java.util.List)
      */
     @Override
-    public boolean bulkRemove(Class<?> clazz, List<Serializable> pks) {
+    public boolean bulkRemove(Class<?> clazz, List<Long> pks) {
         Dao<?> dao = factory.getDao(clazz);
         dao.bulkIdDelete(pks);
         return true;
@@ -271,10 +271,10 @@ public abstract class NwormImpl implements NwormHibernateService {
     @Override
     @Deprecated
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Serializable create(Object obj) {
+    public Long create(Object obj) {
         HDao dao = factory.getDao(obj.getClass());
         NwormEntity saved = (NwormEntity) dao.save(obj);
-        return (Serializable) saved.getPk();
+        return (Long) saved.getPk();
     }
 
     /* (non-Javadoc)
@@ -283,15 +283,15 @@ public abstract class NwormImpl implements NwormHibernateService {
     @Override
     @Deprecated
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public List<Serializable> createBulk(List<?> items) {
+    public List<Long> createBulk(List<?> items) {
         Object obj = items.get(0);
         HDao dao = factory.getDao(obj.getClass());
         dao.bulkSave(items);
 
-        ArrayList<Serializable> ls = new ArrayList<Serializable>();
+        ArrayList<Long> ls = new ArrayList<Long>();
         for (Object item : items) {
             NwormEntity saved = (NwormEntity) item;
-            ls.add((Serializable) saved.getPk());
+            ls.add((Long) saved.getPk());
         }
 
         return ls;
@@ -332,7 +332,7 @@ public abstract class NwormImpl implements NwormHibernateService {
 	 * @see nw.orm.core.service.NwormService#toggleActive(java.lang.Class, java.io.Serializable)
      */
     @Override
-    public boolean toggleActive(Class<? extends Entity> clazz, Serializable id) {
+    public boolean toggleActive(Class<? extends Entity> clazz, Long id) {
         Object bc = getByCriteria(clazz, new Criterion[]{Restrictions.idEq(id)});
         if ((bc instanceof Entity)) {
             Entity e = (Entity) bc;
