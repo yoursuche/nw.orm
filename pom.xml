@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nimworks</groupId>
 	<artifactId>nw.orm</artifactId>
-	<version>4.0.7h.Final</version>
+	<version>4.0.7.1h.Final</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>nworm</module>
@@ -203,5 +203,5 @@
 	<scm>
 		<url>https://github.com/Neemworks/nw.orm</url>
 	</scm>
-         
+                       
 </project>
