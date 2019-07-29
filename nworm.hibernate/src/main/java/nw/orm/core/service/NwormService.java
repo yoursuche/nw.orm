@@ -1,6 +1,6 @@
 package nw.orm.core.service;
 
-import java.io.Serializable;
+
 import java.util.List;
 
 import nw.orm.core.Entity;
@@ -23,7 +23,7 @@ public interface NwormService {
 	 * @return Entity instance with the specified primary key or null
 	 * @throws NwormQueryException when an error occurs
 	 */
-	public <T> T getById(Class<T> entityClass, Serializable primaryKey);
+	public <T> T getById(Class<T> entityClass, Long primaryKey);
 
 	/**
 	 * Retrieves a database entry by its primary key while locking the table.
@@ -35,7 +35,7 @@ public interface NwormService {
 	 * @return Entity instance with the specified primary key or null
 	 * @throws NwormQueryException when an error occurs
 	 */
-	public <T> T getById(Class<T> entityClass, Serializable primaryKey, boolean lockOption);
+	public <T> T getById(Class<T> entityClass, Long primaryKey, boolean lockOption);
 
 	/**
 	 * Retrieves a none paginated list of tables represented by the entity class spscified.
@@ -89,7 +89,7 @@ public interface NwormService {
 	 * @return true, if successful
 	 * @throws NwormQueryException when an error occurs
 	 */
-	public boolean softDelete(Class<? extends Entity> entityClass, Serializable id);
+	public boolean softDelete(Class<? extends Entity> entityClass, Long id);
 
 	/**
 	 * sets the deleted field for all entries in the list. All entries will be ignored in all queries
@@ -98,7 +98,7 @@ public interface NwormService {
 	 * @param paramList the param list
 	 * @return true, if successful
 	 */
-	public boolean bulkSoftDelete(Class<? extends Entity> paramClass, List<Serializable> paramList);
+	public boolean bulkSoftDelete(Class<? extends Entity> paramClass, List<Long> paramList);
 
 	/**
 	 * Deletes an entry from the database.
@@ -112,10 +112,10 @@ public interface NwormService {
 	 * Deletes an entry using its primary key.
 	 *
 	 * @param paramClass the param class
-	 * @param paramSerializable the param serializable
+	 * @param paramLong the param serializable
 	 * @return true, if successful
 	 */
-	public boolean remove(Class<?> paramClass, Serializable paramSerializable);
+	public boolean remove(Class<?> paramClass, Long paramLong);
 
 	/**
 	 * Deletes all entries with primary keys specified in the list.
@@ -124,7 +124,7 @@ public interface NwormService {
 	 * @param paramList the param list
 	 * @return true, if successful
 	 */
-	public boolean bulkRemove(Class<?> paramClass, List<Serializable> paramList);
+	public boolean bulkRemove(Class<?> paramClass, List<Long> paramList);
 
 	/**
 	 * Inserts an entry to the database.
@@ -132,7 +132,7 @@ public interface NwormService {
 	 * @param paramObject the param object
 	 * @return primary key
 	 */
-	public Serializable create(Object paramObject);
+	public Long create(Object paramObject);
 
 	/**
 	 * Creates the specified list of items.
@@ -140,7 +140,7 @@ public interface NwormService {
 	 * @param paramList the param list
 	 * @return the list
 	 */
-	public List<Serializable> createBulk(List<?> paramList);
+	public List<Long> createBulk(List<?> paramList);
 
 	/**
 	 * Updates an entry.
@@ -162,10 +162,10 @@ public interface NwormService {
 	 * Toggle active.
 	 *
 	 * @param paramClass the param class
-	 * @param paramSerializable the param serializable
+	 * @param paramLong the param serializable
 	 * @return true, if successful
 	 */
-	public boolean toggleActive(Class<? extends Entity> paramClass, Serializable paramSerializable);
+	public boolean toggleActive(Class<? extends Entity> paramClass, Long paramLong);
 
 	/**
 	 * Creates the or update.

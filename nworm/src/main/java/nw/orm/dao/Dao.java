@@ -1,6 +1,5 @@
 package nw.orm.dao;
 
-import java.io.Serializable;
 import java.util.List;
 
 import nw.orm.filters.Filter;
@@ -15,7 +14,7 @@ import nw.orm.filters.Filter;
  */
 public interface Dao<T> {
 	
-	T getById(Serializable id);
+	T getById(Long id);
 	
 	T save(T entity);
 	
@@ -25,17 +24,17 @@ public interface Dao<T> {
 	
 	void delete(T entity);
 	
-	void deleteById(Serializable pk);
+	void deleteById(Long pk);
 	
 	void bulkSave(List<T> entities);
 	
 	void bulkDelete(List<T> entities);
 	
-	void bulkIdDelete(List<Serializable> pks);
+	void bulkIdDelete(List<Long> pks);
 	
-	void softDelete(Serializable id);
+	void softDelete(Long id);
 
-	void bulkSoftDelete(List<Serializable> ids);
+	void bulkSoftDelete(List<Long> ids);
 	
 	/**
 	 * Lists all soft deleted entities
